@@ -77,11 +77,13 @@ function Map() {
           borderRadius: 8,
           boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
           zIndex: 20,
-          maxWidth: 320,
+          maxWidth: 400,
         }}
       >
-        <div style={{ fontWeight: 600, marginBottom: 6 }}>Instructions</div>
-        <ol style={{ margin: 0, paddingLeft: 18, fontSize: 13 }}>
+        <div style={{ fontWeight: 600}}>
+          <h2>Instructions</h2>
+        </div>
+        <ol style={{ margin: 0, paddingLeft: 18, fontSize: 16 }}>
           <li>Try to guess where this person is from based on their English accent</li>
           <li>Double Click to place your guess</li>
           <li>Confirm your guess</li>
@@ -113,6 +115,8 @@ function Map() {
             color: "white",
             cursor: hasPin ? "pointer" : "not-allowed",
             boxShadow: hasPin ? "0 2px 6px rgba(43,138,62,0.3)" : undefined,
+            fontSize: 20,
+            marginTop: 12
           }}
         >
           Confirm Guess

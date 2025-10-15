@@ -1,9 +1,10 @@
-import{ useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { Play, Pause, Volume2, VolumeX, Loader2 } from "lucide-react";
+import "../scss/AudioPlayer.scss";
 
 type Props = {
   src?: string;
 };
-
 
 export default function AudioPlayer({
   src = "/testAudios/audio1.m4a",
@@ -82,15 +83,29 @@ export default function AudioPlayer({
     setCurrentTime(a.currentTime);
   };
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
+
   return (
-    <div style={{ border: "1px solid #ddd", padding: 12, borderRadius: 8, maxWidth: 520, display: "flex", flexDirection: "column", gap: 12 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-        <button onClick={togglePlay} aria-label={playing ? "Pause" : "Play"}>
-          {playing ? "❚❚" : "►"}
+    <div className="audio-player">
+      <div className="controls-row">
+        <button
+          onClick={togglePlay}
+          aria-label={playing ? "Pause" : "Play"}
+          className="play-button"
+        >
+          {playing ? <Pause size={24} fill="white" /> : <Play size={24} fill="white" />}
         </button>
 
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-          <label style={{ fontSize: 12 }}>Volume</label>
+        <div className="volume-control">
+          <div className="volume-icon">
+            {volume === 0 ? <VolumeX size={20} /> : <Volume2 size={20} />}
+          </div>
           <input
             type="range"
             min={0}
@@ -98,13 +113,17 @@ export default function AudioPlayer({
             step={0.01}
             value={volume}
             onChange={(e) => setVolume(Number(e.target.value))}
+            className="volume-slider"
           />
-          <div style={{ fontSize: 12, width: 44, textAlign: "right" }}>{Math.round(volume * 100)}%</div>
+          <span className="volume-text">{Math.round(volume * 100)}%</span>
         </div>
       </div>
 
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+      <div className="progress-section">
+        <div className="progress-bar-container">
+          <div className="progress-bar-bg">
+            <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
+          </div>
           <input
             type="range"
             min={0}
@@ -112,13 +131,20 @@ export default function AudioPlayer({
             step={0.01}
             value={currentTime}
             onChange={(e) => seekTo(Number(e.target.value))}
-            style={{ width: "100%" }}
+            className="progress-slider"
           />
         </div>
-        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, marginTop: 6 }}>
-          <div>
-         {loading && <span>• loading</span>}
-          </div>
+
+        <div className="time-display">
+          <span className="current-time">{formatTime(currentTime)}</span>
+          {loading ? (
+            <div className="loading-indicator">
+              <Loader2 size={14} className="spinner" />
+              <span>Loading...</span>
+            </div>
+          ) : (
+            <span className="duration">{formatTime(duration)}</span>
+          )}
         </div>
       </div>
 
