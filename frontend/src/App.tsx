@@ -1,10 +1,10 @@
-import Map from "./components/Map";
+import Home from "./components/Home";
 import "./scss/App.scss";
 
 function App() {
   return (
     <>
-      <Map />
+      <Home />
     </>
   );
 }

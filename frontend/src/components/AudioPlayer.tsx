@@ -2,13 +2,13 @@ import { useEffect, useRef, useState } from "react";
 import { Play, Pause, Volume2, VolumeX, Loader2 } from "lucide-react";
 import "../scss/AudioPlayer.scss";
 
-type Props = {
-  src?: string;
+type AudioPlayerProps = {
+  src: string;
 };
 
 export default function AudioPlayer({
-  src = "/testAudios/audio1.m4a",
-}: Props) {
+  src,
+}: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState<number>(0);
