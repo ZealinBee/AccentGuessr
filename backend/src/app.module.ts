@@ -10,7 +10,7 @@ import { join } from 'path';
     ClipsModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', 'uploads'),
-      serveRoot: '/audio', // accessible at /audio/filename.mp3
+      serveRoot: '/audios', // accessible at /audios/filename.mp3
     }),
   ],
   controllers: [AppController],

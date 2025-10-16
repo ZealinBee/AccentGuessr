@@ -14,11 +14,4 @@ export class ClipsController {
   getOne(@Param('id') id: string) {
     return this.clipsService.getClip(+id);
   }
-
-  @Get('game')
-  async getGame() {
-    const allClips = await this.clipsService.getAllClips();
-    const shuffled = allClips.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
-  }
 }

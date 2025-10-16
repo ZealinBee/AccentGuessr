@@ -4,6 +4,7 @@ import { ClipsService } from './clips.service';
 
 @Module({
   controllers: [ClipsController],
-  providers: [ClipsService]
+  providers: [ClipsService],
+  exports: [ClipsService],
 })
 export class ClipsModule {}
