@@ -1,0 +1,10 @@
+-- CreateTable
+CREATE TABLE "Clip" (
+    "id" SERIAL NOT NULL,
+    "audioUrl" TEXT NOT NULL,
+    "lat" DOUBLE PRECISION NOT NULL,
+    "lng" DOUBLE PRECISION NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Clip_pkey" PRIMARY KEY ("id")
+);
