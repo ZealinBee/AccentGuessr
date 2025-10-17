@@ -1,8 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 
-const BLOB_BASE = process.env.AUDIO_BLOB_BASE;
-
 @Injectable()
 export class ClipsService {
   private prisma = new PrismaClient();
@@ -10,8 +8,6 @@ export class ClipsService {
   private toBlobUrl(url: string) {
     if (!url) return url;
     if (url.startsWith('http://') || url.startsWith('https://')) return url;
-    const name = url.split('/').filter(Boolean).pop();
-    return name ? `${BLOB_BASE}/${name}` : url;
   }
 
   async getAllClips() {
