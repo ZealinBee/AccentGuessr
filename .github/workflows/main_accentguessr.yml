@@ -18,7 +18,7 @@ jobs:
       - name: Set up Node.js version
         uses: actions/setup-node@v3
         with:
-          node-version: '22.x'
+          node-version: "22.x"
 
       - name: Install dependencies and build (backend)
         working-directory: backend
@@ -56,6 +56,6 @@ jobs:
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'accentguessr'
-          slot-name: 'Production'
-          package: .
+          app-name: "accentguessr"
+          slot-name: "Production"
+          package: ./dist
