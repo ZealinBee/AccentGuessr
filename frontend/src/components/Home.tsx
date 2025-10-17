@@ -57,7 +57,6 @@ function Home() {
       {gameStarted && currentGame && (
         <Game
           gameData={currentGame}
-          gameStarted={gameStarted}
           setGameStarted={setGameStarted}
         />
       )}

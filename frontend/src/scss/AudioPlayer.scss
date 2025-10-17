@@ -154,3 +154,49 @@
 .duration {
   color: #94a3b8;
 }
+
+.audio-player {
+  position: relative;
+}
+
+.arrow-button {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  color: #cbd5e1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+}
+
+.arrow-button:hover {
+  background: #3b82f6;
+  color: white;
+  transform: translateY(-50%) scale(1.05);
+}
+
+.arrow-button:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.arrow-button:first-of-type {
+  left: -56px;
+}
+
+.arrow-button:last-of-type {
+  right: -56px;
+}
+
+.arrow-button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+  transform: translateY(-50%);
+}

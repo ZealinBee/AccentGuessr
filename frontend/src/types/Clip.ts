@@ -1,9 +1,8 @@
 interface Clip {
   id: number;
   audioUrl: string;
-  lat: number;
-  lng: number;
   createdAt: string;
+  speakerId: number;
 }
 
 export type { Clip };

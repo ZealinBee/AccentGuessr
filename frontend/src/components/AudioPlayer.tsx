@@ -1,20 +1,83 @@
-import { useEffect, useRef, useState } from "react";
-import { Play, Pause, Volume2, VolumeX, Loader2 } from "lucide-react";
+import { useEffect, useRef, useState, useCallback } from "react";
+import { Play, Pause, Volume2, VolumeX, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
 import "../scss/AudioPlayer.scss";
+import type { Clip } from "../types/Clip";
 
 type AudioPlayerProps = {
-  src: string;
+  srcs: Clip[];
 };
 
-export default function AudioPlayer({
-  src,
-}: AudioPlayerProps) {
+export default function AudioPlayer({ srcs }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [duration, setDuration] = useState<number>(0);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [volume, setVolume] = useState<number>(1);
   const [loading, setLoading] = useState<boolean>(true);
+  const [index, setIndex] = useState<number>(0);
+
+  const currentSrc = srcs && srcs.length > 0 ? srcs[index].audioUrl : "";
+
+  const resetForIndexChange = useCallback(() => {
+    const a = audioRef.current;
+    setPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+    setLoading(true);
+    if (a) {
+      a.pause();
+      a.currentTime = 0;
+    }
+  }, []);
+
+  // If the available srcs change, ensure index is in range and reset player state
+  useEffect(() => {
+    if (!srcs || srcs.length === 0) {
+      setIndex(0);
+      resetForIndexChange();
+      return;
+    }
+    if (index > srcs.length - 1) {
+      setIndex(0);
+      resetForIndexChange();
+    }
+  }, [srcs, index, resetForIndexChange]);
+
+  const togglePlay = useCallback(async () => {
+    const a = audioRef.current;
+    if (!a) return;
+    // use the element's paused state to avoid depending on React 'playing'
+    if (!a.paused) {
+      a.pause();
+      setPlaying(false);
+    } else {
+      try {
+        await a.play();
+        setPlaying(true);
+      } catch (err) {
+        console.warn("Playback failed:", err);
+        setPlaying(false);
+      }
+    }
+  }, []);
+
+  const prevClip = useCallback(() => {
+    if (!srcs || srcs.length === 0) return;
+    setIndex((i) => {
+      const next = Math.max(0, i - 1);
+      resetForIndexChange();
+      return next;
+    });
+  }, [srcs, resetForIndexChange]);
+
+  const nextClip = useCallback(() => {
+    if (!srcs || srcs.length === 0) return;
+    setIndex((i) => {
+      const next = Math.min(srcs.length - 1, i + 1);
+      resetForIndexChange();
+      return next;
+    });
+  }, [srcs, resetForIndexChange]);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -34,13 +97,22 @@ export default function AudioPlayer({
     a.addEventListener("ended", onEnded);
     a.addEventListener("error", onError);
 
+    // ensure the element tries to load metadata for the new src
+    try {
+      setLoading(true);
+      a.load();
+    } catch {
+      // ignore
+    }
+
     return () => {
       a.removeEventListener("loadedmetadata", onLoaded);
       a.removeEventListener("timeupdate", onTime);
       a.removeEventListener("ended", onEnded);
       a.removeEventListener("error", onError);
     };
-  }, [src]);
+    // re-run when the current source changes so listeners reflect the right element state
+  }, [currentSrc]);
 
   useEffect(() => {
     const a = audioRef.current;
@@ -54,27 +126,18 @@ export default function AudioPlayer({
         e.preventDefault();
         togglePlay();
       }
+      if (e.code === "ArrowLeft") {
+        e.preventDefault();
+        prevClip();
+      }
+      if (e.code === "ArrowRight") {
+        e.preventDefault();
+        nextClip();
+      }
     };
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, []);
-
-  const togglePlay = async () => {
-    const a = audioRef.current;
-    if (!a) return;
-    if (playing) {
-      a.pause();
-      setPlaying(false);
-    } else {
-      try {
-        await a.play();
-        setPlaying(true);
-      } catch (err) {
-        console.warn("Playback failed:", err);
-        setPlaying(false);
-      }
-    }
-  };
+  }, [togglePlay, prevClip, nextClip]);
 
   const seekTo = (time: number) => {
     const a = audioRef.current;
@@ -84,7 +147,8 @@ export default function AudioPlayer({
   };
 
   const formatTime = (seconds: number) => {
-    console.log("Formatting time:", seconds);
+    // guard negative/NaN
+    if (!isFinite(seconds) || seconds <= 0) return "0:00";
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;
@@ -95,13 +159,31 @@ export default function AudioPlayer({
   return (
     <div className="audio-player">
       <div className="controls-row">
-        <button
-          onClick={togglePlay}
-          aria-label={playing ? "Pause" : "Play"}
-          className="play-button"
-        >
-          {playing ? <Pause size={24} fill="white" /> : <Play size={24} fill="white" />}
-        </button>
+        <div className="nav-arrows">
+          <button
+            onClick={prevClip}
+            aria-label="Previous clip"
+            className="arrow-button"
+            disabled={index <= 0}
+          >
+            <ChevronLeft size={20} />
+          </button>
+          <button
+            onClick={togglePlay}
+            aria-label={playing ? "Pause" : "Play"}
+            className="play-button"
+          >
+            {playing ? <Pause size={24} fill="white" /> : <Play size={24} fill="white" />}
+          </button>
+          <button
+            onClick={nextClip}
+            aria-label="Next clip"
+            className="arrow-button"
+            disabled={index >= srcs.length - 1}
+          >
+            <ChevronRight size={20} />
+          </button>
+        </div>
 
         <div className="volume-control">
           <div className="volume-icon">
@@ -149,7 +231,9 @@ export default function AudioPlayer({
         </div>
       </div>
 
-      <audio ref={audioRef} src={src} preload="metadata" />
+      <audio ref={audioRef} src={currentSrc} preload="metadata" />
     </div>
   );
+
+
 }

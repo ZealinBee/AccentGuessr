@@ -1,15 +1,13 @@
-import { useEffect, useState } from "react";
-import type { Clip } from "../types/Clip";
+import {  useState } from "react";
 import Map from "./Map";
+import type { Speaker } from "../types/Speaker";
 
 interface GameProps {
-  gameData: Clip[];
-  gameStarted: boolean;
+  gameData: Speaker[];
   setGameStarted: (started: boolean) => void;
 }
-function Game({ gameData, gameStarted, setGameStarted }: GameProps) {
+function Game({ gameData, setGameStarted }: GameProps) {
   const [gameRound, setGameRound] = useState(0);
-
 
   return (
     <div>

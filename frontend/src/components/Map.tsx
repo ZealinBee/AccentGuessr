@@ -7,11 +7,11 @@ import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
-import type { Clip } from "../types/Clip";
 import ResultCard from "./ResultCard";
+import type { Speaker } from "../types/Speaker";
 
 interface MapProps {
-  roundData: Clip;
+  roundData: Speaker;
   gameRound: number;
   setGameStarted: (started: boolean) => void;
   setGameRound: (n: number) => void;
@@ -284,7 +284,7 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
       >
         {!confirmedAnswer ? (
           <>
-            <AudioPlayer src={roundData.audioUrl} />
+            <AudioPlayer srcs={roundData.clips} />
             <button
               onClick={handleConfirm}
               disabled={!hasPin}
