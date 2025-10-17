@@ -84,6 +84,7 @@ export default function AudioPlayer({
   };
 
   const formatTime = (seconds: number) => {
+    console.log("Formatting time:", seconds);
     const mins = Math.floor(seconds / 60);
     const secs = Math.floor(seconds % 60);
     return `${mins}:${secs.toString().padStart(2, "0")}`;

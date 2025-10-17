@@ -41,7 +41,7 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [-74.0242, 40.6941],
-      zoom: 10.12,
+      zoom: 3.12,
     });
 
     mapRef.current = map;
@@ -49,6 +49,7 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
     map.doubleClickZoom.disable();
 
     const handleDblClick = (e: mapboxgl.MapMouseEvent) => {
+      if (confirmedAnswer) return;
       const lngLat = e.lngLat;
       if (markerRef.current) {
         markerRef.current.remove();
@@ -144,6 +145,7 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
             "line-color": "black",
             "line-width": 3,
             "line-opacity": 0.8,
+            "line-dasharray": [2, 2],
           },
         });
       }
