@@ -74,3 +74,54 @@
 .start-button:active {
   transform: translateY(1px);
 }
+
+.loading-spinner {
+  margin-left: 0.5rem;
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border-radius: 50%;
+  position: relative;
+  vertical-align: text-bottom;
+  background: conic-gradient(
+    #2563eb 0deg 90deg,
+    #06b6d4 90deg 180deg,
+    #10b981 180deg 270deg,
+    #f59e0b 270deg 360deg
+  );
+  mask: radial-gradient(farthest-side, transparent calc(50% - 2px), black calc(50% - 2px));
+  -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 2px), black calc(50% - 2px));
+  animation: spin 1s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-spinner {
+    animation: none;
+    opacity: 0.9;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.start-button[disabled] {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(0.06);
+  transform: none;
+}
+
+.sr-only {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}

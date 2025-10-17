@@ -8,14 +8,16 @@ import "../scss/Map.scss";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
 import type { Clip } from "../types/Clip";
+import ResultCard from "./ResultCard";
 
 interface MapProps {
   roundData: Clip;
   gameRound: number;
+  setGameStarted: (started: boolean) => void;
   setGameRound: (n: number) => void;
 }
 
-function Map({ roundData, gameRound, setGameRound }: MapProps) {
+function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -26,8 +28,16 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
     lng: number;
     lat: number;
   } | null>(null);
+  const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(
+    null
+  );
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+
+  useEffect(() => {
+    // keep a ref in sync so the map effect doesn't need confirmedAnswer in deps
+    confirmedAnswerRef.current = confirmedAnswer;
+  }, [confirmedAnswer]);
 
   useEffect(() => {
     const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as
@@ -46,10 +56,32 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
 
     mapRef.current = map;
 
-    map.doubleClickZoom.disable();
+    // Use single click to place the pin and show a crosshair cursor over the map
+    // set initial cursor
+    try {
+      map.getCanvas().style.cursor = "crosshair";
+    } catch {
+      /* ignore if canvas not ready */
+    }
 
-    const handleDblClick = (e: mapboxgl.MapMouseEvent) => {
-      if (confirmedAnswer) return;
+    const handleMouseEnter = () => {
+      try {
+        map.getCanvas().style.cursor = "crosshair";
+      } catch {
+        /* ignore */
+      }
+    };
+
+    const handleMouseLeave = () => {
+      try {
+        map.getCanvas().style.cursor = "";
+      } catch {
+        /* ignore */
+      }
+    };
+
+    const handleClick = (e: mapboxgl.MapMouseEvent) => {
+      if (confirmedAnswerRef.current) return;
       const lngLat = e.lngLat;
       if (markerRef.current) {
         markerRef.current.remove();
@@ -64,15 +96,25 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
       setHasPin(true);
     };
 
-    map.on("dblclick", handleDblClick);
+    map.on("click", handleClick);
+    map.on("mouseenter", handleMouseEnter);
+    map.on("mouseleave", handleMouseLeave);
 
     return () => {
-      map.off("dblclick", handleDblClick);
+      map.off("click", handleClick);
+      map.off("mouseenter", handleMouseEnter);
+      map.off("mouseleave", handleMouseLeave);
       if (markerRef.current) {
         markerRef.current.remove();
         markerRef.current = null;
       }
       setHasPin(false);
+      try {
+        // reset cursor if possible
+        if (map && map.getCanvas) map.getCanvas().style.cursor = "";
+      } catch {
+        /* ignore */
+      }
       map.remove();
       mapRef.current = null;
     };
@@ -187,6 +229,10 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
     setConfirmedAnswer(null);
     setAnswerDistance(null);
     setScore(null);
+    if(gameRound >= 4){
+      setGameStarted(false);
+      return;
+    }
     setGameRound(gameRound + 1);
   };
 
@@ -218,7 +264,7 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
           <li>
             Try to guess where this person is from based on their English accent
           </li>
-          <li>Double Click to place your guess</li>
+          <li>Click to place your guess</li>
           <li>Confirm your guess</li>
         </ol>
       </div>
@@ -258,41 +304,12 @@ function Map({ roundData, gameRound, setGameRound }: MapProps) {
             </button>
           </>
         ) : (
-          <div
-            style={{
-              background: "rgba(255,255,255,0.98)",
-              padding: 14,
-              borderRadius: 8,
-              boxShadow: "0 2px 8px rgba(0,0,0,0.12)",
-              display: "flex",
-              gap: 12,
-              alignItems: "center",
-              flexDirection: "column",
-              minWidth: 260,
-            }}
-          >
-            <div style={{ fontSize: 16, fontWeight: 600 }}>Results</div>
-            <div style={{ fontSize: 14 }}>
-              Distance:{" "}
-              {answerDistance ? `${answerDistance.toFixed(3)} km` : "-"}
-            </div>
-            <div style={{ fontSize: 14 }}>Score: {score ?? "-"}</div>
-            <button
-              onClick={handleNext}
-              style={{
-                padding: "8px 14px",
-                borderRadius: 8,
-                border: "none",
-                background: "#2563eb",
-                color: "white",
-                cursor: "pointer",
-                fontSize: 16,
-                marginTop: 6,
-              }}
-            >
-              Next
-            </button>
-          </div>
+          <ResultCard
+            answerDistance={answerDistance ?? 0}
+            score={score ?? 0}
+            gameRound={gameRound}
+            handleNext={handleNext}
+          />
         )}
       </div>
     </div>
