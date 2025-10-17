@@ -1,12 +1,14 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
 import { ClipsService } from './clips/clips.service';
+import { SpeakersService } from './speakers/speakers.service';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
     private readonly clipsService: ClipsService,
+    private readonly speakersService: SpeakersService,
   ) {}
 
   @Get()
@@ -16,8 +18,6 @@ export class AppController {
 
   @Get('game')
   async getGame(): Promise<any[]> {
-    const allClips = await this.clipsService.getAllClips();
-    const shuffled = allClips.sort(() => 0.5 - Math.random());
-    return shuffled.slice(0, 5);
+    return this.speakersService.getFiveRandomSpeakers();
   }
 }
