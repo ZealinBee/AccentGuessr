@@ -272,6 +272,24 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
       <div
         style={{
           position: "absolute",
+          top: 12,
+          left: 12,
+          background: "rgba(0,0,0,0.6)",
+          color: "white",
+          padding: "8px 12px",
+          borderRadius: 8,
+          zIndex: 21,
+          fontWeight: 700,
+          fontSize: 14,
+        }}
+        aria-label={`Round ${gameRound + 1} of 5`}
+      >
+        Round {gameRound + 1}/5
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
           bottom: 12,
           left: "50%",
           transform: "translateX(-50%)",

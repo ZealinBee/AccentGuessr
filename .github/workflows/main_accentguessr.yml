@@ -13,9 +13,10 @@ jobs:
       contents: read
 
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js version
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "22.x"
@@ -25,9 +26,9 @@ jobs:
         run: |
           npm ci
           npx prisma generate
-          npm run build --if-present
+          npm run build
 
-      - name: Upload backend artifact
+      - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
           name: node-app
@@ -41,11 +42,17 @@ jobs:
       contents: read
 
     steps:
-      - name: Download artifact from build job
+      - name: Download build artifact
         uses: actions/download-artifact@v4
         with:
           name: node-app
           path: ./backend
+
+      - name: Prepare production package
+        working-directory: ./backend
+        run: |
+          npm ci --omit=dev
+          npx prisma generate
 
       - name: Login to Azure
         uses: azure/login@v2
