@@ -1,0 +1,31 @@
+.instruction-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.92);
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  z-index: 20;
+  max-width: 400px;
+}
+
+.instruction-title {
+  font-weight: 600;
+
+  h2 {
+    margin: 0 0 8px 0;
+    font-size: 1.2rem;
+  }
+}
+
+.instruction-list {
+  margin: 0;
+  padding-left: 18px;
+  font-size: 16px;
+  line-height: 1.5;
+
+  @media (max-width: 600px) {
+    font-size: 14px;
+  }
+}

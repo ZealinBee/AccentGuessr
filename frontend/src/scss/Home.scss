@@ -4,7 +4,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1rem;
+  padding: 1.5rem;
+  background-color: #0f172a;
+  font-family: "Inter", system-ui, sans-serif;
 }
 
 .background-image {
@@ -14,91 +16,92 @@
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-  opacity: 0.4;
+  opacity: 0.35;
+  filter: contrast(1.05) saturate(1.1);
 }
 
 .background-overlay {
   position: absolute;
   inset: 0;
-  background-color: #0f172a;
+  background: radial-gradient(circle at 30% 40%, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
 }
 
 .content {
   position: relative;
   z-index: 10;
   width: 100%;
-  max-width: 42rem;
+  max-width: 40rem;
 }
 
 .welcome-card {
-  background-color: rgba(30, 41, 59, 0.8);
-  backdrop-filter: blur(8px);
-  border: 1px solid #334155;
-  border-radius: 0.5rem;
-  padding: 3rem;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  background-color: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.75rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  text-align: center;
 }
 
 .title {
-  font-size: 3rem;
-  font-weight: bold;
-  color: white;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.025em;
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
 }
 
 .description {
-  font-size: 1.25rem;
+  font-size: 1.05rem;
   color: #cbd5e1;
   margin-bottom: 2rem;
-  line-height: 1.75;
+  line-height: 1.7;
+  max-width: 32rem;
+  margin-inline: auto;
 }
 
 .start-button {
-  background-color: white;
+  background: linear-gradient(to right, #f8fafc, #e2e8f0);
   color: #0f172a;
-  padding: 1rem 2rem;
+  padding: 0.85rem 2rem;
   border-radius: 0.5rem;
-  font-size: 1.125rem;
+  font-size: 1rem;
   font-weight: 600;
   border: none;
   cursor: pointer;
-  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
-  transition: background-color 0.2s;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease-in-out;
 }
 
 .start-button:hover {
-  background-color: #f1f5f9;
+  background: linear-gradient(to right, #ffffff, #f1f5f9);
+  transform: translateY(-1px);
 }
 
 .start-button:active {
   transform: translateY(1px);
 }
 
+.start-button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Loading spinner */
 .loading-spinner {
   margin-left: 0.5rem;
   display: inline-block;
-  width: 1rem;
-  height: 1rem;
+  width: 0.9rem;
+  height: 0.9rem;
   border-radius: 50%;
-  position: relative;
-  vertical-align: text-bottom;
   background: conic-gradient(
-    #2563eb 0deg 90deg,
-    #06b6d4 90deg 180deg,
-    #10b981 180deg 270deg,
-    #f59e0b 270deg 360deg
+    #3b82f6 0deg 120deg,
+    #06b6d4 120deg 240deg,
+    #10b981 240deg 360deg
   );
   mask: radial-gradient(farthest-side, transparent calc(50% - 2px), black calc(50% - 2px));
-  -webkit-mask: radial-gradient(farthest-side, transparent calc(50% - 2px), black calc(50% - 2px));
   animation: spin 1s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .loading-spinner {
-    animation: none;
-    opacity: 0.9;
-  }
 }
 
 @keyframes spin {
@@ -107,13 +110,7 @@
   }
 }
 
-.start-button[disabled] {
-  opacity: 0.7;
-  cursor: not-allowed;
-  filter: grayscale(0.06);
-  transform: none;
-}
-
+/* Accessibility utility */
 .sr-only {
   position: absolute !important;
   width: 1px !important;
@@ -124,4 +121,46 @@
   clip: rect(0 0 0 0) !important;
   white-space: nowrap !important;
   border: 0 !important;
+}
+
+/* ----------- Responsive adjustments ----------- */
+@media (max-width: 768px) {
+  .welcome-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 0.6rem;
+  }
+
+  .title {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .description {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .start-button {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .background-image {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .welcome-card {
+    padding: 1.5rem 1rem;
+  }
 }

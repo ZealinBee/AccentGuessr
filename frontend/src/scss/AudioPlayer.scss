@@ -200,3 +200,18 @@
   cursor: not-allowed;
   transform: translateY(-50%);
 }
+
+@media(max-width: 600px) {
+  .arrow-button:first-of-type {
+    left: -45px;
+  }
+
+  .arrow-button:last-of-type {
+    right: -45px;
+  }
+
+  .audio-player {
+    max-width: 100%;
+    padding: 16px;
+  }
+}
