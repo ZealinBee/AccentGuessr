@@ -58,5 +58,6 @@ jobs:
         with:
           app-name: "accentguessr"
           slot-name: "Production"
-          package: ./backend
+          package: .
+
 
