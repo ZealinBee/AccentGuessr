@@ -8,8 +8,6 @@ import { scoreCalculate } from "../utils/scoreCalculate";
 import type { Speaker } from "../types/Speaker";
 import {
   point,
-  polygon,
-  multiPolygon,
   booleanPointInPolygon,
   lineString,
   nearestPointOnLine,
