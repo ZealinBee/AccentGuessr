@@ -9,10 +9,12 @@ generator client {
 
 model Speaker {
   id        Int      @id @default(autoincrement())
-  lat       Float
-  lng       Float
   createdAt DateTime @default(now())
   clips     Clip[]
+  country String?
+
+  accent Accent @relation(fields: [accentId], references: [id])
+  accentId Int
 }
 
 model Clip {
@@ -22,4 +24,15 @@ model Clip {
 
   speakerId  Int
   speaker    Speaker  @relation(fields: [speakerId], references: [id])
+}
+
+model Accent {
+  id          Int      @id @default(autoincrement())
+  name        String
+  region      Json
+  description String?
+  speakers Speaker[]
+  type String?
+
+  createdAt   DateTime @default(now())
 }
