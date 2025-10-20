@@ -12,7 +12,7 @@ export class SpeakersService {
 
   async getAllSpeakers() {
     const speakers = await this.prisma.speaker.findMany({
-      include: { clips: true },
+      include: { clips: true, accent: true },
     });
     return speakers.map((s) => ({
       ...s,
@@ -20,20 +20,26 @@ export class SpeakersService {
         ...c,
         audioUrl: this.toBlobUrl(c.audioUrl),
       })),
+      accent: s.accent,
     }));
   }
 
   async getFiveRandomSpeakers() {
     const speakers = await this.prisma.speaker.findMany({
-      include: { clips: true },
-      take: 5,
+      include: { clips: true, accent: true },
     });
-    return speakers.map((s) => ({
+    // Shuffle and take 5 random
+    const shuffled = [...speakers].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 5);
+    return selected.map((s) => ({
       ...s,
-      clips: s.clips.map((c) => ({
-        ...c,
-        audioUrl: this.toBlobUrl(c.audioUrl),
-      })),
+      clips: Array.isArray(s.clips)
+        ? s.clips.map((c) => ({
+            ...c,
+            audioUrl: this.toBlobUrl(c.audioUrl),
+          }))
+        : [],
+      accent: s.accent ?? null,
     }));
   }
 }

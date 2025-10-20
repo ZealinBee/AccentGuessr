@@ -1,10 +1,10 @@
+import type { Accent } from "./Accent";
 import type { Clip } from "./Clip";
 
 interface Speaker {
-    lat: number;
-    lng: number;
     id: number;
     clips: Clip[];
+    accent: Accent;
 }
 
 export type { Speaker };

@@ -6,9 +6,19 @@ import InstructionCard from "./InstructionCard";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
 import type { Speaker } from "../types/Speaker";
+import {
+  point,
+  polygon,
+  multiPolygon,
+  booleanPointInPolygon,
+  lineString,
+  nearestPointOnLine,
+  distance,
+} from "@turf/turf";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
+import { accentToFeature } from "../utils/accentToFeature";
 
 interface MapProps {
   roundData: Speaker;
@@ -30,7 +40,7 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const correctLocation = { lng: roundData.lng, lat: roundData.lat };
+  const correctLocation = roundData.accent;
 
   useEffect(() => {
     confirmedAnswerRef.current = confirmedAnswer;
@@ -48,7 +58,7 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/streets-v11",
       center: [-74.0242, 40.6941],
-      zoom: 3.12,
+      zoom: 2.12,
     });
 
     mapRef.current = map;
@@ -87,59 +97,137 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
 
     setConfirmedAnswer(answered);
 
-    const distanceKm = haversineKm(
-      answered.lat,
-      answered.lng,
-      correctLocation.lat,
-      correctLocation.lng
+    const isInside = booleanPointInPolygon(
+      point([answered.lng, answered.lat]),
+      accentToFeature(correctLocation)
     );
-    setAnswerDistance(distanceKm);
-    const computedScore = scoreCalculate(distanceKm);
-    setScore(computedScore);
 
+    // Draw the correct region as a transparent polygon with border
     const map = mapRef.current;
-    if (!map) return;
+    if (map) {
+      const regionSourceId = "correct-region";
+      const regionLayerId = "correct-region-layer";
+      // Remove previous if exists
+      if (map.getLayer(regionLayerId)) map.removeLayer(regionLayerId);
+      if (map.getSource(regionSourceId)) map.removeSource(regionSourceId);
 
-    if (correctMarkerRef.current) correctMarkerRef.current.remove();
-    const correctMarker = new mapboxgl.Marker({ color: "#23e200" })
-      .setLngLat([correctLocation.lng, correctLocation.lat])
-      .addTo(map);
-    correctMarkerRef.current = correctMarker;
-
-    const lineId = "answer-line";
-    const lineGeo: GeoJSON.FeatureCollection<GeoJSON.Geometry> = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: [
-              [answered.lng, answered.lat],
-              [correctLocation.lng, correctLocation.lat],
-            ],
-          },
-          properties: {},
-        },
-      ],
-    };
-
-    if (map.getSource(lineId)) {
-      (map.getSource(lineId) as mapboxgl.GeoJSONSource).setData(lineGeo);
-    } else {
-      map.addSource(lineId, { type: "geojson", data: lineGeo });
+      const regionFeature = accentToFeature(correctLocation);
+      map.addSource(regionSourceId, {
+        type: "geojson",
+        data: regionFeature,
+      });
       map.addLayer({
-        id: lineId,
-        type: "line",
-        source: lineId,
-        layout: { "line-join": "round", "line-cap": "round" },
+        id: regionLayerId,
+        type: "fill",
+        source: regionSourceId,
         paint: {
-          "line-color": "black",
-          "line-width": 3,
-          "line-opacity": 0.8,
-          "line-dasharray": [2, 2],
+          "fill-color": "#1abc9c",
+          "fill-opacity": 0.25,
+          "fill-outline-color": "#16a085",
         },
       });
+      // Optionally, add a border line for more visible border
+      const borderLayerId = "correct-region-border";
+      if (map.getLayer(borderLayerId)) map.removeLayer(borderLayerId);
+      map.addLayer({
+        id: borderLayerId,
+        type: "line",
+        source: regionSourceId,
+        paint: {
+          "line-color": "#16a085",
+          "line-width": 2,
+        },
+      });
+    }
+
+    if (isInside) {
+      setAnswerDistance(0);
+      setScore(5000);
+    } else {
+      // Find closest point on the polygon border
+      const guessPt = point([answered.lng, answered.lat]);
+      const regionFeature = accentToFeature(correctLocation);
+      let closest;
+      if (regionFeature.geometry.type === "Polygon") {
+        // For Polygon, check each ring
+        let minDist = Infinity;
+        let minPt = null;
+        for (const ring of regionFeature.geometry.coordinates) {
+          const line = lineString(ring);
+          const snap = nearestPointOnLine(line, guessPt);
+          const distVal = distance(guessPt, snap, { units: "kilometers" });
+          if (distVal < minDist) {
+            minDist = distVal;
+            minPt = snap;
+          }
+        }
+        closest = minPt;
+      } else if (regionFeature.geometry.type === "MultiPolygon") {
+        let minDist = Infinity;
+        let minPt = null;
+        for (const poly of regionFeature.geometry.coordinates) {
+          for (const ring of poly) {
+            const line = lineString(ring);
+            const snap = nearestPointOnLine(line, guessPt);
+            const distVal = distance(guessPt, snap, { units: "kilometers" });
+            if (distVal < minDist) {
+              minDist = distVal;
+              minPt = snap;
+            }
+          }
+        }
+        closest = minPt;
+      }
+
+      // Compute distance and score
+      if (closest) {
+        const borderLngLat = {
+          lng: closest.geometry.coordinates[0],
+          lat: closest.geometry.coordinates[1],
+        };
+        const distKm = haversineKm(
+          answered.lat,
+          answered.lng,
+          borderLngLat.lat,
+          borderLngLat.lng
+        );
+        setAnswerDistance(distKm);
+        setScore(
+          scoreCalculate(answered.lat, answered.lng, regionFeature as any)
+        );
+      }
+
+      // Draw a dotted line from guess to closest border point
+      if (closest && mapRef.current) {
+        const map = mapRef.current;
+        const lineId = "guess-to-border";
+        if (map.getLayer(lineId)) map.removeLayer(lineId);
+        if (map.getSource(lineId)) map.removeSource(lineId);
+        map.addSource(lineId, {
+          type: "geojson",
+          data: {
+            type: "Feature",
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [answered.lng, answered.lat],
+                closest.geometry.coordinates,
+              ],
+            },
+            properties: {},
+          },
+        });
+        map.addLayer({
+          id: lineId,
+          type: "line",
+          source: lineId,
+          paint: {
+            "line-color": "#e67e22",
+            "line-width": 3,
+            "line-dasharray": [2, 2],
+          },
+        });
+      }
     }
   };
 
@@ -148,10 +236,18 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
     if (correctMarkerRef.current) correctMarkerRef.current.remove();
 
     const map = mapRef.current;
-    const lineId = "answer-line";
     if (map) {
-      if (map.getLayer(lineId)) map.removeLayer(lineId);
-      if (map.getSource(lineId)) map.removeSource(lineId);
+      // Remove region polygon and border
+      const regionLayerId = "correct-region-layer";
+      const regionSourceId = "correct-region";
+      const borderLayerId = "correct-region-border";
+      if (map.getLayer(regionLayerId)) map.removeLayer(regionLayerId);
+      if (map.getLayer(borderLayerId)) map.removeLayer(borderLayerId);
+      if (map.getSource(regionSourceId)) map.removeSource(regionSourceId);
+      // Remove guess-to-border line
+      const guessLineId = "guess-to-border";
+      if (map.getLayer(guessLineId)) map.removeLayer(guessLineId);
+      if (map.getSource(guessLineId)) map.removeSource(guessLineId);
     }
 
     setHasPin(false);
