@@ -1,22 +1,32 @@
-import {  useState } from "react";
+import { useState } from "react";
 import Map from "./Map";
 import type { Speaker } from "../types/Speaker";
+import EndScreen from "./EndScreen";
 
 interface GameProps {
   gameData: Speaker[];
-  setGameStarted: (started: boolean) => void;
 }
-function Game({ gameData, setGameStarted }: GameProps) {
+
+function Game({ gameData }: GameProps) {
   const [gameRound, setGameRound] = useState(0);
+  const [showEndScreen, setShowEndScreen] = useState(false);
+  const [totalScore, setTotalScore] = useState(0);
 
   return (
     <div>
-      <Map
-        roundData={gameData[gameRound]}
-        gameRound={gameRound}
-        setGameRound={setGameRound}
-        setGameStarted={setGameStarted}
-      />
+      {showEndScreen ? (
+        <EndScreen totalScore={totalScore} />
+      ) : (
+        <Map
+          roundData={gameData[gameRound]}
+          gameRound={gameRound}
+          setGameRound={setGameRound}
+          showEndScreen={showEndScreen}
+          setShowEndScreen={setShowEndScreen}
+          totalScore={totalScore}
+          setTotalScore={setTotalScore}
+        />
+      )}
     </div>
   );
 }

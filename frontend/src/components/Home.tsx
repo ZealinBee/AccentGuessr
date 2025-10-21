@@ -24,7 +24,7 @@ function Home() {
 
   return (
     <>
-      {!gameStarted && (
+      {!gameStarted  && (
         <div className="home-container">
           <div className="background-image" />
           <div className="background-overlay" />
@@ -54,12 +54,10 @@ function Home() {
           </div>
         </div>
       )}
-      {gameStarted && currentGame && (
-        <Game
-          gameData={currentGame}
-          setGameStarted={setGameStarted}
-        />
+      {gameStarted && currentGame  && (
+        <Game gameData={currentGame} />
       )}
+
     </>
   );
 }

@@ -23,9 +23,11 @@ function ResultCard({
         <div className="result-title">Results</div>
 
         <div className="result-text">
-          Your guess was{" "}
-          {answerDistance ? `${answerDistance.toFixed(3)} km` : "-"} away from the
-          correct location
+          {score === 5000 ? (
+            <>Perfect! You nailed it exactly!</>
+          ) : (
+            <>Your guess was {answerDistance?.toLocaleString()} km away.</>
+          )}
         </div>
 
         <div className="score-text">
@@ -40,10 +42,7 @@ function ResultCard({
           className="progress-container"
         >
           <div className="progress-track">
-            <div
-              className="progress-fill"
-              style={{ width: `${percent}%` }}
-            />
+            <div className="progress-fill" style={{ width: `${percent}%` }} />
           </div>
         </div>
 
