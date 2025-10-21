@@ -44,7 +44,9 @@ function Volunteer() {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/quotes`
         );
-        setQuotes(response.data);
+        const shuffledQuotes = response.data.sort(() => Math.random() - 0.5);
+
+        setQuotes(shuffledQuotes);
       } catch (error) {
         console.error("Error fetching quotes:", error);
       } finally {
