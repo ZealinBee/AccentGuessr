@@ -21,7 +21,6 @@ function Game({ gameData }: GameProps) {
           roundData={gameData[gameRound]}
           gameRound={gameRound}
           setGameRound={setGameRound}
-          showEndScreen={showEndScreen}
           setShowEndScreen={setShowEndScreen}
           totalScore={totalScore}
           setTotalScore={setTotalScore}

@@ -22,7 +22,6 @@ interface MapProps {
   roundData: Speaker;
   gameRound: number;
   setGameRound: (n: number) => void;
-  showEndScreen: boolean;
   setShowEndScreen: (show: boolean) => void;
   totalScore: number;
   setTotalScore: (score: number) => void;
@@ -32,7 +31,6 @@ function Map({
   roundData,
   gameRound,
   setGameRound,
-  showEndScreen,
   setShowEndScreen,
   totalScore,
   setTotalScore,
