@@ -1,11 +1,14 @@
+import { Routes, Route } from "react-router-dom";
 import Home from "./components/Home";
+import Volunteer from "./pages/Volunteer";
 import "./scss/App.scss";
 
 function App() {
   return (
-    <>
-      <Home />
-    </>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/volunteer" element={<Volunteer />} />
+    </Routes>
   );
 }
 

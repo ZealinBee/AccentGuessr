@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Game from "./Game";
 import "../scss/Home.scss";
 
@@ -7,6 +8,7 @@ function Home() {
   const [currentGame, setCurrentGame] = useState(null);
   const [gameStarted, setGameStarted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const startGame = async () => {
     try {
@@ -49,6 +51,12 @@ function Home() {
                     <span className="sr-only">Loading…</span>
                   </>
                 )}
+              </button>
+              <button
+                onClick={() => navigate('/volunteer')}
+                className="start-button volunteer-button"
+              >
+                Volunteer Your Accent
               </button>
             </div>
           </div>
