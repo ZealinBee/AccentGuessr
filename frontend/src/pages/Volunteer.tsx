@@ -57,7 +57,12 @@ function Volunteer() {
   const startRecording = async (index: number) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = MediaRecorder.isTypeSupported("audio/mp4;codecs=aac")
+        ? "audio/mp4"
+        : MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm"
+        : "";
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -68,9 +73,8 @@ function Volunteer() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/webm",
-        });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+
         setRecordingStates((prev) => ({
           ...prev,
           [index]: {
@@ -161,13 +165,13 @@ function Volunteer() {
         formData.append(
           `recording_${index}`,
           state.audioBlob,
-          `recording_${index}.webm`,
+          `recording_${index}.webm`
         );
         formData.append("quoteId", quotes[Number(index)].joke);
       }
     });
 
-  // navigate is from useNavigate above
+    // navigate is from useNavigate above
 
     setIsSubmitting(true);
     try {
@@ -181,7 +185,9 @@ function Volunteer() {
         }
       );
 
-      alert("Thank you! Your recordings have been submitted successfully, the recording will be added soon.");
+      alert(
+        "Thank you! Your recordings have been submitted successfully, the recording will be added soon."
+      );
 
       // Reset form
       setRecordingStates({});
@@ -190,7 +196,7 @@ function Volunteer() {
       setSelectedQuoteIndex(null);
 
       // Navigate to home after success
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Error submitting recordings:", error);
       alert("There was an error submitting your recordings. Please try again.");
@@ -351,7 +357,9 @@ function Volunteer() {
 
           <button
             type="submit"
-            className={`submit-button ${(!isFormValid || isSubmitting) ? "disabled" : ""}`}
+            className={`submit-button ${
+              !isFormValid || isSubmitting ? "disabled" : ""
+            }`}
             disabled={!isFormValid || isSubmitting}
             aria-busy={isSubmitting}
           >
