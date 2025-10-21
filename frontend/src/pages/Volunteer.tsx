@@ -208,7 +208,7 @@ function Volunteer() {
           <li>Click on any quote card to expand it</li>
           <li>Record yourself reading the quote</li>
           <li>
-            Make at least 1 recording (you can make more if you want! We'll more
+            Record at least one quote (you can make more if you want! We'll more
             likely use your clip)
           </li>
           <li>Scroll down and submit your recording</li>
