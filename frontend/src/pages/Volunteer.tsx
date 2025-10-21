@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../scss/Volunteer.scss";
 
 type Quote = {
@@ -25,6 +26,8 @@ function Volunteer() {
   const [countryOfOrigin, setCountryOfOrigin] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   // Calculate number of recordings
   const recordingCount = Object.values(recordingStates).filter(
@@ -164,8 +167,11 @@ function Volunteer() {
       }
     });
 
+  // navigate is from useNavigate above
+
+    setIsSubmitting(true);
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/submit-recordings`,
         formData,
         {
@@ -175,17 +181,21 @@ function Volunteer() {
         }
       );
 
-      alert("Thank you! Your recordings have been submitted successfully.");
-      console.log("Submission response:", response.data);
+      alert("Thank you! Your recordings have been submitted successfully, the recording will be added soon.");
 
       // Reset form
       setRecordingStates({});
       setNativeLanguage("");
       setCountryOfOrigin("");
       setSelectedQuoteIndex(null);
+
+      // Navigate to home after success
+      navigate('/');
     } catch (error) {
       console.error("Error submitting recordings:", error);
       alert("There was an error submitting your recordings. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -341,10 +351,13 @@ function Volunteer() {
 
           <button
             type="submit"
-            className={`submit-button ${!isFormValid ? "disabled" : ""}`}
-            disabled={!isFormValid}
+            className={`submit-button ${(!isFormValid || isSubmitting) ? "disabled" : ""}`}
+            disabled={!isFormValid || isSubmitting}
+            aria-busy={isSubmitting}
           >
-            {!isFormValid
+            {isSubmitting
+              ? `⏳ Submitting...`
+              : !isFormValid
               ? `⏳ Complete Form and have at least 1 audio clip to Submit`
               : "✓ Submit Recordings"}
           </button>

@@ -12,9 +12,15 @@ export class RecordingsService {
   constructor(private readonly blobService: BlobService) {}
 
   // ✅ Helper to sanitize filenames for Azure Blob Storage
+  // ✅ Helper to sanitize filenames for Azure Blob Storage
   private sanitizeFilename(name: string): string {
-    // Replace all characters not alphanumeric, dot, underscore, or hyphen
-    return name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    // Remove or replace characters that are invalid in Azure Blob Storage names
+    // Azure disallows: \ / ? # [ ] (and generally unsafe URL chars)
+    // We’ll allow only alphanumeric, dot, underscore, and hyphen
+    return name
+      .replace(/[^a-zA-Z0-9._-]/g, '_') // Replace unsafe characters
+      .replace(/_+/g, '_') // Collapse multiple underscores
+      .replace(/^_+|_+$/g, ''); // Trim leading/trailing underscores
   }
 
   async processRecordings(
@@ -67,7 +73,7 @@ export class RecordingsService {
 
         const url = await this.blobService.uploadRecording(
           safeFile,
-          body.quoteId,
+          this.sanitizeFilename(body.quoteId.toString()),
           this.sanitizeFilename(body.nativeLanguage),
           body.countryOfOrigin
             ? this.sanitizeFilename(body.countryOfOrigin)
