@@ -45,7 +45,7 @@ function Volunteer() {
           `${import.meta.env.VITE_API_URL}/quotes`
         );
         const shuffledQuotes = response.data.sort(() => Math.random() - 0.5);
-
+        shuffledQuotes.splice(5);
         setQuotes(shuffledQuotes);
       } catch (error) {
         console.error("Error fetching quotes:", error);
@@ -161,8 +161,27 @@ function Volunteer() {
       formData.append("countryOfOrigin", countryOfOrigin);
     }
 
-    // Add all recordings
-    Object.entries(recordingStates).forEach(([index, state]) => {
+    // Collect all recorded states with blobs
+    const recordedEntries = Object.entries(recordingStates).filter(
+      ([, state]) => state.isRecorded && state.audioBlob
+    ) as [string, RecordingState[number]][];
+
+    // If there are more than 3 recordings, pick 3 at random
+    let entriesToSend: [string, RecordingState[number]][] = recordedEntries;
+    if (recordedEntries.length > 3) {
+      // Fisher-Yates shuffle then slice first 3
+      const shuffled = [...recordedEntries];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = tmp;
+      }
+      entriesToSend = shuffled.slice(0, 3);
+    }
+
+    // Append selected recordings to form data
+    entriesToSend.forEach(([index, state]) => {
       if (state.isRecorded && state.audioBlob) {
         formData.append(
           `recording_${index}`,
@@ -217,7 +236,7 @@ function Volunteer() {
           <li>Record yourself reading the quote</li>
           <li>
             Record at least one quote (you can make more if you want! We'll more
-            likely use your clip)
+            likely use your clip, but 3 should be enough!)
           </li>
           <li>Scroll down and submit your recording</li>
         </ol>
