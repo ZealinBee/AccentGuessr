@@ -12,7 +12,7 @@
 .background-image {
   position: absolute;
   inset: 0;
-  background-image: url('/background.jpg');
+  background-image: url("/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -23,7 +23,11 @@
 .background-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 40%, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
+  background: radial-gradient(
+    circle at 30% 40%,
+    rgba(15, 23, 42, 0.8),
+    rgba(15, 23, 42, 0.95)
+  );
 }
 
 .content {
@@ -100,7 +104,11 @@
     #06b6d4 120deg 240deg,
     #10b981 240deg 360deg
   );
-  mask: radial-gradient(farthest-side, transparent calc(50% - 2px), black calc(50% - 2px));
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(50% - 2px),
+    black calc(50% - 2px)
+  );
   animation: spin 1s linear infinite;
 }
 
@@ -167,4 +175,8 @@
 
 .volunteer-button {
   margin-left: 1rem;
+  margin-top: 1rem;
+  @media(max-width: 480px) {
+    margin-left: 0;
+  }
 }

@@ -44,7 +44,9 @@ function Volunteer() {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/quotes`
         );
-        setQuotes(response.data);
+        const shuffledQuotes = response.data.sort(() => Math.random() - 0.5);
+        shuffledQuotes.splice(5);
+        setQuotes(shuffledQuotes);
       } catch (error) {
         console.error("Error fetching quotes:", error);
       } finally {
@@ -57,7 +59,12 @@ function Volunteer() {
   const startRecording = async (index: number) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const mimeType = MediaRecorder.isTypeSupported("audio/mp4;codecs=aac")
+        ? "audio/mp4"
+        : MediaRecorder.isTypeSupported("audio/webm;codecs=opus")
+        ? "audio/webm"
+        : "";
+      const mediaRecorder = new MediaRecorder(stream, { mimeType });
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
@@ -68,9 +75,8 @@ function Volunteer() {
       };
 
       mediaRecorder.onstop = () => {
-        const audioBlob = new Blob(audioChunksRef.current, {
-          type: "audio/webm",
-        });
+        const audioBlob = new Blob(audioChunksRef.current, { type: mimeType });
+
         setRecordingStates((prev) => ({
           ...prev,
           [index]: {
@@ -155,19 +161,38 @@ function Volunteer() {
       formData.append("countryOfOrigin", countryOfOrigin);
     }
 
-    // Add all recordings
-    Object.entries(recordingStates).forEach(([index, state]) => {
+    // Collect all recorded states with blobs
+    const recordedEntries = Object.entries(recordingStates).filter(
+      ([, state]) => state.isRecorded && state.audioBlob
+    ) as [string, RecordingState[number]][];
+
+    // If there are more than 3 recordings, pick 3 at random
+    let entriesToSend: [string, RecordingState[number]][] = recordedEntries;
+    if (recordedEntries.length > 3) {
+      // Fisher-Yates shuffle then slice first 3
+      const shuffled = [...recordedEntries];
+      for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        const tmp = shuffled[i];
+        shuffled[i] = shuffled[j];
+        shuffled[j] = tmp;
+      }
+      entriesToSend = shuffled.slice(0, 3);
+    }
+
+    // Append selected recordings to form data
+    entriesToSend.forEach(([index, state]) => {
       if (state.isRecorded && state.audioBlob) {
         formData.append(
           `recording_${index}`,
           state.audioBlob,
-          `recording_${index}.webm`,
+          `recording_${index}.webm`
         );
         formData.append("quoteId", quotes[Number(index)].joke);
       }
     });
 
-  // navigate is from useNavigate above
+    // navigate is from useNavigate above
 
     setIsSubmitting(true);
     try {
@@ -181,7 +206,9 @@ function Volunteer() {
         }
       );
 
-      alert("Thank you! Your recordings have been submitted successfully, the recording will be added soon.");
+      alert(
+        "Thank you! Your recordings have been submitted successfully, the recording will be added soon."
+      );
 
       // Reset form
       setRecordingStates({});
@@ -190,7 +217,7 @@ function Volunteer() {
       setSelectedQuoteIndex(null);
 
       // Navigate to home after success
-      navigate('/');
+      navigate("/");
     } catch (error) {
       console.error("Error submitting recordings:", error);
       alert("There was an error submitting your recordings. Please try again.");
@@ -208,8 +235,8 @@ function Volunteer() {
           <li>Click on any quote card to expand it</li>
           <li>Record yourself reading the quote</li>
           <li>
-            Make at least 1 recording (you can make more if you want! We'll more
-            likely use your clip)
+            Record at least one quote (you can make more if you want! We'll more
+            likely use your clip, but 3 should be enough!)
           </li>
           <li>Scroll down and submit your recording</li>
         </ol>
@@ -351,7 +378,9 @@ function Volunteer() {
 
           <button
             type="submit"
-            className={`submit-button ${(!isFormValid || isSubmitting) ? "disabled" : ""}`}
+            className={`submit-button ${
+              !isFormValid || isSubmitting ? "disabled" : ""
+            }`}
             disabled={!isFormValid || isSubmitting}
             aria-busy={isSubmitting}
           >
