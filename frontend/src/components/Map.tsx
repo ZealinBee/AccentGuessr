@@ -21,11 +21,20 @@ import { accentToFeature } from "../utils/accentToFeature";
 interface MapProps {
   roundData: Speaker;
   gameRound: number;
-  setGameStarted: (started: boolean) => void;
   setGameRound: (n: number) => void;
+  setShowEndScreen: (show: boolean) => void;
+  totalScore: number;
+  setTotalScore: (score: number) => void;
 }
 
-function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
+function Map({
+  roundData,
+  gameRound,
+  setGameRound,
+  setShowEndScreen,
+  totalScore,
+  setTotalScore,
+}: MapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -251,10 +260,15 @@ function Map({ roundData, gameRound, setGameRound, setGameStarted }: MapProps) {
     setHasPin(false);
     setConfirmedAnswer(null);
     setAnswerDistance(null);
+
+    setTotalScore(totalScore + (score ?? 0));
     setScore(null);
 
-    if (gameRound >= 4) setGameStarted(false);
-    else setGameRound(gameRound + 1);
+    if (gameRound >= 4) {
+      setShowEndScreen(true);
+    } else {
+      setGameRound(gameRound + 1);
+    }
   };
 
   return (

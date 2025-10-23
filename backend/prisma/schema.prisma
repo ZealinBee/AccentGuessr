@@ -36,3 +36,33 @@ model Accent {
 
   createdAt   DateTime @default(now())
 }
+
+model VolunteerSubmission {
+  id          Int      @id @default(autoincrement())
+  nativeLanguage  String
+  countryOfOrigin String?
+  ipAddress String
+
+  submissionRecordings SubmissionRecording[]
+  createdAt DateTime @default(now())
+}
+
+model SubmissionRecording {
+  id          Int      @id @default(autoincrement())
+  nativeLanguage String
+
+  quoteId Int
+  quote   Quote   @relation(fields: [quoteId], references: [id])
+
+  volunteerSubmissionId Int
+  volunteerSubmission VolunteerSubmission @relation(fields:[volunteerSubmissionId], references: id)
+}
+
+model Quote {
+  id          Int      @id @default(autoincrement())
+  joke String
+  isUsed Boolean
+
+  submissionRecordings SubmissionRecording[]
+
+}
