@@ -15,7 +15,6 @@ function Home() {
     try {
       setLoading(true);
       const game = await axios.get(`${import.meta.env.VITE_API_URL}/game`);
-      console.log(game.data);
       setCurrentGame(game.data);
       setGameStarted(true);
     } catch (error) {

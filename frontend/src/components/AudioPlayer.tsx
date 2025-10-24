@@ -84,7 +84,7 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
     if (!a) return;
 
     const onLoaded = () => {
-      setDuration(a.duration || 0);
+      setDuration(a.duration);
       setLoading(false);
     };
 
@@ -111,7 +111,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
       a.removeEventListener("ended", onEnded);
       a.removeEventListener("error", onError);
     };
-    // re-run when the current source changes so listeners reflect the right element state
   }, [currentSrc]);
 
   useEffect(() => {

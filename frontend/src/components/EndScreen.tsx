@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import "../scss/EndScreen.scss";
 
 interface EndScreenProps {
@@ -5,6 +6,7 @@ interface EndScreenProps {
 }
 
 function EndScreen({ totalScore }: EndScreenProps) {
+  const navigate = useNavigate();
   return (
     <div className="end-screen-container">
       <div className="background-image"></div>
@@ -18,6 +20,8 @@ function EndScreen({ totalScore }: EndScreenProps) {
         <p className="end-screen-message">
           This game is still in its early stages, stay tuned for new updates!
         </p>
+        <p className="end-screen-message">If you are a master at delivering dad jokes, volunteer here, takes one minute!</p>
+        <button onClick={() => navigate("/volunteer")} className="end-screen-volunteer-button">Volunteer</button>
       </div>
     </div>
   );
