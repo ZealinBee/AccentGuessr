@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Game from "./Game";
 import "../scss/Home.scss";
+// import LoginButton from "./GoogleLoginButton";
 
 function Home() {
   const [currentGame, setCurrentGame] = useState(null);
@@ -26,7 +27,8 @@ function Home() {
 
   return (
     <>
-      {!gameStarted  && (
+      {/* <LoginButton /> */}
+      {!gameStarted && (
         <div className="home-container">
           <div className="background-image" />
           <div className="background-overlay" />
@@ -53,7 +55,7 @@ function Home() {
                 )}
               </button>
               <button
-                onClick={() => navigate('/volunteer')}
+                onClick={() => navigate("/volunteer")}
                 className="start-button volunteer-button"
               >
                 Volunteer Your Accent
@@ -62,10 +64,7 @@ function Home() {
           </div>
         </div>
       )}
-      {gameStarted && currentGame  && (
-        <Game gameData={currentGame} />
-      )}
-
+      {gameStarted && currentGame && <Game gameData={currentGame} />}
     </>
   );
 }
