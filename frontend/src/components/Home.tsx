@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Game from "./Game";
 import Seo from "./Seo";
 import "../scss/Home.scss";
+// import LoginButton from "./GoogleLoginButton";
 
 function Home() {
   const [currentGame, setCurrentGame] = useState(null);
@@ -15,7 +16,6 @@ function Home() {
     try {
       setLoading(true);
       const game = await axios.get(`${import.meta.env.VITE_API_URL}/game`);
-      console.log(game.data);
       setCurrentGame(game.data);
       setGameStarted(true);
     } catch (error) {
@@ -33,7 +33,8 @@ function Home() {
         canonical={typeof window !== 'undefined' ? window.location.href : undefined}
         url={typeof window !== 'undefined' ? window.location.href : undefined}
       />
-      {!gameStarted  && (
+      {/* <LoginButton /> */}
+      {!gameStarted && (
         <div className="home-container">
           <div className="background-image" />
           <div className="background-overlay" />
@@ -60,7 +61,7 @@ function Home() {
                 )}
               </button>
               <button
-                onClick={() => navigate('/volunteer')}
+                onClick={() => navigate("/volunteer")}
                 className="start-button volunteer-button"
               >
                 Volunteer Your Accent
@@ -69,10 +70,7 @@ function Home() {
           </div>
         </div>
       )}
-      {gameStarted && currentGame  && (
-        <Game gameData={currentGame} />
-      )}
-
+      {gameStarted && currentGame && <Game gameData={currentGame} />}
     </>
   );
 }
