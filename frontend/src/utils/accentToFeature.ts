@@ -5,7 +5,6 @@ import type { Accent } from "../types/Accent";
 export function accentToFeature(
   accent: Accent
 ): Feature<Polygon | MultiPolygon> {
-    console.log("HERE", accent);
   function closeRing(ring: number[][]): number[][] {
     if (ring.length < 2) return ring;
     const first = ring[0];

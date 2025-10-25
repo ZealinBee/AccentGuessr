@@ -30,45 +30,50 @@ function Home() {
       <Seo
         title="Guess the Accent — AccentGuessr"
         description={`Try to identify where a speaker is from by their English accent. Short audio clips, global accents, fun learning.`}
-        canonical={typeof window !== 'undefined' ? window.location.href : undefined}
-        url={typeof window !== 'undefined' ? window.location.href : undefined}
+        canonical={
+          typeof window !== "undefined" ? window.location.href : undefined
+        }
+        url={typeof window !== "undefined" ? window.location.href : undefined}
       />
-      <LoginButton />
       {!gameStarted && (
-        <div className="home-container">
-          <div className="background-image" />
-          <div className="background-overlay" />
+        <>
+          <LoginButton />
 
-          <div className="content">
-            <div className="welcome-card">
-              <h1 className="title">Guess the Accent</h1>
-              <p className="description">
-                Try to see if you can tell where this person is from by their
-                English accent.
-              </p>
-              <button
-                onClick={() => startGame()}
-                className="start-button"
-                disabled={loading}
-                aria-busy={loading}
-              >
-                Start Game
-                {loading && (
-                  <>
-                    <span className="loading-spinner" aria-hidden="true" />
-                    <span className="sr-only">Loading…</span>
-                  </>
-                )}
-              </button>
-              <button
-                onClick={() => navigate("/volunteer")}
-                className="start-button volunteer-button"
-              >
-                Volunteer Your Accent
-              </button>
+          <div className="home-container">
+            <div className="background-image" />
+            <div className="background-overlay" />
+
+            <div className="content">
+              <div className="welcome-card">
+                <h1 className="title">Guess the Accent</h1>
+                <p className="description">
+                  Try to see if you can tell where this person is from by their
+                  English accent.
+                </p>
+                <button
+                  onClick={() => startGame()}
+                  className="start-button"
+                  disabled={loading}
+                  aria-busy={loading}
+                >
+                  Start Game
+                  {loading && (
+                    <>
+                      <span className="loading-spinner" aria-hidden="true" />
+                      <span className="sr-only">Loading…</span>
+                    </>
+                  )}
+                </button>
+                <button
+                  onClick={() => navigate("/volunteer")}
+                  className="start-button volunteer-button"
+                >
+                  Volunteer Your Accent
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </>
       )}
       {gameStarted && currentGame && <Game gameData={currentGame} />}
     </>

@@ -1,5 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import "../scss/EndScreen.scss";
+import LoginButton from "./GoogleLoginButton";
+import { useEffect, useState } from "react";
 
 interface EndScreenProps {
   totalScore: number;
@@ -7,6 +9,15 @@ interface EndScreenProps {
 
 function EndScreen({ totalScore }: EndScreenProps) {
   const navigate = useNavigate();
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+
   return (
     <div className="end-screen-container">
       <div className="background-image"></div>
@@ -20,8 +31,18 @@ function EndScreen({ totalScore }: EndScreenProps) {
         <p className="end-screen-message">
           This game is still in its early stages, stay tuned for new updates!
         </p>
-        <p className="end-screen-message">If you are a master at delivering dad jokes, volunteer here, takes one minute!</p>
-        <button onClick={() => navigate("/volunteer")} className="end-screen-volunteer-button">Volunteer</button>
+        <p className="end-screen-message">
+          Volunteer {isLoggedIn ? "if you want your voice to be in the game too:" : "or Sign up to Save Your Progress and Play more Games"}
+        </p>
+        <div className="button-wrapper">
+          <button
+            onClick={() => navigate("/volunteer")}
+            className="end-screen-volunteer-button"
+          >
+            Volunteer
+          </button>
+        </div>
+        {!isLoggedIn && <LoginButton />}
       </div>
     </div>
   );
