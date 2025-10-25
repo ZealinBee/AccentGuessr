@@ -15,10 +15,10 @@ export default function LoginButton() {
     const decoded: GoogleCredential = jwtDecode(idToken);
 
     console.log("Google User:", decoded);
-
+    const games = JSON.parse(localStorage.getItem("allRoundInfo") || "null");
     const res = await axios.post(
       `${import.meta.env.VITE_API_URL}/auth/google`,
-      { idToken },
+      { idToken, games },
       { withCredentials: true }
     );
 

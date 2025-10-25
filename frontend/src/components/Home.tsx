@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Game from "./Game";
 import Seo from "./Seo";
 import "../scss/Home.scss";
-// import LoginButton from "./GoogleLoginButton";
+import LoginButton from "./GoogleLoginButton";
 
 function Home() {
   const [currentGame, setCurrentGame] = useState(null);
@@ -33,7 +33,7 @@ function Home() {
         canonical={typeof window !== 'undefined' ? window.location.href : undefined}
         url={typeof window !== 'undefined' ? window.location.href : undefined}
       />
-      {/* <LoginButton /> */}
+      <LoginButton />
       {!gameStarted && (
         <div className="home-container">
           <div className="background-image" />

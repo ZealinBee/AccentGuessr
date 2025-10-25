@@ -3,18 +3,26 @@ import { JwtService } from '@nestjs/jwt';
 import { OAuth2Client } from 'google-auth-library';
 import { UserService } from '../user/user.service';
 
+type RoundInput = {
+  score: number;
+  guessLat: number;
+  guessLong: number;
+  speakerId: number;
+};
+
+type GameCreateInput = {
+  totalScore: number;
+  rounds?: RoundInput[];
+};
+type UserResult = Awaited<ReturnType<UserService['findByEmail']>>;
+
 @Injectable()
 export class AuthService {
   private googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
-
-  private userServiceRef: unknown;
-
   constructor(
     private jwtService: JwtService,
-    userService: UserService,
-  ) {
-    this.userServiceRef = userService;
-  }
+    private userService: UserService,
+  ) {}
 
   async verifyGoogleToken(idToken: string) {
     const ticket = await this.googleClient.verifyIdToken({
@@ -33,28 +41,56 @@ export class AuthService {
     };
   }
 
-  async loginWithGoogle(idToken: string) {
+  async loginWithGoogle(idToken: string, games: GameCreateInput) {
     const googleUser = await this.verifyGoogleToken(idToken);
-    // Ensure email is present (verifyGoogleToken should provide it)
+    console.log('games', games);
     if (!googleUser.email)
       throw new UnauthorizedException('Google token missing email');
     const email = googleUser.email;
 
-    const us = this.userServiceRef as UserService;
-    let user = await us.findByEmail(email);
+    let user: UserResult | null = await this.userService.findByEmail(email);
     if (!user) {
-      user = await us.createOne({
+      user = await this.userService.createOne({
         email: googleUser.email,
         name: googleUser.name ?? null,
         picture: googleUser.picture ?? null,
+        games: games
+          ? {
+              create: [
+                {
+                  totalScore: games.totalScore,
+                  rounds: games.rounds
+                    ? {
+                        create: games.rounds.map((round) => ({
+                          score: round.score,
+                          guessLat: round.guessLat,
+                          guessLong: round.guessLong,
+                          speaker: {
+                            connect: { id: round.speakerId },
+                          },
+                        })),
+                      }
+                    : undefined,
+                },
+              ],
+            }
+          : undefined,
       });
     }
 
-    const accessToken = this.jwtService.sign({
-      sub: user.id,
-      email: user.email,
-    });
+    if (!user) throw new UnauthorizedException('Failed to get or create user');
 
-    return { accessToken, user };
+    const payload = { sub: user.id, email: user.email };
+    const accessToken = this.jwtService.sign(payload);
+
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        picture: user.picture,
+      },
+    };
   }
 }

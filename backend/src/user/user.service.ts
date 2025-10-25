@@ -7,14 +7,41 @@ export class UserService {
   private prisma = new PrismaClient();
 
   findOne(id: string) {
-    return this.prisma.user.findUnique({ where: { id } });
+    return this.prisma.user.findUnique({
+      where: { id },
+      include: {
+        games: {
+          include: {
+            rounds: true,
+          },
+        },
+      },
+    });
   }
 
   findByEmail(email: string) {
-    return this.prisma.user.findUnique({ where: { email } });
+    return this.prisma.user.findUnique({
+      where: { email },
+      include: {
+        games: {
+          include: {
+            rounds: true,
+          },
+        },
+      },
+    });
   }
 
   createOne(data: CreateUserDto) {
-    return this.prisma.user.create({ data });
+    return this.prisma.user.create({
+      data,
+      include: {
+        games: {
+          include: {
+            rounds: true,
+          },
+        },
+      },
+    });
   }
 }

@@ -23,6 +23,7 @@ async function bootstrap() {
     credentials: true,
   } satisfies CorsOptions);
 
+  console.log('HELOW');
   await app.listen(process.env.PORT ?? 3000);
 }
 bootstrap();

@@ -25,6 +25,24 @@ interface MapProps {
   setShowEndScreen: (show: boolean) => void;
   totalScore: number;
   setTotalScore: (score: number) => void;
+  allRoundInfo: {
+    totalScore: number;
+    rounds: Array<{
+      score: number;
+      guessLat: number;
+      guessLong: number;
+      speakerId: number;
+    }>;
+  };
+  setAllRoundInfo: (info: {
+    totalScore: number;
+    rounds: Array<{
+      score: number;
+      guessLat: number;
+      guessLong: number;
+      speakerId: number;
+    }>;
+  }) => void;
 }
 
 function Map({
@@ -34,6 +52,8 @@ function Map({
   setShowEndScreen,
   totalScore,
   setTotalScore,
+  allRoundInfo,
+  setAllRoundInfo,
 }: MapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
@@ -146,10 +166,13 @@ function Map({
         },
       });
     }
-
+    let roundScore = 0;
+    let totalDistance = 0;
     if (isInside) {
-      setAnswerDistance(0);
-      setScore(5000);
+      totalDistance = 0;
+      setAnswerDistance(totalDistance);
+      roundScore = 5000;
+      setScore(roundScore);
     } else {
       // Find closest point on the polygon border
       const guessPt = point([answered.lng, answered.lat]);
@@ -192,16 +215,19 @@ function Map({
           lng: closest.geometry.coordinates[0],
           lat: closest.geometry.coordinates[1],
         };
-        const distKm = haversineKm(
+        totalDistance = haversineKm(
           answered.lat,
           answered.lng,
           borderLngLat.lat,
           borderLngLat.lng
         );
-        setAnswerDistance(distKm);
-        setScore(
-          scoreCalculate(answered.lat, answered.lng, regionFeature as any)
+        roundScore = scoreCalculate(
+          answered.lat,
+          answered.lng,
+          regionFeature as any
         );
+        setAnswerDistance(totalDistance);
+        setScore(roundScore);
       }
 
       // Draw a dotted line from guess to closest border point
@@ -236,6 +262,18 @@ function Map({
         });
       }
     }
+    setAllRoundInfo({
+      totalScore: totalScore + roundScore,
+      rounds: [
+        ...allRoundInfo.rounds,
+        {
+          score: roundScore,
+          guessLong: answered.lng,
+          guessLat: answered.lat,
+          speakerId: roundData.id,
+        },
+      ],
+    });
   };
 
   const handleNext = () => {
@@ -266,6 +304,7 @@ function Map({
 
     if (gameRound >= 4) {
       setShowEndScreen(true);
+      localStorage.setItem("allRoundInfo", JSON.stringify(allRoundInfo));
     } else {
       setGameRound(gameRound + 1);
     }
