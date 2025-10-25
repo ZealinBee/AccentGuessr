@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Game from "./Game";
+import Seo from "./Seo";
 import "../scss/Home.scss";
 
 function Home() {
@@ -26,6 +27,12 @@ function Home() {
 
   return (
     <>
+      <Seo
+        title="Guess the Accent — AccentGuessr"
+        description={`Try to identify where a speaker is from by their English accent. Short audio clips, global accents, fun learning.`}
+        canonical={typeof window !== 'undefined' ? window.location.href : undefined}
+        url={typeof window !== 'undefined' ? window.location.href : undefined}
+      />
       {!gameStarted  && (
         <div className="home-container">
           <div className="background-image" />

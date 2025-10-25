@@ -5,6 +5,7 @@ import "../scss/Volunteer.scss";
 
 type Quote = {
   joke: string;
+  isUsed: boolean;
 };
 
 type RecordingState = {
@@ -44,7 +45,10 @@ function Volunteer() {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/quotes`
         );
-        const shuffledQuotes = response.data.sort(() => Math.random() - 0.5);
+        const unusedQuotes = response.data.filter((quote: Quote) => {
+          return !quote.isUsed;
+        });
+        const shuffledQuotes = unusedQuotes.sort(() => Math.random() - 0.5);
         shuffledQuotes.splice(5);
         setQuotes(shuffledQuotes);
       } catch (error) {
