@@ -1,8 +1,9 @@
 .instruction-card {
   position: absolute;
   top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  right: 12px;
+  left: auto;
+  transform: none;
   background: rgba(255, 255, 255, 0.92);
   padding: 12px;
   border-radius: 8px;
@@ -34,6 +35,9 @@
 
 @media (max-width: 600px) {
   .instruction-card {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
     max-width: 100%;
     padding: 10px;
   }
