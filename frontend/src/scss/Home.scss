@@ -191,3 +191,20 @@
     margin-bottom: 1rem;
   }
 }
+
+.buy-me-coffee-wrapper {
+  position:absolute;
+  display:flex;
+  flex-direction:column;
+  align-items: center;
+  justify-content: center;
+  width:100vw;
+  bottom:1.5rem;
+  img {
+    width: 150px;
+  }
+  p {
+    color: white;
+    margin-bottom: 0.5rem;
+  }
+}

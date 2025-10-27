@@ -8,8 +8,8 @@ import useAuth from "../hooks/useAuth";
 
 function Home() {
   const navigate = useNavigate();
-  const {startGame, isLoading, gameData} = useGame();
-  const {isLoggedIn} = useAuth();
+  const { startGame, isLoading, gameData } = useGame();
+  const { isLoggedIn } = useAuth();
 
   return (
     <>
@@ -62,6 +62,16 @@ function Home() {
                 </button>
               </div>
             </div>
+          </div>
+          <div className="buy-me-coffee-wrapper">
+            <a
+              href="https://buymeacoffee.com/zhiyuanliu"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {" "}
+              <img src="/buymecoffeebutton.png" />
+            </a>
           </div>
         </>
       )}
