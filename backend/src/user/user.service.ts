@@ -1,12 +1,20 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
-
+type UserWithGamesAndRounds = Prisma.UserGetPayload<{
+  include: {
+    games: {
+      include: {
+        rounds: true;
+      };
+    };
+  };
+}>;
 @Injectable()
 export class UserService {
   private prisma = new PrismaClient();
 
-  findOne(id: string) {
+  findOne(id: string): Promise<UserWithGamesAndRounds | null> {
     return this.prisma.user.findUnique({
       where: { id },
       include: {
@@ -19,7 +27,7 @@ export class UserService {
     });
   }
 
-  findByEmail(email: string) {
+  findByEmail(email: string): Promise<UserWithGamesAndRounds | null> {
     return this.prisma.user.findUnique({
       where: { email },
       include: {
