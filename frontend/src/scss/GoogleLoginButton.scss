@@ -9,4 +9,28 @@
   cursor: pointer;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease-in-out;
+  display:flex;
+  margin: 0 auto;
+  svg {
+    margin-right: 0.5rem;
+  }
+}
+
+.loading-spinner {
+  margin-left: 0.5rem;
+  display: inline-block;
+  width: 0.9rem;
+  height: 0.9rem;
+  border-radius: 50%;
+  background: conic-gradient(
+    #3b82f6 0deg 120deg,
+    #06b6d4 120deg 240deg,
+    #10b981 240deg 360deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(50% - 2px),
+    black calc(50% - 2px)
+  );
+  animation: spin 1s linear infinite;
 }
