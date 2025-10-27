@@ -296,6 +296,8 @@ function Map({ roundData }: MapProps) {
             score={score ?? 0}
             gameRound={gameRound}
             handleNext={handleNext}
+            accentName={roundData.accent.name}
+            accentDescription={roundData.accent.description}
           />
         )}
       </div>
