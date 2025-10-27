@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 
@@ -30,11 +30,15 @@ export class SpeakersService {
     const speakers = await this.prisma.speaker.findMany({
       include: { clips: true, accent: true },
     });
+    console.log('yoyoyoo:', userId);
 
     let playableSpeakers = speakers;
 
     if (userId) {
       const user = await this.userService.findOne(userId);
+      console.log('User:', user);
+      console.log('User games:', user?.games);
+
       if (user && Array.isArray(user.games)) {
         const playedSpeakerIds = new Set<number>();
 
@@ -50,6 +54,10 @@ export class SpeakersService {
 
         playableSpeakers = speakers.filter((s) => !playedSpeakerIds.has(s.id));
       }
+    }
+    console.log('Playable speakers count:', playableSpeakers.length);
+    if (!playableSpeakers || playableSpeakers.length < 5) {
+      throw new BadRequestException('Unfortunately we ran out of games');
     }
 
     // Randomize and select 5 speakers

@@ -1,29 +1,15 @@
-import axios from "axios";
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Game from "./Game";
 import Seo from "./Seo";
 import "../scss/Home.scss";
 import LoginButton from "./GoogleLoginButton";
+import { useGame } from "../hooks/useGame";
+import useAuth from "../hooks/useAuth";
 
 function Home() {
-  const [currentGame, setCurrentGame] = useState(null);
-  const [gameStarted, setGameStarted] = useState(false);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const startGame = async () => {
-    try {
-      setLoading(true);
-      const game = await axios.get(`${import.meta.env.VITE_API_URL}/game`);
-      setCurrentGame(game.data);
-      setGameStarted(true);
-    } catch (error) {
-      console.error("Error fetching game data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const {startGame, isLoading, gameData} = useGame();
+  const {isLoggedIn} = useAuth();
 
   return (
     <>
@@ -35,9 +21,13 @@ function Home() {
         }
         url={typeof window !== "undefined" ? window.location.href : undefined}
       />
-      {!gameStarted && (
+      {!gameData && (
         <>
-          <LoginButton />
+          {!isLoggedIn && (
+            <div className="absolute-button">
+              <LoginButton />
+            </div>
+          )}
 
           <div className="home-container">
             <div className="background-image" />
@@ -53,11 +43,11 @@ function Home() {
                 <button
                   onClick={() => startGame()}
                   className="start-button"
-                  disabled={loading}
-                  aria-busy={loading}
+                  disabled={isLoading}
+                  aria-busy={isLoading}
                 >
                   Start Game
-                  {loading && (
+                  {isLoading && (
                     <>
                       <span className="loading-spinner" aria-hidden="true" />
                       <span className="sr-only">Loading…</span>
@@ -75,7 +65,7 @@ function Home() {
           </div>
         </>
       )}
-      {gameStarted && currentGame && <Game gameData={currentGame} />}
+      {gameData && <Game />}
     </>
   );
 }

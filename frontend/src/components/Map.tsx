@@ -17,44 +17,13 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
 import { accentToFeature } from "../utils/accentToFeature";
+import { useGame } from "../hooks/useGame";
 
 interface MapProps {
   roundData: Speaker;
-  gameRound: number;
-  setGameRound: (n: number) => void;
-  setShowEndScreen: (show: boolean) => void;
-  totalScore: number;
-  setTotalScore: (score: number) => void;
-  allRoundInfo: {
-    totalScore: number;
-    rounds: Array<{
-      score: number;
-      guessLat: number;
-      guessLong: number;
-      speakerId: number;
-    }>;
-  };
-  setAllRoundInfo: (info: {
-    totalScore: number;
-    rounds: Array<{
-      score: number;
-      guessLat: number;
-      guessLong: number;
-      speakerId: number;
-    }>;
-  }) => void;
 }
 
-function Map({
-  roundData,
-  gameRound,
-  setGameRound,
-  setShowEndScreen,
-  totalScore,
-  setTotalScore,
-  allRoundInfo,
-  setAllRoundInfo,
-}: MapProps) {
+function Map({ roundData }: MapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -67,6 +36,8 @@ function Map({
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const { nextRound, pushRoundResult, gameRound } = useGame();
+
   const correctLocation = roundData.accent;
 
   useEffect(() => {
@@ -262,17 +233,11 @@ function Map({
         });
       }
     }
-    setAllRoundInfo({
-      totalScore: totalScore + roundScore,
-      rounds: [
-        ...allRoundInfo.rounds,
-        {
-          score: roundScore,
-          guessLong: answered.lng,
-          guessLat: answered.lat,
-          speakerId: roundData.id,
-        },
-      ],
+    pushRoundResult({
+      score: roundScore,
+      guessLong: answered.lng,
+      guessLat: answered.lat,
+      speakerId: roundData.id,
     });
   };
 
@@ -298,16 +263,9 @@ function Map({
     setHasPin(false);
     setConfirmedAnswer(null);
     setAnswerDistance(null);
-
-    setTotalScore(totalScore + (score ?? 0));
     setScore(null);
 
-    if (gameRound >= 4) {
-      setShowEndScreen(true);
-      localStorage.setItem("allRoundInfo", JSON.stringify(allRoundInfo));
-    } else {
-      setGameRound(gameRound + 1);
-    }
+    nextRound();
   };
 
   return (

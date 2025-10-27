@@ -180,3 +180,14 @@
     margin-left: 0;
   }
 }
+
+.absolute-button {
+  position: absolute;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 999;
+  @media(max-width: 480px) {
+    margin-top: 1rem;
+    margin-bottom: 1rem;
+  }
+}

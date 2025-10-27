@@ -1,13 +1,4 @@
-.google-login-container {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  z-index: 60;
-}
-
-/* Style any button rendered inside the container to match the start-button in Home.scss */
-.google-login-container button,
-.google-login-container .google-button {
+.google-button {
   background: linear-gradient(to right, #f8fafc, #e2e8f0);
   color: #0f172a;
   padding: 0.85rem 2rem;
@@ -18,64 +9,4 @@
   cursor: pointer;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
   transition: all 0.2s ease-in-out;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.google-login-container button:hover,
-.google-login-container .google-button:hover {
-  background: linear-gradient(to right, #ffffff, #f1f5f9);
-  transform: translateY(-1px);
-}
-
-.google-login-container button:active,
-.google-login-container .google-button:active {
-  transform: translateY(1px);
-}
-
-.google-login-container button[disabled],
-.google-login-container .google-button[disabled] {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Loading spinner (copied from Home.scss) */
-.google-login-container .loading-spinner {
-  margin-left: 0.5rem;
-  display: inline-block;
-  width: 0.9rem;
-  height: 0.9rem;
-  border-radius: 50%;
-  background: conic-gradient(
-    #3b82f6 0deg 120deg,
-    #06b6d4 120deg 240deg,
-    #10b981 240deg 360deg
-  );
-  mask: radial-gradient(
-    farthest-side,
-    transparent calc(50% - 2px),
-    black calc(50% - 2px)
-  );
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-/* Accessibility utility (copied from Home.scss) */
-.google-login-container .sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  clip: rect(0 0 0 0) !important;
-  white-space: nowrap !important;
-  border: 0 !important;
 }

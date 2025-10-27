@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
-import { useEffect, useState } from "react";
+import useAuth from "../hooks/useAuth";
+import { useGame } from "../hooks/useGame";
 
 interface EndScreenProps {
   totalScore: number;
@@ -9,14 +10,14 @@ interface EndScreenProps {
 
 function EndScreen({ totalScore }: EndScreenProps) {
   const navigate = useNavigate();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setIsLoggedIn(true);
-    }
-  }, []);
+  const { isLoggedIn } = useAuth();
+  const { resetGame, startGame } = useGame();
+
+  const newGame = () => {
+    resetGame();
+    startGame();
+  };
 
   return (
     <div className="end-screen-container">
@@ -32,7 +33,7 @@ function EndScreen({ totalScore }: EndScreenProps) {
           This game is still in its early stages, stay tuned for new updates!
         </p>
         <p className="end-screen-message">
-          Volunteer {isLoggedIn ? "if you want your voice to be in the game too:" : "or Sign up to Save Your Progress and Play more Games"}
+          Volunteer if you want your voice to be in the game too:
         </p>
         <div className="button-wrapper">
           <button
@@ -42,7 +43,25 @@ function EndScreen({ totalScore }: EndScreenProps) {
             Volunteer
           </button>
         </div>
-        {!isLoggedIn && <LoginButton />}
+        {!isLoggedIn && (
+          <>
+            <p className="end-screen-message">
+              Sign up to play more and save your progress:
+            </p>
+            <div className="end-screen-google-button">
+              {" "}
+              <LoginButton message="Continue with Google" />{" "}
+            </div>
+          </>
+        )}
+        {isLoggedIn && (
+          <>
+            <p className="end-screen-message">Play a new game:</p>
+            <button className="end-screen-volunteer-button" onClick={newGame}>
+              Play again
+            </button>
+          </>
+        )}
       </div>
     </div>
   );
