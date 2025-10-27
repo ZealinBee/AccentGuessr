@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const allowedOrigins = [
     'http://localhost:5173',
-    'https://guesstheaccent.xyz/',
+    'https://guesstheaccent.xyz',
   ];
 
   app.enableCors({

@@ -76,4 +76,20 @@ export class SpeakersService {
       accent: s.accent ?? null,
     }));
   }
+
+  async getFiveLatestSpeakers() {
+    const speakers = await this.prisma.speaker.findMany({
+      orderBy: { createdAt: 'desc' },
+      take: 5,
+      include: { clips: true, accent: true },
+    });
+    return speakers.map((s) => ({
+      ...s,
+      clips: s.clips.map((c) => ({
+        ...c,
+        audioUrl: this.toBlobUrl(c.audioUrl),
+      })),
+      accent: s.accent,
+    }));
+  }
 }
