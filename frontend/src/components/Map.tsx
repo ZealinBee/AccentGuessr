@@ -17,24 +17,13 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
 import { accentToFeature } from "../utils/accentToFeature";
+import { useGame } from "../hooks/useGame";
 
 interface MapProps {
   roundData: Speaker;
-  gameRound: number;
-  setGameRound: (n: number) => void;
-  setShowEndScreen: (show: boolean) => void;
-  totalScore: number;
-  setTotalScore: (score: number) => void;
 }
 
-function Map({
-  roundData,
-  gameRound,
-  setGameRound,
-  setShowEndScreen,
-  totalScore,
-  setTotalScore,
-}: MapProps) {
+function Map({ roundData }: MapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -47,6 +36,8 @@ function Map({
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const { nextRound, pushRoundResult, gameRound } = useGame();
+
   const correctLocation = roundData.accent;
 
   useEffect(() => {
@@ -146,10 +137,13 @@ function Map({
         },
       });
     }
-
+    let roundScore = 0;
+    let totalDistance = 0;
     if (isInside) {
-      setAnswerDistance(0);
-      setScore(5000);
+      totalDistance = 0;
+      setAnswerDistance(totalDistance);
+      roundScore = 5000;
+      setScore(roundScore);
     } else {
       // Find closest point on the polygon border
       const guessPt = point([answered.lng, answered.lat]);
@@ -192,16 +186,19 @@ function Map({
           lng: closest.geometry.coordinates[0],
           lat: closest.geometry.coordinates[1],
         };
-        const distKm = haversineKm(
+        totalDistance = haversineKm(
           answered.lat,
           answered.lng,
           borderLngLat.lat,
           borderLngLat.lng
         );
-        setAnswerDistance(distKm);
-        setScore(
-          scoreCalculate(answered.lat, answered.lng, regionFeature as any)
+        roundScore = scoreCalculate(
+          answered.lat,
+          answered.lng,
+          regionFeature as any
         );
+        setAnswerDistance(totalDistance);
+        setScore(roundScore);
       }
 
       // Draw a dotted line from guess to closest border point
@@ -236,6 +233,12 @@ function Map({
         });
       }
     }
+    pushRoundResult({
+      score: roundScore,
+      guessLong: answered.lng,
+      guessLat: answered.lat,
+      speakerId: roundData.id,
+    });
   };
 
   const handleNext = () => {
@@ -260,15 +263,9 @@ function Map({
     setHasPin(false);
     setConfirmedAnswer(null);
     setAnswerDistance(null);
-
-    setTotalScore(totalScore + (score ?? 0));
     setScore(null);
 
-    if (gameRound >= 4) {
-      setShowEndScreen(true);
-    } else {
-      setGameRound(gameRound + 1);
-    }
+    nextRound();
   };
 
   return (
@@ -299,6 +296,8 @@ function Map({
             score={score ?? 0}
             gameRound={gameRound}
             handleNext={handleNext}
+            accentName={roundData.accent.name}
+            accentDescription={roundData.accent.description}
           />
         )}
       </div>

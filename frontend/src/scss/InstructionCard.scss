@@ -2,12 +2,15 @@
   position: absolute;
   top: 12px;
   right: 12px;
+  left: auto;
+  transform: none;
   background: rgba(255, 255, 255, 0.92);
   padding: 12px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
   z-index: 20;
   max-width: 400px;
+  width: calc(100% - 24px);
 }
 
 .instruction-title {
@@ -27,5 +30,19 @@
 
   @media (max-width: 600px) {
     font-size: 14px;
+  }
+}
+
+@media (max-width: 600px) {
+  .instruction-card {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    max-width: 100%;
+    padding: 10px;
+  }
+
+  .instruction-title h2 {
+    font-size: 1.1rem;
   }
 }

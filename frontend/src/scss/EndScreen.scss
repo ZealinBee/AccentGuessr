@@ -2,6 +2,7 @@
   min-height: 100vh;
   position: relative;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   padding: 1.5rem;
@@ -12,7 +13,7 @@
 .background-image {
   position: absolute;
   inset: 0;
-  background-image: url('/background.jpg');
+  background-image: url("/background.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -23,7 +24,11 @@
 .background-overlay {
   position: absolute;
   inset: 0;
-  background: radial-gradient(circle at 30% 40%, rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.95));
+  background: radial-gradient(
+    circle at 30% 40%,
+    rgba(15, 23, 42, 0.8),
+    rgba(15, 23, 42, 0.95)
+  );
 }
 
 .end-screen-card {
@@ -67,6 +72,43 @@
   color: #cbd5e1;
   line-height: 1.7;
   margin-top: 1.5rem;
+}
+
+/* Volunteer section styling */
+.end-screen-container > p {
+  position: relative;
+  z-index: 10;
+  color: #cbd5e1;
+  font-size: 1.05rem;
+  margin-top: 1.5rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+}
+
+.end-screen-container > button {
+  position: relative;
+  z-index: 10;
+  background-color: #3b82f6;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.end-screen-container > button:hover {
+  background-color: #2563eb;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
+}
+
+.end-screen-container > button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
 }
 
 /* Responsive adjustments */
@@ -115,4 +157,32 @@
   .end-screen-card {
     padding: 1.5rem 1rem;
   }
+
+  .end-screen-container > p {
+    font-size: 0.9rem;
+    margin-top: 1rem;
+  }
+
+  .end-screen-container > button {
+    font-size: 0.9rem;
+    padding: 0.6rem 1.5rem;
+  }
+}
+
+.end-screen-volunteer-button {
+  background: linear-gradient(to right, #f8fafc, #e2e8f0);
+  color: #0f172a;
+  padding: 0.85rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease-in-out;
+  margin-top: 1rem;
+}
+
+.end-screen-google-button {
+  margin-top: 1rem;
 }
