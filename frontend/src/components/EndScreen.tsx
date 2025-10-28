@@ -24,6 +24,12 @@ function EndScreen({ totalScore }: EndScreenProps) {
       <div className="background-image"></div>
       <div className="background-overlay"></div>
       <div className="end-screen-card">
+        <button
+          className="end-screen-back-home-button"
+          onClick={() => navigate("/")}
+        >
+          ← Home
+        </button>
         <h1 className="end-screen-title">Thanks for playing! </h1>
         <h2 className="end-screen-score-heading">Your total score:</h2>
         <div className="end-screen-score">
@@ -49,17 +55,18 @@ function EndScreen({ totalScore }: EndScreenProps) {
               Sign up to play more and save your progress:
             </p>
             <div className="end-screen-google-button">
-              {" "}
-              <LoginButton message="Continue with Google" />{" "}
+              <LoginButton message="Continue with Google" />
             </div>
           </>
         )}
         {isLoggedIn && (
           <>
             <p className="end-screen-message">Play a new game:</p>
-            <button className="end-screen-volunteer-button" onClick={newGame}>
-              Play again
-            </button>
+            <div className="button-wrapper">
+              <button className="end-screen-play-again-button" onClick={newGame}>
+                Play again
+              </button>
+            </div>
           </>
         )}
       </div>

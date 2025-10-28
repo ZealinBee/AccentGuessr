@@ -60,7 +60,7 @@ function Dashboard() {
         setGames(data);
       } catch (err: unknown) {
         console.error("Failed to fetch games", err);
-        setError("Failed to load games. Should be fixed soon!");
+        setError("Play a game to see your past games here!");
         setGames([]);
       } finally {
         setLoading(false);
@@ -84,7 +84,7 @@ function Dashboard() {
             onClick={() => navigate("/")}
             aria-label="Go back to home"
           >
-            Back Home
+            ← Home
           </button>
         </div>
         <div className="games-section">
