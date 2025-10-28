@@ -62,7 +62,7 @@ function Map({ roundData }: MapProps) {
     mapRef.current = map;
 
     try {
-      map.getCanvas().style.cursor = "crosshair";
+      map.getCanvas().style.cursor = 'url("/cursor.png") 16 16, crosshair';
     } catch {
       // ignore
     }

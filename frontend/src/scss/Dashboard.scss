@@ -1,0 +1,110 @@
+/* Dashboard styles */
+
+.dashboard-page {
+	max-width: 1000px;
+	margin: 24px auto;
+	padding: 0 16px;
+	font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+	color: #111827;
+}
+
+.profile-bar {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px;
+	border-radius: 12px;
+	background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+	box-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+}
+
+.profile-info {
+	display: flex;
+	align-items: center;
+}
+
+.profile-pic {
+	width: 64px;
+	height: 64px;
+	border-radius: 9999px;
+	object-fit: cover;
+	margin-right: 12px;
+	border: 2px solid #eef2ff;
+	background: #f3f4f6;
+}
+
+.profile-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.profile-name {
+	font-weight: 600;
+	font-size: 1.05rem;
+}
+
+.profile-sub {
+	font-size: 0.85rem;
+	color: #6b7280;
+}
+
+.games-section {
+	margin-top: 20px;
+}
+
+.games-section h2 {
+	margin: 8px 0 12px 0;
+}
+
+.table-wrapper {
+	overflow-x: auto;
+	border-radius: 8px;
+	background: white;
+	padding: 8px;
+	box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.games-table {
+	width: 100%;
+	border-collapse: collapse;
+	min-width: 700px;
+}
+
+.games-table th,
+.games-table td {
+	padding: 10px 12px;
+	text-align: left;
+	border-bottom: 1px solid #eef2f6;
+}
+
+.games-table thead th {
+	background: #f8fafc;
+	font-weight: 600;
+	color: #374151;
+}
+
+.games-table tbody tr:nth-child(even) {
+	background: #fbfdff;
+}
+
+.muted {
+	color: #6b7280;
+	padding: 12px;
+}
+
+.error {
+	color: #b91c1c;
+	margin: 8px 0;
+}
+
+@media (max-width: 720px) {
+	.profile-pic {
+		width: 52px;
+		height: 52px;
+	}
+
+	.games-table {
+		min-width: 600px;
+	}
+}
+

@@ -7,6 +7,7 @@ import { QuotesModule } from './quotes/quotes.module';
 import { RecordingsModule } from './recordings/recordings.module';
 import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
+import { GamesModule } from './games/games.module';
 @Module({
   imports: [
     ClipsModule,
@@ -15,6 +16,7 @@ import { AuthModule } from './auth/auth.module';
     RecordingsModule,
     UserModule,
     AuthModule,
+    GamesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
