@@ -5,7 +5,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 1.5rem;
+  padding: 1.1rem;
   background-color: #0f172a;
   font-family: "Inter", system-ui, sans-serif;
 }
@@ -38,7 +38,7 @@
   backdrop-filter: blur(10px);
   border: 1px solid rgba(148, 163, 184, 0.15);
   border-radius: 0.75rem;
-  padding: 2.5rem 2rem;
+  padding: 1.5rem;
   box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
   text-align: center;
   max-width: 40rem;
@@ -135,7 +135,7 @@
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .end-screen-card {
-    padding: 1.75rem 1.25rem;
+    padding: 1rem 1.25rem;
     border-radius: 0.6rem;
   }
 
@@ -181,7 +181,7 @@
   }
 
   .end-screen-card {
-    padding: 1.5rem 1rem;
+    padding: 1rem;
   }
 
   .end-screen-volunteer-button,
