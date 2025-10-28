@@ -26,7 +26,10 @@ function EndScreen({ totalScore }: EndScreenProps) {
       <div className="end-screen-card">
         <button
           className="end-screen-back-home-button"
-          onClick={() => navigate("/")}
+          onClick={() => {
+            resetGame();
+            navigate("/");
+          }}
         >
           ← Home
         </button>
@@ -63,7 +66,10 @@ function EndScreen({ totalScore }: EndScreenProps) {
           <>
             <p className="end-screen-message">Play a new game:</p>
             <div className="button-wrapper">
-              <button className="end-screen-play-again-button" onClick={newGame}>
+              <button
+                className="end-screen-play-again-button"
+                onClick={newGame}
+              >
                 Play again
               </button>
             </div>

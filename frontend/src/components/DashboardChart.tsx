@@ -26,17 +26,12 @@ type Game = {
 
 type Props = {
   game?: Game | null;
-  // optionally accept rounds directly
   rounds?: Round[];
-  // accept array of games to plot totalScore across games
   games?: Game[] | null;
   height?: number;
 };
 
 function DashboardChart({ game, rounds, games, height = 200 }: Props) {
-  // support two modes:
-  // - games prop provided => plot totalScore per game
-  // - otherwise fall back to plotting rounds (existing behavior)
   const dataFromRounds = (rounds ?? game?.rounds ?? []).map((r, i) => ({
     name: `#${i + 1}`,
     score: typeof r.score === "number" ? r.score : 0,
@@ -96,6 +91,7 @@ function DashboardChart({ game, rounds, games, height = 200 }: Props) {
           </ResponsiveContainer>
         )}
       </div>
+      <p style={{color:"white"}}>More Info Coming Soon!</p>
     </div>
   );
 }
