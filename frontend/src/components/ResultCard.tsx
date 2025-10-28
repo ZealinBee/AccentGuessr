@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../scss/ResultCard.scss";
 
 interface ResultCardProps {
@@ -22,6 +22,60 @@ function ResultCard({
   const safeScore = typeof score === "number" ? score : 0;
   const percent = Math.max(0, Math.min(100, (safeScore / maxScore) * 100));
   const [showDetails, setShowDetails] = useState(false);
+
+  // all this to make scrolling up on mobile not cook up and refresh
+  useEffect(() => {
+    const html = document.documentElement;
+    const body = document.body;
+    const prevHtmlOverscroll = html.style.overscrollBehavior;
+    const prevBodyOverscroll = body.style.overscrollBehavior;
+
+    html.style.overscrollBehavior = "none";
+    body.style.overscrollBehavior = "none";
+
+    let startY = 0;
+    let startTargetScrollable: HTMLElement | null = null;
+
+    function findScrollable(el: Element | null): HTMLElement | null {
+      while (el && el !== document.body && el !== document.documentElement) {
+        const style = window.getComputedStyle(el);
+        const overflowY = style.overflowY;
+        if ((overflowY === "auto" || overflowY === "scroll" || overflowY === "overlay") && (el as HTMLElement).scrollHeight > (el as HTMLElement).clientHeight) {
+          return el as HTMLElement;
+        }
+        el = el.parentElement;
+      }
+      return null;
+    }
+
+    function onTouchStart(e: TouchEvent) {
+      startY = e.touches && e.touches.length ? e.touches[0].clientY : 0;
+      startTargetScrollable = findScrollable(e.target as Element | null);
+    }
+
+    function onTouchMove(e: TouchEvent) {
+      const curY = e.touches && e.touches.length ? e.touches[0].clientY : 0;
+      const diff = curY - startY;
+
+      if (diff > 0) {
+        if (!startTargetScrollable) {
+          if (window.scrollY === 0) {
+            e.preventDefault();
+          }
+        }
+      }
+    }
+
+    document.addEventListener("touchstart", onTouchStart, { passive: true } as EventListenerOptions);
+    document.addEventListener("touchmove", onTouchMove, { passive: false } as EventListenerOptions);
+
+    return () => {
+      html.style.overscrollBehavior = prevHtmlOverscroll;
+      body.style.overscrollBehavior = prevBodyOverscroll;
+      document.removeEventListener("touchstart", onTouchStart as EventListenerOrEventListenerObject);
+      document.removeEventListener("touchmove", onTouchMove as EventListenerOrEventListenerObject);
+    };
+  }, []);
 
   return (
     <>
