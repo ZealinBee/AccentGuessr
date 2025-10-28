@@ -5,6 +5,7 @@ import "../scss/Home.scss";
 import LoginButton from "./GoogleLoginButton";
 import { useGame } from "../hooks/useGame";
 import useAuth from "../hooks/useAuth";
+import DashboardIcon from "./DashboardIcon";
 
 function Home() {
   const navigate = useNavigate();
@@ -27,6 +28,10 @@ function Home() {
             <div className="absolute-button">
               <LoginButton />
             </div>
+          )}
+
+          {isLoggedIn && (
+            <DashboardIcon />
           )}
 
           <div className="home-container">
