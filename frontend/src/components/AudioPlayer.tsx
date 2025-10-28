@@ -10,20 +10,15 @@ type AudioPlayerProps = {
 export default function AudioPlayer({ srcs }: AudioPlayerProps) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
-  const [duration, setDuration] = useState<number>(0);
-  const [currentTime, setCurrentTime] = useState<number>(0);
   const [volume, setVolume] = useState<number>(1);
-  const [loading, setLoading] = useState<boolean>(true);
   const [index, setIndex] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
 
   const currentSrc = srcs && srcs.length > 0 ? srcs[index].audioUrl : "";
 
   const resetForIndexChange = useCallback(() => {
     const a = audioRef.current;
     setPlaying(false);
-    setCurrentTime(0);
-    setDuration(0);
-    setLoading(true);
     if (a) {
       a.pause();
       a.currentTime = 0;
@@ -83,18 +78,14 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
     const a = audioRef.current;
     if (!a) return;
 
-    const onLoaded = () => {
-      setDuration(a.duration);
-      setLoading(false);
-    };
-
-    const onTime = () => setCurrentTime(a.currentTime || 0);
     const onEnded = () => setPlaying(false);
+    const onLoadStart = () => setLoading(true);
+    const onCanPlay = () => setLoading(false);
     const onError = () => setLoading(false);
 
-    a.addEventListener("loadedmetadata", onLoaded);
-    a.addEventListener("timeupdate", onTime);
     a.addEventListener("ended", onEnded);
+    a.addEventListener("loadstart", onLoadStart);
+    a.addEventListener("canplay", onCanPlay);
     a.addEventListener("error", onError);
 
     // ensure the element tries to load metadata for the new src
@@ -102,13 +93,13 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
       setLoading(true);
       a.load();
     } catch {
-      // ignore
+      setLoading(false);
     }
 
     return () => {
-      a.removeEventListener("loadedmetadata", onLoaded);
-      a.removeEventListener("timeupdate", onTime);
       a.removeEventListener("ended", onEnded);
+      a.removeEventListener("loadstart", onLoadStart);
+      a.removeEventListener("canplay", onCanPlay);
       a.removeEventListener("error", onError);
     };
   }, [currentSrc]);
@@ -138,23 +129,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
     return () => window.removeEventListener("keydown", handler);
   }, [togglePlay, prevClip, nextClip]);
 
-  const seekTo = (time: number) => {
-    const a = audioRef.current;
-    if (!a) return;
-    a.currentTime = Math.max(0, Math.min(time, duration || 0));
-    setCurrentTime(a.currentTime);
-  };
-
-  const formatTime = (seconds: number) => {
-    // guard negative/NaN
-    if (!isFinite(seconds) || seconds <= 0) return "0:00";
-    const mins = Math.floor(seconds / 60);
-    const secs = Math.floor(seconds % 60);
-    return `${mins}:${secs.toString().padStart(2, "0")}`;
-  };
-
-  const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
-
   return (
     <div className="audio-player">
       <div className="controls-row">
@@ -171,8 +145,15 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
             onClick={togglePlay}
             aria-label={playing ? "Pause" : "Play"}
             className="play-button"
+            disabled={loading}
           >
-            {playing ? <Pause size={24} fill="white" /> : <Play size={24} fill="white" />}
+            {loading ? (
+              <Loader2 size={24} className="spinner" />
+            ) : playing ? (
+              <Pause size={24} fill="white" />
+            ) : (
+              <Play size={24} fill="white" />
+            )}
           </button>
           <button
             onClick={nextClip}
@@ -198,35 +179,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
             className="volume-slider"
           />
           <span className="volume-text">{Math.round(volume * 100)}%</span>
-        </div>
-      </div>
-
-      <div className="progress-section">
-        <div className="progress-bar-container">
-          <div className="progress-bar-bg">
-            <div className="progress-bar-fill" style={{ width: `${progress}%` }} />
-          </div>
-          <input
-            type="range"
-            min={0}
-            max={Math.max(0, duration)}
-            step={0.01}
-            value={currentTime}
-            onChange={(e) => seekTo(Number(e.target.value))}
-            className="progress-slider"
-          />
-        </div>
-
-        <div className="time-display">
-          <span className="current-time">{formatTime(currentTime)}</span>
-          {loading ? (
-            <div className="loading-indicator">
-              <Loader2 size={14} className="spinner" />
-              <span>Loading...</span>
-            </div>
-          ) : (
-            <span className="duration">{formatTime(duration)}</span>
-          )}
         </div>
       </div>
 

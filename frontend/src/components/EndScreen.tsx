@@ -38,20 +38,7 @@ function EndScreen({ totalScore }: EndScreenProps) {
         <div className="end-screen-score">
           {totalScore.toLocaleString()} / 25,000
         </div>
-        <p className="end-screen-message">
-          This game is still in its early stages, stay tuned for new updates!
-        </p>
-        <p className="end-screen-message">
-          Volunteer if you want your voice to be in the game too:
-        </p>
-        <div className="button-wrapper">
-          <button
-            onClick={() => navigate("/volunteer")}
-            className="end-screen-volunteer-button"
-          >
-            Volunteer
-          </button>
-        </div>
+
         {!isLoggedIn && (
           <>
             <p className="end-screen-message">
