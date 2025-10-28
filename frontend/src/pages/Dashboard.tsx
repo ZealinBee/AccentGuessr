@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../scss/Dashboard.scss";
+import DashboardChart from "../components/DashboardChart";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
 
@@ -34,7 +35,7 @@ type Game = {
 
 function Dashboard() {
   const navigate = useNavigate();
-  const { token, username, userPictureURL, isLoggedIn } = useAuth();
+  const { token, isLoggedIn } = useAuth();
   const [games, setGames] = useState<Game[] | null>(null);
   const [expandedGames, setExpandedGames] = useState<Record<number, boolean>>(
     {}
@@ -86,26 +87,11 @@ function Dashboard() {
             Back Home
           </button>
         </div>
-        <div className="profile-bar">
-          <div className="profile-info">
-            <img
-              className="profile-pic"
-              src={userPictureURL ?? "/testAudios/avatar-placeholder.png"}
-              alt={username ?? "User avatar"}
-            />
-            <div className="profile-text">
-              <div className="profile-name">
-                {username ?? (isLoggedIn ? "Unknown user" : "Not signed in")}
-              </div>
-              <div className="profile-sub">
-                {isLoggedIn ? "Signed in" : "Sign in to see your games"}
-              </div>
-            </div>
-          </div>
-        </div>
-
         <div className="games-section">
-          <h2>Your games</h2>
+          {/* Chart showing totalScore across all games */}
+          <div style={{ marginBottom: 12 }}>
+            <DashboardChart games={games ?? []} height={220} />
+          </div>
 
           {loading && <div className="loading-text">Loading...</div>}
           {error && <div className="error">{error}</div>}

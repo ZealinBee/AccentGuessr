@@ -1,0 +1,102 @@
+/* Styles for the DashboardChart component - Dark theme */
+
+.dashboard-chart {
+  padding: 1.5rem;
+  background-color: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.75rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  margin: 1.5rem 0;
+}
+
+.dashboard-chart .chart-header {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.dashboard-chart .chart-wrapper {
+  width: 100%;
+  min-height: 200px;
+
+  // Style the recharts components
+  .recharts-cartesian-grid-horizontal line,
+  .recharts-cartesian-grid-vertical line {
+    stroke: rgba(148, 163, 184, 0.15);
+  }
+
+  .recharts-text {
+    fill: #cbd5e1;
+    font-size: 0.85rem;
+  }
+
+  .recharts-tooltip-wrapper {
+    outline: none;
+  }
+
+  .recharts-default-tooltip {
+    background-color: rgba(15, 23, 42, 0.95) !important;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.25) !important;
+    border-radius: 0.5rem !important;
+    padding: 0.75rem !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.5) !important;
+  }
+
+  .recharts-tooltip-label {
+    color: #f8fafc !important;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+
+  .recharts-tooltip-item {
+    color: #cbd5e1 !important;
+  }
+
+  .recharts-line {
+    filter: drop-shadow(0 2px 4px rgba(59, 130, 246, 0.3));
+  }
+}
+
+.dashboard-chart .no-data {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-size: 1rem;
+  padding: 3rem 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .dashboard-chart {
+    padding: 1.25rem;
+  }
+
+  .dashboard-chart .chart-header {
+    font-size: 1rem;
+  }
+
+  .dashboard-chart .chart-wrapper {
+    min-height: 180px;
+
+    .recharts-text {
+      font-size: 0.75rem;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-chart {
+    padding: 1rem;
+    margin: 1rem 0;
+  }
+
+  .dashboard-chart .chart-wrapper {
+    min-height: 160px;
+  }
+}
