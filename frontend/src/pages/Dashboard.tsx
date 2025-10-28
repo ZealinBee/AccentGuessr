@@ -149,7 +149,6 @@ function Dashboard() {
                                     <tr>
                                       <th>Round</th>
                                       <th>Score</th>
-                                      <th>Speaker</th>
                                       <th>Accent</th>
                                       <th>Guess (lat, long)</th>
                                     </tr>
@@ -159,12 +158,6 @@ function Dashboard() {
                                       <tr key={r.id}>
                                         <td>{rIdx + 1}</td>
                                         <td>{r.score}</td>
-                                        <td>
-                                          {r.speaker
-                                            ? r.speaker.country ??
-                                              `#${r.speaker.id}`
-                                            : `#${r.speakerId}`}
-                                        </td>
                                         <td>
                                           {r.speaker && r.speaker.accent
                                             ? r.speaker.accent.name
