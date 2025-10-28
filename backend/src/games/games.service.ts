@@ -8,6 +8,18 @@ type RoundShape = {
   guessLong: number;
   gameId: number;
   speakerId: number;
+  speaker?: {
+    id: number;
+    country?: string | null;
+    accent?: {
+      id: number;
+      name: string;
+      region: any;
+      description?: string | null;
+      type?: string | null;
+      createdAt: Date;
+    } | null;
+  } | null;
 };
 
 type GameShape = {
@@ -25,7 +37,17 @@ export class GamesService {
   findByUser(userId: string): Promise<GameShape[]> {
     return this.prisma.game.findMany({
       where: { userId },
-      include: { rounds: true },
+      include: {
+        rounds: {
+          include: {
+            speaker: {
+              include: {
+                accent: true,
+              },
+            },
+          },
+        },
+      },
       orderBy: { createdAt: 'desc' },
     }) as Promise<GameShape[]>;
   }

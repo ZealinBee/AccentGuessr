@@ -86,6 +86,7 @@ model Game {
 
   user User @relation(fields: [userId], references: [id])
   userId String
+  createdAt DateTime? @default(now())
 }
 
 model Round {
@@ -99,4 +100,5 @@ model Round {
 
   speaker Speaker @relation(fields: [speakerId], references: [id])
   speakerId Int
+  createdAt DateTime? @default(now())
 }
