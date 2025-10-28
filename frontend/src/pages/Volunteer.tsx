@@ -394,7 +394,15 @@ function Volunteer() {
               ? `⏳ Complete Form and have at least 1 audio clip to Submit`
               : "✓ Submit Recordings"}
           </button>
-
+          <label className="consent">
+            <div className="checkbox-container">
+              <input type="checkbox" required />
+              <div className="custom-checkbox"></div>
+              <span className="checkbox-text">
+                I consent to my recordings being used for this game. It will not be used anywhere else. Email zhiyuan.liu@tuni.fi if you want to delete your recordings.
+              </span>
+            </div>
+          </label>
           {!isFormValid && (
             <div className="validation-message">
               <p>Before submitting, please ensure:</p>

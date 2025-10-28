@@ -5,6 +5,9 @@ import App from "./App.tsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import { GameProvider } from "./context/GameContext.jsx";
+import { initAnalytics } from "./lib/firebase";
+
+initAnalytics({ enabled: true });
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
