@@ -26,6 +26,7 @@ model Clip {
 
   speakerId  Int
   speaker    Speaker  @relation(fields: [speakerId], references: [id])
+  transcription Json?
 }
 
 model Accent {
@@ -84,7 +85,7 @@ model Game {
 
   rounds Round[]
 
-  user User @relation(fields: [userId], references: [id])
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
   createdAt DateTime? @default(now())
 }
@@ -95,7 +96,7 @@ model Round {
   guessLat Float
   guessLong Float
 
-  game Game @relation(fields: [gameId], references: [id])
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
   gameId Int
 
   speaker Speaker @relation(fields: [speakerId], references: [id])
