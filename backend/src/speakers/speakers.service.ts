@@ -25,7 +25,6 @@ export class SpeakersService {
       accent: s.accent,
     }));
   }
-
   async getFiveRandomSpeakers(userId: string | null) {
     const speakers = await this.prisma.speaker.findMany({
       include: { clips: true, accent: true },
@@ -55,22 +54,24 @@ export class SpeakersService {
         playableSpeakers = speakers.filter((s) => !playedSpeakerIds.has(s.id));
       }
     }
+
     console.log('Playable speakers count:', playableSpeakers.length);
     if (!playableSpeakers || playableSpeakers.length < 5) {
       throw new BadRequestException('Unfortunately we ran out of games');
     }
 
-    // Randomize and select 5 speakers
     const shuffled = [...playableSpeakers].sort(() => Math.random() - 0.5);
     const selected = shuffled.slice(0, 5);
 
-    // Format result
     return selected.map((s) => ({
       ...s,
       clips: Array.isArray(s.clips)
         ? s.clips.map((c) => ({
             ...c,
             audioUrl: this.toBlobUrl(c.audioUrl),
+            transcription: c.transcription
+              ? JSON.parse(JSON.stringify(c.transcription))
+              : null, // <--- added line
           }))
         : [],
       accent: s.accent ?? null,
