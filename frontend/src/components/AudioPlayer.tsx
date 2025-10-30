@@ -50,10 +50,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
   }, []);
 
   useEffect(() => {
-    console.log("Current src:", srcs[index]);
-  }, [srcs, index]);
-
-  useEffect(() => {
     const a = audioRef.current;
     if (!a) return;
 
