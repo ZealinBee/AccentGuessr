@@ -1,5 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Play, Pause, Volume2, VolumeX, Loader2, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  Play,
+  Pause,
+  Volume2,
+  VolumeX,
+  Loader2,
+  ChevronLeft,
+  ChevronRight,
+  Captions,
+} from "lucide-react";
 import "../scss/AudioPlayer.scss";
 import type { Clip } from "../types/Clip";
 
@@ -13,8 +22,23 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
   const [volume, setVolume] = useState<number>(1);
   const [index, setIndex] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [showSubtitles, setShowSubtitles] = useState<boolean>(() => {
+    try {
+      if (typeof window === "undefined") return false;
+      const raw = localStorage.getItem("showSubtitles");
+      return raw ? JSON.parse(raw) : false; // default OFF
+    } catch {
+      return false;
+    }
+  });
 
   const currentSrc = srcs && srcs.length > 0 ? srcs[index].audioUrl : "";
+
+  // Track how many times each clip has been played in this session.
+  // Keyed by Clip.id (fallback to index if id missing).
+  const playCountsRef = useRef<Record<number, number>>({});
+  const [playCountForCurrent, setPlayCountForCurrent] = useState<number>(0);
 
   const resetForIndexChange = useCallback(() => {
     const a = audioRef.current;
@@ -23,6 +47,23 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
       a.pause();
       a.currentTime = 0;
     }
+  }, []);
+
+  useEffect(() => {
+    console.log("Current src:", srcs[index]);
+  }, [srcs, index]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+
+    const onTimeUpdate = () => setCurrentTime(a.currentTime);
+
+    a.addEventListener("timeupdate", onTimeUpdate);
+
+    return () => {
+      a.removeEventListener("timeupdate", onTimeUpdate);
+    };
   }, []);
 
   // If the available srcs change, ensure index is in range and reset player state
@@ -49,12 +90,22 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
       try {
         await a.play();
         setPlaying(true);
+        // increment play count for this clip after a successful start
+        try {
+          const clipId = srcs && srcs.length > 0 ? srcs[index]?.id ?? index : index;
+          const prev = playCountsRef.current[clipId] || 0;
+          playCountsRef.current[clipId] = prev + 1;
+          setPlayCountForCurrent(playCountsRef.current[clipId]);
+        } catch {
+          // ignore
+        }
       } catch (err) {
         console.warn("Playback failed:", err);
         setPlaying(false);
       }
     }
-  }, []);
+  }, [index, srcs]);
+
 
   const prevClip = useCallback(() => {
     if (!srcs || srcs.length === 0) return;
@@ -110,6 +161,27 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
     a.volume = volume;
   }, [volume]);
 
+  // When index or srcs change, update playCountForCurrent to the stored value (or 0)
+  useEffect(() => {
+    const clipId = srcs && srcs.length > 0 ? srcs[index]?.id ?? index : index;
+    setPlayCountForCurrent(playCountsRef.current[clipId] || 0);
+  }, [index, srcs]);
+
+  // Sync subtitle setting across components/tabs via localStorage
+  useEffect(() => {
+    const handler = (e: StorageEvent) => {
+      if (e.key === "showSubtitles") {
+        try {
+          setShowSubtitles(e.newValue ? JSON.parse(e.newValue) : false);
+        } catch {
+          setShowSubtitles(false);
+        }
+      }
+    };
+    window.addEventListener("storage", handler);
+    return () => window.removeEventListener("storage", handler);
+  }, []);
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.code === "Space") {
@@ -141,6 +213,7 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
           >
             <ChevronLeft size={20} />
           </button>
+
           <button
             onClick={togglePlay}
             aria-label={playing ? "Pause" : "Play"}
@@ -180,11 +253,57 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
           />
           <span className="volume-text">{Math.round(volume * 100)}%</span>
         </div>
+        <div className="subtitle-toggle">
+          <button
+            onClick={() => {
+              setShowSubtitles((s) => {
+                const next = !s;
+                try {
+                  localStorage.setItem("showSubtitles", JSON.stringify(next));
+                } catch {
+                  // ignore storage errors
+                }
+                return next;
+              });
+            }}
+            aria-label={showSubtitles ? "Hide subtitles" : "Show subtitles"}
+            className={`subtitle-button ${showSubtitles ? "active" : ""}`}
+          >
+            <Captions size={20} />
+          </button>
+        </div>
       </div>
 
       <audio ref={audioRef} src={currentSrc} preload="metadata" />
+
+      {showSubtitles &&
+        Array.isArray(srcs[index]?.transcription?.segments) &&
+        srcs[index]!.transcription!.segments!.length > 0 && (
+          <div className="transcript-wrapper">
+            <div className="transcript-container">
+              {srcs[index]!.transcription!.segments!.map((segment) => (
+                <div key={segment.id} className="transcript-segment">
+                  {segment.words?.map((w, i) => {
+                    const showAll = playCountForCurrent > 1;
+                    // Don't reveal words at time 0 before playback starts.
+                    // Only reveal progressively when currentTime > 0 (or show all on repeats).
+                    const shouldShow = showAll || (currentTime > 0 && currentTime >= w.start);
+                    return (
+                      <span
+                        key={i}
+                        className={`transcript-word ${
+                          shouldShow ? "visible" : "hidden"
+                        }`}
+                      >
+                        {shouldShow ? w.word + " " : ""}
+                      </span>
+                    );
+                  })}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
     </div>
   );
-
-
 }
