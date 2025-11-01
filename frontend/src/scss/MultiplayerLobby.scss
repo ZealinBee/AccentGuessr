@@ -1,0 +1,245 @@
+.lobby-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: #0f172a;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.lobby-background-image {
+  position: absolute;
+  inset: 0;
+  background-image: url("/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  filter: contrast(1.05) saturate(1.1);
+}
+
+.lobby-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 30% 40%,
+    rgba(15, 23, 42, 0.8),
+    rgba(15, 23, 42, 0.95)
+  );
+}
+
+.lobby-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 40rem;
+}
+
+.lobby-card {
+  background-color: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.75rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+}
+
+.lobby-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+  text-align: center;
+}
+
+.lobby-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+}
+
+.lobby-info-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background-color: rgba(15, 23, 42, 0.4);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.lobby-info-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.lobby-info-value {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #f8fafc;
+}
+
+.lobby-status-waiting {
+  color: #fbbf24;
+}
+
+.lobby-status-active {
+  color: #10b981;
+}
+
+.lobby-players-section {
+  margin-bottom: 2rem;
+}
+
+.lobby-players-heading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 1rem;
+}
+
+.lobby-players-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.lobby-player-item {
+  background-color: rgba(15, 23, 42, 0.5);
+  border-radius: 0.5rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  transition: all 0.2s ease-in-out;
+}
+
+.lobby-player-item:hover {
+  background-color: rgba(15, 23, 42, 0.7);
+  border-color: rgba(148, 163, 184, 0.2);
+}
+
+.lobby-player-owner {
+  background: linear-gradient(
+    135deg,
+    rgba(59, 130, 246, 0.15),
+    rgba(37, 99, 235, 0.1)
+  );
+  border-color: rgba(59, 130, 246, 0.3);
+}
+
+.lobby-player-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #e2e8f0;
+}
+
+.lobby-player-badge {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #60a5fa;
+  font-weight: 600;
+}
+
+.lobby-no-players {
+  font-size: 0.95rem;
+  color: #94a3b8;
+  text-align: center;
+  padding: 1.5rem;
+  background-color: rgba(15, 23, 42, 0.3);
+  border-radius: 0.5rem;
+  border: 1px dashed rgba(148, 163, 184, 0.2);
+}
+
+.lobby-start-button {
+  width: 100%;
+  background: linear-gradient(to right, #f8fafc, #e2e8f0);
+  color: #0f172a;
+  padding: 0.85rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease-in-out;
+  margin-top: 1rem;
+}
+
+.lobby-start-button:hover {
+  background: linear-gradient(to right, #ffffff, #f1f5f9);
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.lobby-start-button:active {
+  transform: translateY(1px);
+}
+
+.lobby-start-button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .lobby-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 0.6rem;
+  }
+
+  .lobby-title {
+    font-size: 1.75rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .lobby-info-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .lobby-players-heading {
+    font-size: 1.15rem;
+  }
+
+  .lobby-background-image {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 480px) {
+  .lobby-title {
+    font-size: 1.5rem;
+  }
+
+  .lobby-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .lobby-info-label {
+    font-size: 0.85rem;
+  }
+
+  .lobby-info-value {
+    font-size: 0.95rem;
+  }
+
+  .lobby-player-item {
+    padding: 0.75rem 0.85rem;
+  }
+
+  .lobby-start-button {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+  }
+}
