@@ -77,7 +77,6 @@ export class MatchesService {
     if (!match) {
       throw new Error('Match not found');
     }
-    console.log('Current ownerId:', match.ownerId);
     if (!match.ownerId) {
       await this.prisma.match.update({
         where: { id: match.id },

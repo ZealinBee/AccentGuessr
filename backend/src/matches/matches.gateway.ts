@@ -66,18 +66,22 @@ export class MatchesGateway
     const player = match.matchPlayers.find(
       (p) => p.name === payload.playerName,
     );
-    if (player) {
-      await this.matchesService.assignOwnerIfNone(matchCode, player.id);
-      this.playerConnections.set(socket.id, {
-        matchCode: payload.matchCode,
-        playerId: player.id,
-      });
+    if (!player) {
+      return;
     }
-
+    await this.matchesService.assignOwnerIfNone(matchCode, player.id);
+    const updatedMatch = await this.matchesService.findByCode(matchCode);
+    if (!updatedMatch) {
+      return;
+    }
+    this.playerConnections.set(socket.id, {
+      matchCode: payload.matchCode,
+      playerId: player.id,
+    });
     await socket.join(`match_${matchCode}`);
     socket.emit('match_joined', {
-      match,
-      isOwner: match.ownerId === player?.id,
+      match: updatedMatch,
+      isOwner: updatedMatch.ownerId === player?.id,
     });
     socket.broadcast.to(`match_${matchCode}`).emit('player_joined', match);
   }

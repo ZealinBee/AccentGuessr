@@ -65,20 +65,6 @@ function MultiplayerLobby() {
                   : roomState?.status}
               </span>
             </div>
-
-            {roomState?.owner && (
-              <div className="lobby-info-item">
-                <span className="lobby-info-label">Host</span>
-                <span className="lobby-info-value">{roomState.owner.name}</span>
-              </div>
-            )}
-
-            <div className="lobby-info-item">
-              <span className="lobby-info-label">Rounds</span>
-              <span className="lobby-info-value">
-                {roomState?.currentRound} / {roomState?.maxRounds}
-              </span>
-            </div>
           </div>
 
           <div className="lobby-players-section">
