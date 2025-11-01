@@ -17,6 +17,7 @@ model Speaker {
   accentId Int
 
   rounds Round[]
+  matchRounds MatchRound[]
 }
 
 model Clip {
@@ -27,6 +28,8 @@ model Clip {
   speakerId  Int
   speaker    Speaker  @relation(fields: [speakerId], references: [id])
   transcription Json?
+
+  matchRound MatchRound[]
 }
 
 model Accent {
@@ -77,6 +80,7 @@ model User {
   createdAt DateTime @default(now())
 
   games Game[]
+  playerMatches MatchPlayer[]
 }
 
 model Game {
@@ -102,4 +106,83 @@ model Round {
   speaker Speaker @relation(fields: [speakerId], references: [id])
   speakerId Int
   createdAt DateTime? @default(now())
+}
+
+model Match {
+  id          Int      @id @default(autoincrement())
+  status MatchStatus @default(waiting)
+  code Int
+  createdAt    DateTime     @default(now())
+  startedAt    DateTime?
+  endedAt      DateTime?
+
+  ownerId Int? @unique
+  owner MatchPlayer?   @relation("OwnerMatch", fields: [ownerId], references: [id])
+
+  currentRound Int @default(0)
+  maxRounds Int @default(5)
+
+  matchPlayers MatchPlayer[]
+  matchRounds MatchRound[]
+}
+
+model MatchPlayer {
+  id          Int       @id @default(autoincrement())
+
+  matchId      Int
+  match        Match     @relation(fields: [matchId], references: [id])
+
+  userId       String?   // nullable → guest possible
+  user         User?     @relation(fields: [userId], references: [id])
+
+  isGuest      Boolean   @default(false)
+  guestName    String?
+  score        Int       @default(0)
+  orderIndex   Int
+
+  joinedAt     DateTime  @default(now())
+  leftAt       DateTime?
+  isConnected  Boolean   @default(true)
+
+  guesses      PlayerGuess[]
+
+  ownedMatch Match?       @relation("OwnerMatch")
+
+}
+
+model MatchRound {
+  id           Int       @id @default(autoincrement())
+  matchId      Int
+  match        Match     @relation(fields: [matchId], references: [id])
+
+  roundIndex   Int
+  speakerId    Int
+  speaker      Speaker   @relation(fields: [speakerId], references: [id])
+  clipId       Int?
+  clip         Clip?     @relation(fields: [clipId], references: [id])
+
+  startedAt    DateTime  @default(now())
+  endedAt      DateTime?
+  isResolved   Boolean   @default(false)
+
+  guesses      PlayerGuess[]
+}
+
+model PlayerGuess {
+  id           Int       @id @default(autoincrement())
+  roundId      Int
+  round        MatchRound @relation(fields: [roundId], references: [id])
+  playerId     Int
+  player       MatchPlayer @relation(fields: [playerId], references: [id])
+
+  guessLat     Float
+  guessLong    Float
+  score        Int?
+  submittedAt  DateTime   @default(now())
+}
+
+enum MatchStatus {
+  waiting
+  in_progress
+  finished
 }
