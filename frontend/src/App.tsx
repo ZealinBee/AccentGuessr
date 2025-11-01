@@ -12,7 +12,7 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/volunteer" element={<Volunteer />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/join/:matchId" element={<MultiplayerLobby />} />
+      <Route path="/join/:matchCode" element={<MultiplayerLobby />} />
       <Route path="/multiplayer" element={<Multiplayer />} />
     </Routes>
   );

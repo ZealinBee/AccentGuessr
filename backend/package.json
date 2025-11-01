@@ -28,9 +28,11 @@
     "@nestjs/jwt": "^11.0.1",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
+    "@nestjs/platform-socket.io": "^11.1.8",
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/serve-static": "^5.0.4",
     "@nestjs/testing": "^11.0.1",
+    "@nestjs/websockets": "^11.1.8",
     "@prisma/client": "^6.17.1",
     "google-auth-library": "^10.4.1",
     "passport": "^0.7.0",
@@ -38,6 +40,7 @@
     "prisma": "^6.17.1",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
+    "socket.io": "^4.8.1",
     "uuid": "^13.0.0"
   },
   "devDependencies": {

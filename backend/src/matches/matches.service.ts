@@ -1,46 +1,88 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { Match, PrismaClient } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { Prisma, PrismaClient } from '@prisma/client';
+
+type MatchWithRelations = Prisma.MatchGetPayload<{
+  include: { matchPlayers: true; owner: true };
+}>;
 
 @Injectable()
 export class MatchesService {
   private prisma: PrismaClient = new PrismaClient();
 
-  /**
-   * Create a new match and make the given user the owner.
-   * Implementation: create match (without ownerId), create MatchPlayer for owner, then update match.ownerId.
-   * All steps are executed in a transaction to avoid partial state.
-   */
-  async createMatch(userId: string): Promise<Match> {
-    if (!userId) throw new BadRequestException('User id is required');
-
-    // could be better
+  async createMatch(): Promise<MatchWithRelations> {
     const code = Math.floor(100000 + Math.random() * 900000);
-    const result = await this.prisma.$transaction(async (tx) => {
-      const match = await tx.match.create({
-        data: {
-          code,
-          maxRounds: 5,
-        },
-      });
 
-      const ownerPlayer = await tx.matchPlayer.create({
-        data: {
-          matchId: match.id,
-          userId,
-          isGuest: false,
-          orderIndex: 0,
-        },
-      });
+    const match = await this.prisma.match.create({
+      data: {
+        code,
+        maxRounds: 5,
+        status: 'waiting',
+      },
+      include: {
+        owner: true,
+        matchPlayers: true,
+      },
+    });
+    return match;
+  }
 
-      const updated = await tx.match.update({
-        where: { id: match.id },
-        data: { ownerId: ownerPlayer.id },
-        include: { owner: true, matchPlayers: true },
-      });
+  findByCode(code: number): Promise<MatchWithRelations | null> {
+    return this.prisma.match.findFirst({
+      where: { code },
+      include: { matchPlayers: true, owner: true },
+    });
+  }
 
-      return updated;
+  async joinRoom(
+    matchCode: number,
+    playerName: string,
+    isGuest: boolean,
+  ): Promise<MatchWithRelations | null> {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    await this.prisma.matchPlayer.create({
+      data: {
+        matchId: match.id,
+        name: playerName,
+        isGuest,
+        orderIndex: match.matchPlayers.length,
+      },
+    });
+    const updatedMatch = await this.prisma.match.findUnique({
+      where: { id: match.id },
+      include: { matchPlayers: true, owner: true },
     });
 
-    return result;
+    return updatedMatch;
+  }
+
+  async removePlayerFromMatch(matchCode: number, playerId: number) {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    await this.prisma.matchPlayer.delete({
+      where: { id: playerId },
+    });
+    return await this.prisma.match.findUnique({
+      where: { id: match.id },
+      include: { matchPlayers: true, owner: true },
+    });
+  }
+
+  async assignOwnerIfNone(matchCode: number, playerId: number) {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    console.log('Current ownerId:', match.ownerId);
+    if (!match.ownerId) {
+      await this.prisma.match.update({
+        where: { id: match.id },
+        data: { ownerId: playerId },
+      });
+    }
   }
 }

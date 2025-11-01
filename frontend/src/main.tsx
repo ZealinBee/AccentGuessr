@@ -6,6 +6,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import { AuthProvider } from "./context/AuthContext";
 import { GameProvider } from "./context/GameContext.jsx";
 import { initAnalytics } from "./lib/firebase";
+import { MatchProvider } from "./context/MatchContext.tsx";
 
 initAnalytics({ enabled: true });
 
@@ -13,11 +14,13 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}>
       <AuthProvider>
-        <GameProvider>
-          <BrowserRouter>
-            <App />
-          </BrowserRouter>
-        </GameProvider>
+        <MatchProvider>
+          <GameProvider>
+            <BrowserRouter>
+              <App />
+            </BrowserRouter>
+          </GameProvider>
+        </MatchProvider>
       </AuthProvider>
     </GoogleOAuthProvider>
   </StrictMode>

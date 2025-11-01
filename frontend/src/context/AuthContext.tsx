@@ -7,6 +7,7 @@ type AuthContextType = {
   logout: () => void;
   username: string | null;
   userPictureURL: string | null;
+  userId: string | null;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -17,6 +18,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [token, setToken] = useState<string | null>(null);
   const [username, setUsername] = useState<string | null>(null);
   const [userPictureURL, setUserPictureURL] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
     const t = localStorage.getItem("token");
@@ -30,7 +32,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const login = (
     t: string,
     usernameArg?: string,
-    userPictureURLArg?: string
+    userPictureURLArg?: string,
+    userId?: string
   ) => {
     localStorage.setItem("token", t);
     setToken(t);
@@ -43,6 +46,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     if (userPictureURLArg) {
       localStorage.setItem("userPictureURL", userPictureURLArg);
       setUserPictureURL(userPictureURLArg);
+    }
+
+    if (userId) {
+      localStorage.setItem("userId", userId);
+      setUserId(userId);
     }
   };
 
@@ -64,6 +72,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         logout,
         username,
         userPictureURL,
+        userId,
       }}
     >
       {children}

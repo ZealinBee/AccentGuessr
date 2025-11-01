@@ -27,7 +27,7 @@ export default function LoginButton({ message }: LoginButtonProps) {
         { idToken, games },
         { withCredentials: true }
       );
-      auth.login(res.data.accessToken, res.data.user.name, res.data.user.picture);
+      auth.login(res.data.accessToken, res.data.user.name, res.data.user.picture, res.data.user.id);
       navigate("/");
     } catch (error) {
       console.error("Error during backend authentication:", error);

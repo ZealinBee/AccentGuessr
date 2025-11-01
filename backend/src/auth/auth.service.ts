@@ -43,7 +43,6 @@ export class AuthService {
 
   async loginWithGoogle(idToken: string, games: GameCreateInput) {
     const googleUser = await this.verifyGoogleToken(idToken);
-    console.log('games', games);
     if (!googleUser.email)
       throw new UnauthorizedException('Google token missing email');
     const email = googleUser.email;
@@ -80,7 +79,7 @@ export class AuthService {
 
     if (!user) throw new UnauthorizedException('Failed to get or create user');
 
-    const payload = { sub: user.id, email: user.email };
+    const payload = { sub: user.id, email: user.email, username: user.name };
     const accessToken = this.jwtService.sign(payload);
 
     return {
