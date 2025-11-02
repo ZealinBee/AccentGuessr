@@ -4,6 +4,7 @@ import { useMatchSocket } from "../hooks/useMatchWebSocket";
 import { useParams } from "react-router-dom";
 import type { Match } from "../types/Match";
 import "../scss/MultiplayerLobby.scss";
+import MultiplayerMap from "../components/MultiplayerMap";
 
 function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
@@ -24,7 +25,7 @@ function MultiplayerLobby() {
     onMatchStarted: (data) => {
       console.log("MATCH STARTED", data);
       setRoomState(data);
-    }
+    },
   });
   const [roomState, setRoomState] = useState<Match | null>(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -55,6 +56,10 @@ function MultiplayerLobby() {
         </div>
       </div>
     );
+  }
+
+  if (roomState.status === "in_progress") {
+    return <MultiplayerMap roomState={roomState} />;
   }
 
   return (
@@ -119,7 +124,9 @@ function MultiplayerLobby() {
           </div>
 
           {isOwner && (
-            <button className="lobby-start-button" onClick={startMatch}>Start Game</button>
+            <button className="lobby-start-button" onClick={startMatch}>
+              Start Game
+            </button>
           )}
         </div>
       </div>

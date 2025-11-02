@@ -1,6 +1,6 @@
-import Map from "./Map";
 import EndScreen from "./EndScreen";
 import { useGame } from "../hooks/useGame";
+import Map from "./Map";
 
 function Game() {
   const { isShowingEndScreen, totalScore, gameData, gameRound } = useGame();

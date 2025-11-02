@@ -5,7 +5,6 @@ import ResultCard from "./ResultCard";
 import InstructionCard from "./InstructionCard";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
-import type { Speaker } from "../types/Speaker";
 import {
   point,
   booleanPointInPolygon,
@@ -17,22 +16,13 @@ import {
 import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
 import { accentToFeature } from "../utils/accentToFeature";
-import { useGame } from "../hooks/useGame";
+import type { Match } from "../types/Match";
 
-interface MapProps {
-  roundData: Speaker;
+interface MultiplayerMapProps {
+  roomState: Match;
 }
 
-export type MapCoreRef = {
-  showRegion: (regionFeature: any) => void;
-  showResultLine: (from: { lng: number; lat: number }, to: { lng: number; lat: number }) => void;
-  clearOverlays: () => void;
-  clearMarker: () => void;
-  setMarker: (lng: number, lat: number) => void;
-
-}
-
-function Map({ roundData }: MapProps) {
+function MultiplayerMap({ roomState }: MultiplayerMapProps) {
   const mapRef = useRef<mapboxgl.Map | null>(null);
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
@@ -45,9 +35,8 @@ function Map({ roundData }: MapProps) {
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const { nextRound, pushRoundResult, gameRound } = useGame();
 
-  const correctLocation = roundData.accent;
+  const correctLocation = roomState.matchRounds[roomState.currentRound].speaker.accent;
 
   useEffect(() => {
     confirmedAnswerRef.current = confirmedAnswer;
@@ -242,12 +231,12 @@ function Map({ roundData }: MapProps) {
         });
       }
     }
-    pushRoundResult({
-      score: roundScore,
-      guessLong: answered.lng,
-      guessLat: answered.lat,
-      speakerId: roundData.id,
-    });
+    // pushRoundResult({
+    //   score: roundScore,
+    //   guessLong: answered.lng,
+    //   guessLat: answered.lat,
+    //   speakerId: roundData.id,
+    // });
   };
 
   const handleNext = () => {
@@ -283,14 +272,14 @@ function Map({ roundData }: MapProps) {
       <InstructionCard />
       <div
         className="round-indicator"
-        aria-label={`Round ${gameRound + 1} of 5`}
+        aria-label={`Round ${roomState.currentRound + 1} of 5`}
       >
-        Round {gameRound + 1}/5
+        Round {roomState.currentRound + 1}/5
       </div>
       <div className="bottom-controls">
         {!confirmedAnswer ? (
           <div className="guess-section">
-            <AudioPlayer srcs={roundData.clips} />
+            <AudioPlayer srcs={roomState.matchRounds[roomState.currentRound].speaker.clips} />
             <button
               className={`confirm-btn ${hasPin ? "active" : "disabled"}`}
               onClick={handleConfirm}
@@ -303,10 +292,10 @@ function Map({ roundData }: MapProps) {
           <ResultCard
             answerDistance={answerDistance ?? 0}
             score={score ?? 0}
-            gameRound={gameRound}
+            gameRound={roomState.currentRound}
             handleNext={handleNext}
-            accentName={roundData.accent.name}
-            accentDescription={roundData.accent.description}
+            accentName={roomState.matchRounds[roomState.currentRound].speaker.accent.name}
+            accentDescription={roomState.matchRounds[roomState.currentRound].speaker.accent.description}
           />
         )}
       </div>
@@ -314,4 +303,4 @@ function Map({ roundData }: MapProps) {
   );
 }
 
-export default Map;
+export default MultiplayerMap;

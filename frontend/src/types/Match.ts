@@ -1,3 +1,5 @@
+import type { Speaker } from "./Speaker";
+
 export interface MatchPlayer {
   id: number;
   matchId: number;
@@ -20,5 +22,31 @@ export interface Match {
   ownerId: number;
   owner: MatchPlayer;
   matchPlayers: MatchPlayer[];
+  matchRounds: MatchRound[];
 }
 
+export interface PlayerGuess {
+  id: number;
+  roundId: number;
+  playerId: number;
+  player?: MatchPlayer;
+
+  guessLat: number;
+  guessLong: number;
+  score?: number | null;
+  submittedAt: string;
+}
+
+export interface MatchRound {
+  id: number;
+  matchId: number;
+  roundIndex: number;
+  speakerId: number;
+  speaker: Speaker;
+
+  startedAt: string;
+  endedAt: string | null;
+  isResolved: boolean;
+
+  guesses: PlayerGuess[];
+}
