@@ -125,4 +125,49 @@ export class MatchesService {
 
     return updatedMatch;
   }
+
+  async confirmGuess(
+    matchCode: number,
+    playerId: number,
+    guessLong: number,
+    guessLat: number,
+    score: number,
+  ) {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    const currentRoundIndex = match.currentRound;
+    const matchRound = await this.prisma.matchRound.findFirst({
+      where: {
+        matchId: match.id,
+        roundIndex: currentRoundIndex,
+      },
+    });
+    if (!matchRound) {
+      throw new Error('Match round not found');
+    }
+    await this.prisma.playerGuess.create({
+      data: {
+        roundId: matchRound.id,
+        playerId,
+        guessLong,
+        guessLat,
+        score,
+      },
+    });
+    return await this.prisma.match.findUnique({
+      where: { id: match.id },
+      include: {
+        matchPlayers: true,
+        owner: true,
+        matchRounds: {
+          include: {
+            speaker: { include: { clips: true, accent: true } },
+            guesses: true,
+          },
+        },
+      },
+    });
+  }
 }

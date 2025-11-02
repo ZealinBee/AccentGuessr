@@ -98,4 +98,39 @@ export class MatchesGateway
     }
     this.server.to(`match_${payload.matchCode}`).emit('match_started', match);
   }
+
+  @SubscribeMessage('confirm_guess')
+  async onConfirmGuess(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody()
+    payload: {
+      matchCode: number;
+      guessLong: number;
+      guessLat: number;
+      score: number;
+    },
+  ) {
+    const connectionInfo = this.playerConnections.get(socket.id);
+    if (!connectionInfo) {
+      socket.emit('error', {
+        message: 'Player not found in connection records',
+      });
+      return;
+    }
+    const playerId = connectionInfo.playerId;
+    const updatedMatch = await this.matchesService.confirmGuess(
+      payload.matchCode,
+      playerId,
+      payload.guessLong,
+      payload.guessLat,
+      payload.score,
+    );
+    if (!updatedMatch) {
+      socket.emit('error', { message: 'Match or player not found' });
+      return;
+    }
+    this.server
+      .to(`match_${payload.matchCode}`)
+      .emit('guess_confirmed', updatedMatch);
+  }
 }

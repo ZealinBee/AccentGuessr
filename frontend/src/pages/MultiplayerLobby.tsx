@@ -59,7 +59,15 @@ function MultiplayerLobby() {
   }
 
   if (roomState.status === "in_progress") {
-    return <MultiplayerMap roomState={roomState} />;
+    return (
+      <MultiplayerMap
+        roomState={roomState}
+        onGuessConfirmed={(data) => {
+          setRoomState(data);
+          console.log("GUESS CONFIRMED", data);
+        }}
+      />
+    );
   }
 
   return (

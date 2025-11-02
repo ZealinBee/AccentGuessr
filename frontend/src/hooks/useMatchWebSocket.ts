@@ -6,6 +6,7 @@ type Events = {
   onPlayerJoined?: (data: any) => void;
   onPlayerLeft?: (data: any) => void;
   onMatchStarted?: (data: any) => void;
+  onGuessConfirmed?: (data: any) => void;
 };
 
 export function useMatchSocket(matchCode: number, opts: Events = {}) {
@@ -24,6 +25,7 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
       player_joined: opts.onPlayerJoined,
       player_left: opts.onPlayerLeft,
       match_started: opts.onMatchStarted,
+      guess_confirmed: opts.onGuessConfirmed,
     };
 
     for (const [event, handler] of Object.entries(eventHandlers)) {
@@ -37,7 +39,7 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
         else socket.off(event);
       }
     };
-  }, [opts.onMatchJoined, opts.onPlayerJoined, opts.onPlayerLeft, opts.onMatchStarted]);
+  }, [opts.onMatchJoined, opts.onPlayerJoined, opts.onPlayerLeft, opts.onMatchStarted, opts.onGuessConfirmed]);
 
   const joinMatch = (playerName: string, isGuest: boolean) => {
     const socket = getSocket();
@@ -51,5 +53,11 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
     socket.emit("start_match", { matchCode });
   }
 
-  return { connected, joinMatch, startMatch };
+  const confirmGuess = (lng: number, lat: number, score: number) => {
+    const socket = getSocket();
+    console.log("Emitting confirm_guess", { matchCode, guessLong: lng, guessLat: lat, score });
+    socket.emit("confirm_guess", { matchCode, guessLong: lng, guessLat: lat, score });
+  }
+
+  return { connected, joinMatch, startMatch, confirmGuess };
 }
