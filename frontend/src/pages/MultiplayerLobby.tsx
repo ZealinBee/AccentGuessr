@@ -14,6 +14,7 @@ function MultiplayerLobby() {
     onMatchJoined: (data) => {
       setRoomState(data.match);
       setIsOwner(data.isOwner);
+      setPlayerId(data.playerId);
     },
     onPlayerJoined: (data) => {
       console.log("HELLO SOMEONE JOINED", data);
@@ -29,6 +30,7 @@ function MultiplayerLobby() {
   });
   const [roomState, setRoomState] = useState<Match | null>(null);
   const [isOwner, setIsOwner] = useState(false);
+  const [playerId, setPlayerId] = useState<number | null>(null);
 
   useEffect(() => {
     if (!connected || !numericCode) return;
@@ -62,6 +64,7 @@ function MultiplayerLobby() {
     return (
       <MultiplayerMap
         roomState={roomState}
+        playerId={playerId}
         onGuessConfirmed={(data) => {
           setRoomState(data);
           console.log("GUESS CONFIRMED", data);

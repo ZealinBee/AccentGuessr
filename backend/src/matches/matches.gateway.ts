@@ -82,6 +82,7 @@ export class MatchesGateway
     socket.emit('match_joined', {
       match: updatedMatch,
       isOwner: updatedMatch.ownerId === player?.id,
+      playerId: player.id,
     });
     socket.broadcast.to(`match_${matchCode}`).emit('player_joined', match);
   }
