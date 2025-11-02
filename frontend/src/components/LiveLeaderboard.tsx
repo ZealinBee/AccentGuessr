@@ -12,6 +12,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
 
   const rows = useMemo(() => {
     const totals = new Map<number, number>();
+    const isRoundResolved = roomState.matchRounds?.[currentRound]?.isResolved;
 
     // calculate cumulative scores
     for (const round of roomState.matchRounds || []) {
@@ -31,16 +32,22 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
     return roomState.matchPlayers
       .map((p) => {
         const curGuess = currentRoundGuesses.find((g) => g.playerId === p.id);
+        const isCurrent = p.id === playerId;
+
+        // For other players when round is not resolved, hide their scores
+        const shouldShowScore = isRoundResolved || isCurrent;
+
         const currentRoundScore =
-          typeof curGuess?.score === "number" ? curGuess.score : 0;
-        const totalScore = totals.get(p.id) || 0;
+          shouldShowScore && typeof curGuess?.score === "number"
+            ? curGuess.score
+            : 0;
+        const totalScore = shouldShowScore ? (totals.get(p.id) || 0) : 0;
+
         const status = (() => {
           if (roomState.status === "ended") return "Finished";
           if (curGuess) return curGuess.score == null ? "Ready" : "Scored";
           return "Guessing";
         })();
-
-        const isCurrent = p.id === playerId;
 
         return {
           id: p.id,
@@ -49,6 +56,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           totalScore,
           status,
           isCurrent,
+          shouldShowScore,
         };
       })
       .sort((a, b) => b.totalScore - a.totalScore);
@@ -85,8 +93,12 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
               </span>
             </div>
             <div className="player-right">
-              <span className="round-score">{r.currentRoundScore}</span>
-              <span className="total-score">{r.totalScore}</span>
+              <span className="round-score">
+                {r.shouldShowScore ? r.currentRoundScore : "—"}
+              </span>
+              <span className="total-score">
+                {r.shouldShowScore ? r.totalScore : "—"}
+              </span>
               <span className={`status status-${r.status.toLowerCase()}`}>
                 {r.status}
               </span>

@@ -147,15 +147,42 @@ export class MatchesService {
     if (!matchRound) {
       throw new Error('Match round not found');
     }
-    await this.prisma.playerGuess.create({
-      data: {
-        roundId: matchRound.id,
-        playerId,
-        guessLong,
-        guessLat,
-        score,
-      },
+
+    const totalPlayers = match.matchPlayers.length;
+
+    // Create the guess and check if all players have guessed in a transaction
+    await this.prisma.$transaction(async (tx) => {
+      // Create the guess
+      await tx.playerGuess.create({
+        data: {
+          roundId: matchRound.id,
+          playerId,
+          guessLong,
+          guessLat,
+          score,
+        },
+      });
+
+      // Count guesses AFTER creating the new one
+      const guessesForRound = await tx.playerGuess.count({
+        where: {
+          roundId: matchRound.id,
+        },
+      });
+
+      console.log('Total players in match:', totalPlayers);
+      console.log('Guesses for current round (after insert):', guessesForRound);
+
+      // If all players have guessed, mark the round as resolved
+      if (guessesForRound >= totalPlayers) {
+        await tx.matchRound.update({
+          where: { id: matchRound.id },
+          data: { isResolved: true, endedAt: new Date() },
+        });
+        console.log('Round marked as resolved');
+      }
     });
+
     return await this.prisma.match.findUnique({
       where: { id: match.id },
       include: {
@@ -166,6 +193,7 @@ export class MatchesService {
             speaker: { include: { clips: true, accent: true } },
             guesses: true,
           },
+          orderBy: { roundIndex: 'asc' },
         },
       },
     });

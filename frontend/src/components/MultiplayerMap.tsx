@@ -53,9 +53,6 @@ export default function MultiplayerMap({
     confirmedAnswerRef.current = confirmedAnswer;
   }, [confirmedAnswer]);
 
-  /** ─────────────────────────────
-   * Draw all guesses when results available
-   * ─────────────────────────────*/
   useEffect(() => {
     if (!mapRef.current || !roomState.matchRounds[roomState.currentRound])
       return;
@@ -63,8 +60,12 @@ export default function MultiplayerMap({
     const round = roomState.matchRounds[roomState.currentRound];
     const guesses = round.guesses || [];
 
-    const hasAnyScore = guesses.some((g) => g.score != null);
-    if (!hasAnyScore) return;
+    // Show current player's guess immediately, show all when resolved
+    const shouldShowAll = round.isResolved;
+    const currentPlayerGuess = guesses.find((g) => g.playerId === playerId);
+
+    // If not resolved and current player hasn't guessed yet, don't show anything
+    if (!shouldShowAll && !currentPlayerGuess) return;
 
     // Clear previous player markers and lines
     playerMarkersRef.current.forEach((m) => m.remove());
@@ -77,7 +78,9 @@ export default function MultiplayerMap({
     }
 
     // Add markers for each guess
-    for (const guess of guesses) {
+    const guessesToShow = shouldShowAll ? guesses : currentPlayerGuess ? [currentPlayerGuess] : [];
+
+    for (const guess of guessesToShow) {
       const marker = new mapboxgl.Marker({ color: markerColor })
         .setLngLat([guess.guessLong, guess.guessLat])
         .addTo(map);
@@ -118,6 +121,7 @@ export default function MultiplayerMap({
             type: "geojson",
             data: {
               type: "Feature",
+              properties: {},
               geometry: {
                 type: "LineString",
                 coordinates: [
@@ -173,6 +177,7 @@ export default function MultiplayerMap({
     roomState.currentRound,
     roomState.matchPlayers,
     correctLocation,
+    playerId,
   ]);
 
   /** ─────────────────────────────
@@ -222,7 +227,8 @@ export default function MultiplayerMap({
    * Confirm guess
    * ─────────────────────────────*/
   const handleConfirm = () => {
-    if (!markerRef.current || !playerId) return;
+    if (!markerRef.current || !playerId || !mapRef.current) return;
+    const map = mapRef.current;
     const lngLat = markerRef.current.getLngLat();
     const answered = { lng: lngLat.lng, lat: lngLat.lat };
     setConfirmedAnswer(answered);
@@ -235,12 +241,12 @@ export default function MultiplayerMap({
 
     let totalDistance = 0;
     let roundScore = 0;
+    let closest = null;
 
     if (isInside) {
       roundScore = 5000;
     } else {
       const guessPt = point([answered.lng, answered.lat]);
-      let closest = null;
       let minDist = Infinity;
 
       const checkRings = (rings: number[][][]) => {
@@ -273,12 +279,69 @@ export default function MultiplayerMap({
 
     setAnswerDistance(totalDistance);
     setScore(roundScore);
+
+    // *** IMMEDIATELY draw the correct region ***
+    const regionSourceId = "correct-region";
+    const regionLayerId = "correct-region-layer";
+    const borderLayerId = "correct-region-border";
+
+    if (map.getLayer(regionLayerId)) map.removeLayer(regionLayerId);
+    if (map.getLayer(borderLayerId)) map.removeLayer(borderLayerId);
+    if (map.getSource(regionSourceId)) map.removeSource(regionSourceId);
+
+    map.addSource(regionSourceId, { type: "geojson", data: regionFeature });
+    map.addLayer({
+      id: regionLayerId,
+      type: "fill",
+      source: regionSourceId,
+      paint: {
+        "fill-color": "#1abc9c",
+        "fill-opacity": 0.25,
+        "fill-outline-color": "#16a085",
+      },
+    });
+    map.addLayer({
+      id: borderLayerId,
+      type: "line",
+      source: regionSourceId,
+      paint: { "line-color": "#16a085", "line-width": 2 },
+    });
+
+    // *** IMMEDIATELY draw the line if outside the region ***
+    if (!isInside && closest) {
+      const lineId = `player-guess-line-${playerId}`;
+      if (map.getLayer(lineId)) map.removeLayer(lineId);
+      if (map.getSource(lineId)) map.removeSource(lineId);
+
+      map.addSource(lineId, {
+        type: "geojson",
+        data: {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "LineString",
+            coordinates: [
+              [answered.lng, answered.lat],
+              closest.geometry.coordinates,
+            ],
+          },
+        },
+      });
+      map.addLayer({
+        id: lineId,
+        type: "line",
+        source: lineId,
+        paint: {
+          "line-color": markerColor,
+          "line-width": 2,
+          "line-dasharray": [2, 2],
+        },
+      });
+    }
+
     confirmGuess(answered.lng, answered.lat, roundScore, playerId);
   };
 
-  /** ─────────────────────────────
-   * Reset for next round
-   * ─────────────────────────────*/
   const handleNext = () => {
     if (markerRef.current) markerRef.current.remove();
     playerMarkersRef.current.forEach((m) => m.remove());
@@ -286,10 +349,25 @@ export default function MultiplayerMap({
 
     const map = mapRef.current;
     if (map) {
+      // Clean up correct region layers
       ["correct-region-layer", "correct-region-border"].forEach((id) => {
         if (map.getLayer(id)) map.removeLayer(id);
       });
       if (map.getSource("correct-region")) map.removeSource("correct-region");
+
+      // Clean up current player's line if it exists
+      if (playerId) {
+        const lineId = `player-guess-line-${playerId}`;
+        if (map.getLayer(lineId)) map.removeLayer(lineId);
+        if (map.getSource(lineId)) map.removeSource(lineId);
+      }
+
+      // Clean up all other player lines
+      for (const player of roomState.matchPlayers) {
+        const lineId = `player-guess-line-${player.id}`;
+        if (map.getLayer(lineId)) map.removeLayer(lineId);
+        if (map.getSource(lineId)) map.removeSource(lineId);
+      }
     }
 
     setHasPin(false);
@@ -323,19 +401,29 @@ export default function MultiplayerMap({
             </button>
           </div>
         ) : (
-          <ResultCard
-            answerDistance={answerDistance ?? 0}
-            score={score ?? 0}
-            gameRound={roomState.currentRound}
-            handleNext={handleNext}
-            accentName={
-              roomState.matchRounds[roomState.currentRound].speaker.accent.name
-            }
-            accentDescription={
-              roomState.matchRounds[roomState.currentRound].speaker.accent
-                .description
-            }
-          />
+          <>
+            {/* Show result immediately after confirming */}
+            <ResultCard
+              answerDistance={answerDistance ?? 0}
+              score={score ?? 0}
+              gameRound={roomState.currentRound}
+              handleNext={handleNext}
+              accentName={
+                roomState.matchRounds[roomState.currentRound].speaker.accent
+                  .name
+              }
+              accentDescription={
+                roomState.matchRounds[roomState.currentRound].speaker.accent
+                  .description
+              }
+            />
+            {/* Show waiting message if round not resolved yet */}
+            {!roomState.matchRounds[roomState.currentRound].isResolved && (
+              <div className="waiting-section">
+                <p>Waiting for other players to finish...</p>
+              </div>
+            )}
+          </>
         )}
       </div>
     </div>
