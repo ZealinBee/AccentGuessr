@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
+import { SpeakersService } from 'src/speakers/speakers.service';
 
 type MatchWithRelations = Prisma.MatchGetPayload<{
   include: { matchPlayers: true; owner: true };
@@ -8,6 +9,8 @@ type MatchWithRelations = Prisma.MatchGetPayload<{
 @Injectable()
 export class MatchesService {
   private prisma: PrismaClient = new PrismaClient();
+
+  constructor(private speakerService: SpeakersService) {}
 
   async createMatch(): Promise<MatchWithRelations> {
     const code = Math.floor(100000 + Math.random() * 900000);
@@ -83,5 +86,43 @@ export class MatchesService {
         data: { ownerId: playerId },
       });
     }
+  }
+
+  async startMatch(matchCode: number) {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    const speakers = await this.speakerService.getFiveRandomSpeakers(null);
+
+    const roundsData = speakers.map((s, idx) => ({
+      matchId: match.id,
+      roundIndex: idx,
+      speakerId: s.id,
+    }));
+
+    await this.prisma.$transaction(async (tx) => {
+      await tx.matchRound.createMany({ data: roundsData });
+
+      await tx.match.update({
+        where: { id: match.id },
+        data: { status: 'in_progress', startedAt: new Date(), currentRound: 0 },
+      });
+    });
+
+    const updatedMatch = await this.prisma.match.findUnique({
+      where: { id: match.id },
+      include: {
+        matchPlayers: true,
+        owner: true,
+        matchRounds: {
+          include: {
+            speaker: { include: { clips: true, accent: true } },
+          },
+        },
+      },
+    });
+
+    return updatedMatch;
   }
 }

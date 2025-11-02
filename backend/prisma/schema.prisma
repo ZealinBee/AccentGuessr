@@ -28,8 +28,6 @@ model Clip {
   speakerId  Int
   speaker    Speaker  @relation(fields: [speakerId], references: [id])
   transcription Json?
-
-  matchRound MatchRound[]
 }
 
 model Accent {
@@ -158,8 +156,6 @@ model MatchRound {
   roundIndex   Int
   speakerId    Int
   speaker      Speaker   @relation(fields: [speakerId], references: [id])
-  clipId       Int?
-  clip         Clip?     @relation(fields: [clipId], references: [id])
 
   startedAt    DateTime  @default(now())
   endedAt      DateTime?

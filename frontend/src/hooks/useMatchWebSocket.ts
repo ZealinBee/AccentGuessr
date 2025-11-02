@@ -5,6 +5,7 @@ type Events = {
   onMatchJoined?: (data: any) => void;
   onPlayerJoined?: (data: any) => void;
   onPlayerLeft?: (data: any) => void;
+  onMatchStarted?: (data: any) => void;
 };
 
 export function useMatchSocket(matchCode: number, opts: Events = {}) {
@@ -22,6 +23,7 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
       match_joined: opts.onMatchJoined,
       player_joined: opts.onPlayerJoined,
       player_left: opts.onPlayerLeft,
+      match_started: opts.onMatchStarted,
     };
 
     for (const [event, handler] of Object.entries(eventHandlers)) {
@@ -35,7 +37,7 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
         else socket.off(event);
       }
     };
-  }, [opts.onMatchJoined, opts.onPlayerJoined, opts.onPlayerLeft]);
+  }, [opts.onMatchJoined, opts.onPlayerJoined, opts.onPlayerLeft, opts.onMatchStarted]);
 
   const joinMatch = (playerName: string, isGuest: boolean) => {
     const socket = getSocket();
@@ -43,5 +45,11 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
     socket.emit("join_match", { matchCode, playerName, isGuest });
   };
 
-  return { connected, joinMatch };
+  const startMatch = () => {
+    const socket = getSocket();
+    console.log("Emitting start_match", { matchCode });
+    socket.emit("start_match", { matchCode });
+  }
+
+  return { connected, joinMatch, startMatch };
 }

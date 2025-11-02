@@ -85,4 +85,17 @@ export class MatchesGateway
     });
     socket.broadcast.to(`match_${matchCode}`).emit('player_joined', match);
   }
+
+  @SubscribeMessage('start_match')
+  async onStartMatch(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() payload: { matchCode: number },
+  ) {
+    const match = await this.matchesService.startMatch(payload.matchCode);
+    if (!match) {
+      socket.emit('error', { message: 'Match not found or cannot be started' });
+      return;
+    }
+    this.server.to(`match_${payload.matchCode}`).emit('match_started', match);
+  }
 }

@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { useMatch } from "../hooks/useMatch";
 import useAuth from "../hooks/useAuth";
 import { useMatchSocket } from "../hooks/useMatchWebSocket";
 import { useParams } from "react-router-dom";
@@ -10,9 +9,8 @@ function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
   const numericCode = Number(matchCode);
   const { userId, username } = useAuth();
-  const { connected, joinMatch } = useMatchSocket(numericCode, {
+  const { connected, joinMatch, startMatch } = useMatchSocket(numericCode, {
     onMatchJoined: (data) => {
-      console.log("HELLO MATCH JOINED", data.match);
       setRoomState(data.match);
       setIsOwner(data.isOwner);
     },
@@ -23,6 +21,10 @@ function MultiplayerLobby() {
     onPlayerLeft: (data) => {
       setRoomState(data);
     },
+    onMatchStarted: (data) => {
+      console.log("MATCH STARTED", data);
+      setRoomState(data);
+    }
   });
   const [roomState, setRoomState] = useState<Match | null>(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -117,7 +119,7 @@ function MultiplayerLobby() {
           </div>
 
           {isOwner && (
-            <button className="lobby-start-button">Start Game</button>
+            <button className="lobby-start-button" onClick={startMatch}>Start Game</button>
           )}
         </div>
       </div>
