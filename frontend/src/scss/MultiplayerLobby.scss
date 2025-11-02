@@ -190,6 +190,57 @@
   transform: none;
 }
 
+/* Loading state */
+.lobby-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 1rem;
+}
+
+.lobby-loading-spinner {
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: conic-gradient(
+    #3b82f6 0deg 120deg,
+    #06b6d4 120deg 240deg,
+    #10b981 240deg 360deg
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(50% - 3px),
+    black calc(50% - 3px)
+  );
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(50% - 3px),
+    black calc(50% - 3px)
+  );
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.lobby-loading-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 0.5rem;
+}
+
+.lobby-loading-text {
+  font-size: 1rem;
+  color: #94a3b8;
+  text-align: center;
+}
+
 /* Responsive adjustments */
 @media (max-width: 768px) {
   .lobby-card {

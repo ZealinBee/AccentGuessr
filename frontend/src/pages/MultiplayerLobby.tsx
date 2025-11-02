@@ -34,6 +34,27 @@ function MultiplayerLobby() {
     joinMatch(username || `Guest_${Math.floor(Math.random() * 1000)}`, isGuest);
   }, [numericCode, connected]);
 
+  if (!roomState) {
+    return (
+      <div className="lobby-container">
+        <div className="lobby-background-image" />
+        <div className="lobby-background-overlay" />
+
+        <div className="lobby-content">
+          <div className="lobby-card">
+            <div className="lobby-loading">
+              <div className="lobby-loading-spinner" />
+              <h2 className="lobby-loading-title">Connecting to lobby...</h2>
+              <p className="lobby-loading-text">
+                Please wait while we set up your room
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="lobby-container">
       <div className="lobby-background-image" />

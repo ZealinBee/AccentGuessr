@@ -1,0 +1,207 @@
+.multiplayer-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: #0f172a;
+  font-family: "Inter", system-ui, sans-serif;
+}
+
+.multiplayer-background-image {
+  position: absolute;
+  inset: 0;
+  background-image: url("/background.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.35;
+  filter: contrast(1.05) saturate(1.1);
+}
+
+.multiplayer-background-overlay {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at 30% 40%,
+    rgba(15, 23, 42, 0.8),
+    rgba(15, 23, 42, 0.95)
+  );
+}
+
+.multiplayer-content {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  max-width: 40rem;
+}
+
+.multiplayer-card {
+  background-color: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.75rem;
+  padding: 2.5rem 2rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.multiplayer-title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 1rem;
+  letter-spacing: -0.02em;
+}
+
+.multiplayer-subtitle {
+  font-size: 1.05rem;
+  color: #cbd5e1;
+  margin-bottom: 2rem;
+  line-height: 1.7;
+  max-width: 32rem;
+  margin-inline: auto;
+}
+
+.multiplayer-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.multiplayer-create-button {
+  width: 100%;
+  max-width: 20rem;
+  background: linear-gradient(to right, #f8fafc, #e2e8f0);
+  color: #0f172a;
+  padding: 0.85rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+
+  &:hover {
+    background: linear-gradient(to right, #ffffff, #f1f5f9);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+}
+
+.multiplayer-divider {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  max-width: 20rem;
+  gap: 1rem;
+  color: #94a3b8;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(
+      to right,
+      transparent,
+      rgba(148, 163, 184, 0.3),
+      transparent
+    );
+  }
+}
+
+.multiplayer-join-link {
+  width: 100%;
+  max-width: 20rem;
+  background-color: transparent;
+  color: #f8fafc;
+  padding: 0.85rem 2rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid rgba(148, 163, 184, 0.3);
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-decoration: none;
+  display: inline-block;
+
+  &:hover {
+    background-color: rgba(148, 163, 184, 0.1);
+    border-color: rgba(148, 163, 184, 0.5);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .multiplayer-card {
+    padding: 1.75rem 1.25rem;
+    border-radius: 0.6rem;
+  }
+
+  .multiplayer-title {
+    font-size: 1.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .multiplayer-subtitle {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .multiplayer-create-button,
+  .multiplayer-join-link {
+    font-size: 0.95rem;
+    padding: 0.75rem 1.5rem;
+  }
+
+  .multiplayer-background-image {
+    opacity: 0.3;
+  }
+}
+
+@media (max-width: 480px) {
+  .multiplayer-title {
+    font-size: 1.5rem;
+  }
+
+  .multiplayer-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .multiplayer-card {
+    padding: 1.5rem 1rem;
+  }
+
+  .multiplayer-actions {
+    gap: 1.25rem;
+  }
+}
