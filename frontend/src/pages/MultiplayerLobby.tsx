@@ -26,6 +26,7 @@ function MultiplayerLobby() {
     onMatchStarted: (data) => {
       console.log("MATCH STARTED", data);
       setRoomState(data);
+      setIsStartingGame(false);
     },
     onNewRound: (data) => {
       console.log("NEW ROUND STARTED", data);
@@ -35,6 +36,7 @@ function MultiplayerLobby() {
   const [roomState, setRoomState] = useState<Match | null>(null);
   const [isOwner, setIsOwner] = useState(false);
   const [playerId, setPlayerId] = useState<number | null>(null);
+  const [isStartingGame, setIsStartingGame] = useState(false);
 
   useEffect(() => {
     if (!connected || !numericCode) return;
@@ -140,8 +142,24 @@ function MultiplayerLobby() {
           </div>
 
           {isOwner && (
-            <button className="lobby-start-button" onClick={startMatch}>
-              Start Game
+            <button
+              className="lobby-start-button"
+              onClick={() => {
+                setIsStartingGame(true);
+                startMatch();
+              }}
+              disabled={isStartingGame || (roomState?.matchPlayers?.length || 0) < 2}
+            >
+              {isStartingGame ? (
+                <>
+                  Starting Game
+                  <span className="loading-spinner" />
+                </>
+              ) : (roomState?.matchPlayers?.length || 0) < 2 ? (
+                "Need at least 1 more player"
+              ) : (
+                "Start Game"
+              )}
             </button>
           )}
         </div>
