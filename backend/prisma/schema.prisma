@@ -123,6 +123,8 @@ model Match {
 
   matchPlayers MatchPlayer[]
   matchRounds MatchRound[]
+
+  @@index([code, status])
 }
 
 model MatchPlayer {

@@ -19,25 +19,62 @@ export class MatchesService {
   ) {}
 
   async createMatch(): Promise<MatchWithRelations> {
-    const code = Math.floor(100000 + Math.random() * 900000);
+    let match: MatchWithRelations | null = null;
+    let attempts = 0;
+    const maxAttempts = 10;
 
-    const match = await this.prisma.match.create({
-      data: {
-        code,
-        maxRounds: 5,
-        status: 'waiting',
-      },
-      include: {
-        owner: true,
-        matchPlayers: true,
-      },
-    });
+    while (!match && attempts < maxAttempts) {
+      const code = Math.floor(100000 + Math.random() * 900000);
+
+      // Check if this code is already in use by an active match
+      const existingActiveMatch = await this.prisma.match.findFirst({
+        where: {
+          code,
+          status: { not: 'finished' }, // Only check non-finished matches
+        },
+      });
+
+      if (existingActiveMatch) {
+        attempts++;
+        continue;
+      }
+
+      try {
+        match = await this.prisma.match.create({
+          data: {
+            code,
+            maxRounds: 5,
+            status: 'waiting',
+          },
+          include: {
+            owner: true,
+            matchPlayers: true,
+          },
+        });
+      } catch (error) {
+        // Handle any other database errors
+        attempts++;
+        if (attempts >= maxAttempts) {
+          throw error;
+        }
+      }
+    }
+
+    if (!match) {
+      throw new Error(
+        'Failed to generate unique match code after multiple attempts',
+      );
+    }
+
     return match;
   }
 
   findByCode(code: number): Promise<MatchWithRelations | null> {
     return this.prisma.match.findFirst({
-      where: { code },
+      where: {
+        code,
+        status: { not: 'finished' }, // Only find active matches
+      },
       include: { matchPlayers: true, owner: true },
     });
   }
@@ -75,6 +112,9 @@ export class MatchesService {
     await this.prisma.matchPlayer.delete({
       where: { id: playerId },
     });
+    if (match.ownerId === playerId) {
+      await this.assignOwnerFirstJoined(matchCode);
+    }
     return await this.prisma.match.findUnique({
       where: { id: match.id },
       include: { matchPlayers: true, owner: true },
@@ -90,6 +130,26 @@ export class MatchesService {
       await this.prisma.match.update({
         where: { id: match.id },
         data: { ownerId: playerId },
+      });
+    }
+  }
+
+  async assignOwnerFirstJoined(matchCode: number) {
+    const match = await this.findByCode(matchCode);
+    if (!match) {
+      throw new Error('Match not found');
+    }
+    console.log('Assigning new owner for matchCode', matchCode);
+    if (match.matchPlayers.length > 0) {
+      const firstPlayer = match.matchPlayers[0];
+      await this.prisma.match.update({
+        where: { id: match.id },
+        data: { ownerId: firstPlayer.id },
+      });
+    } else {
+      await this.prisma.match.update({
+        where: { id: match.id },
+        data: { ownerId: null },
       });
     }
   }
