@@ -14,8 +14,11 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
     const totals = new Map<number, number>();
     const isRoundResolved = roomState.matchRounds?.[currentRound]?.isResolved;
 
-    // calculate cumulative scores
-    for (const round of roomState.matchRounds || []) {
+    // calculate cumulative scores from PREVIOUS rounds only (exclude current round)
+    for (let i = 0; i < currentRound; i++) {
+      const round = roomState.matchRounds?.[i];
+      if (!round) continue;
+
       for (const guess of round.guesses || []) {
         if (typeof guess.score === "number") {
           totals.set(
@@ -41,7 +44,22 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           shouldShowScore && typeof curGuess?.score === "number"
             ? curGuess.score
             : 0;
-        const totalScore = shouldShowScore ? (totals.get(p.id) || 0) : 0;
+
+        // Show previous rounds total, or "—" if this is the first round
+        // For current player, always include current round score in total
+        const hasPreviousRounds = currentRound > 0;
+        let totalScore: number | null;
+
+        if (isCurrent && typeof curGuess?.score === "number") {
+          // Current player: show previous rounds + current round score
+          totalScore = (totals.get(p.id) || 0) + curGuess.score;
+        } else if (hasPreviousRounds) {
+          // Other players: show only previous rounds
+          totalScore = totals.get(p.id) || 0;
+        } else {
+          // First round, no previous scores
+          totalScore = null;
+        }
 
         const status = (() => {
           if (roomState.status === "ended") return "Finished";
@@ -59,7 +77,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           shouldShowScore,
         };
       })
-      .sort((a, b) => b.totalScore - a.totalScore);
+      .sort((a, b) => (b.totalScore ?? 0) - (a.totalScore ?? 0));
   }, [roomState, playerId, currentRound]);
 
   return (
@@ -97,7 +115,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
                 {r.shouldShowScore ? r.currentRoundScore : "—"}
               </span>
               <span className="total-score">
-                {r.shouldShowScore ? r.totalScore : "—"}
+                {r.totalScore !== null ? r.totalScore : "—"}
               </span>
               <span className={`status status-${r.status.toLowerCase()}`}>
                 {r.status}
