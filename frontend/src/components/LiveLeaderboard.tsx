@@ -45,7 +45,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
 
         const status = (() => {
           if (roomState.status === "ended") return "Finished";
-          if (curGuess) return curGuess.score == null ? "Ready" : "Scored";
+          if (curGuess) return curGuess.score == null ? "Ready" : "Ready";
           return "Guessing";
         })();
 

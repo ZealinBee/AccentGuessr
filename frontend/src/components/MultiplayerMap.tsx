@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import AudioPlayer from "./AudioPlayer";
-import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
 import {
   point,
@@ -43,6 +42,7 @@ export default function MultiplayerMap({
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [isConfirming, setIsConfirming] = useState(false);
 
   const markerColor = "#007bff"; // unified color for now
   const correctLocation =
@@ -60,7 +60,7 @@ export default function MultiplayerMap({
   const { confirmGuess } = useMatchSocket(roomState.code, {
     onGuessConfirmed,
     onMatchFinished: onGuessConfirmed,
-    onNewRound: (updatedMatch) => {
+    onNewRound: () => {
       console.log("New round started, cleaning up");
 
       // Reset all state
@@ -68,6 +68,7 @@ export default function MultiplayerMap({
       setConfirmedAnswer(null);
       setAnswerDistance(null);
       setScore(null);
+      setIsConfirming(false);
 
       // Remove player's own marker
       if (markerRef.current) {
@@ -180,46 +181,28 @@ export default function MultiplayerMap({
     const round = roomState.matchRounds[roomState.currentRound];
     const guesses = round.guesses || [];
 
-    // Show current player's guess immediately, show all when resolved
-    const shouldShowAll = round.isResolved;
     const currentPlayerGuess = guesses.find((g) => g.playerId === playerId);
 
-    // If not resolved and current player hasn't guessed yet, don't show anything
-    if (!shouldShowAll && !currentPlayerGuess) return;
+    // If player confirmed but hasn't received server update yet, don't draw anything
+    if (isConfirming && !currentPlayerGuess) return;
 
-    // Clear previous player markers and lines
-    playerMarkersRef.current.forEach((m) => m.remove());
-    playerMarkersRef.current.clear();
+    // Once we have the player's guess from server, stop loading and set local state
+    if (isConfirming && currentPlayerGuess) {
+      setIsConfirming(false);
+      setConfirmedAnswer({ lng: currentPlayerGuess.guessLong, lat: currentPlayerGuess.guessLat });
 
-    for (const player of roomState.matchPlayers) {
-      const lineId = `player-guess-line-${player.id}`;
-      if (map.getLayer(lineId)) map.removeLayer(lineId);
-      if (map.getSource(lineId)) map.removeSource(lineId);
-    }
-
-    // Add markers for each guess
-    const guessesToShow = shouldShowAll
-      ? guesses
-      : currentPlayerGuess
-      ? [currentPlayerGuess]
-      : [];
-
-    for (const guess of guessesToShow) {
-      const marker = new mapboxgl.Marker({ color: markerColor })
-        .setLngLat([guess.guessLong, guess.guessLat])
-        .addTo(map);
-      playerMarkersRef.current.set(guess.playerId, marker);
-
+      // Calculate distance and score for this player
+      const regionFeature = accentToFeature(correctLocation);
       const isInside = booleanPointInPolygon(
-        point([guess.guessLong, guess.guessLat]),
-        accentToFeature(correctLocation)
+        point([currentPlayerGuess.guessLong, currentPlayerGuess.guessLat]),
+        regionFeature
       );
 
+      let totalDistance = 0;
       if (!isInside) {
-        const guessPt = point([guess.guessLong, guess.guessLat]);
-        const regionFeature = accentToFeature(correctLocation);
-        let closest = null;
+        const guessPt = point([currentPlayerGuess.guessLong, currentPlayerGuess.guessLat]);
         let minDist = Infinity;
+        let closest: ReturnType<typeof nearestPointOnLine> | null = null;
 
         const checkRings = (rings: number[][][]) => {
           for (const ring of rings) {
@@ -236,40 +219,33 @@ export default function MultiplayerMap({
         if (regionFeature.geometry.type === "Polygon")
           checkRings(regionFeature.geometry.coordinates);
         else if (regionFeature.geometry.type === "MultiPolygon")
-          for (const poly of regionFeature.geometry.coordinates)
-            checkRings(poly);
+          for (const poly of regionFeature.geometry.coordinates) checkRings(poly);
 
         if (closest) {
-          const lineId = `player-guess-line-${guess.playerId}`;
-          map.addSource(lineId, {
-            type: "geojson",
-            data: {
-              type: "Feature",
-              properties: {},
-              geometry: {
-                type: "LineString",
-                coordinates: [
-                  [guess.guessLong, guess.guessLat],
-                  closest.geometry.coordinates,
-                ],
-              },
-            },
-          });
-          map.addLayer({
-            id: lineId,
-            type: "line",
-            source: lineId,
-            paint: {
-              "line-color": markerColor,
-              "line-width": 2,
-              "line-dasharray": [2, 2],
-            },
-          });
+          totalDistance = distance(guessPt, closest, { units: "kilometers" });
         }
       }
+
+      setAnswerDistance(totalDistance);
+      setScore(currentPlayerGuess.score ?? 0);
     }
 
-    // Draw correct region outline
+    // If not resolved and current player hasn't guessed yet, don't show anything
+    const shouldShowAll = round.isResolved;
+    if (!shouldShowAll && !currentPlayerGuess) return;
+
+    // Clear previous player markers
+    playerMarkersRef.current.forEach((m) => m.remove());
+    playerMarkersRef.current.clear();
+
+    // Clear all lines first
+    for (const player of roomState.matchPlayers) {
+      const lineId = `player-guess-line-${player.id}`;
+      if (map.getLayer(lineId)) map.removeLayer(lineId);
+      if (map.getSource(lineId)) map.removeSource(lineId);
+    }
+
+    // Draw correct region first
     const regionSourceId = "correct-region";
     const regionLayerId = "correct-region-layer";
     const borderLayerId = "correct-region-border";
@@ -296,12 +272,89 @@ export default function MultiplayerMap({
       source: regionSourceId,
       paint: { "line-color": "#16a085", "line-width": 2 },
     });
+
+    // Determine which guesses to show
+    const guessesToShow = shouldShowAll
+      ? guesses
+      : currentPlayerGuess
+      ? [currentPlayerGuess]
+      : [];
+
+    // Add markers for each guess
+    for (const guess of guessesToShow) {
+      const marker = new mapboxgl.Marker({ color: markerColor })
+        .setLngLat([guess.guessLong, guess.guessLat])
+        .addTo(map);
+      playerMarkersRef.current.set(guess.playerId, marker);
+    }
+
+    // AFTER adding all markers, now draw all lines at once
+    for (const guess of guessesToShow) {
+      const isInside = booleanPointInPolygon(
+        point([guess.guessLong, guess.guessLat]),
+        regionFeature
+      );
+
+      if (!isInside) {
+        const guessPt = point([guess.guessLong, guess.guessLat]);
+        let closest: ReturnType<typeof nearestPointOnLine> | null = null;
+        let minDist = Infinity;
+
+        const checkRings = (rings: number[][][]) => {
+          for (const ring of rings) {
+            const line = lineString(ring);
+            const snap = nearestPointOnLine(line, guessPt);
+            const distVal = distance(guessPt, snap, { units: "kilometers" });
+            if (distVal < minDist) {
+              minDist = distVal;
+              closest = snap;
+            }
+          }
+        };
+
+        if (regionFeature.geometry.type === "Polygon")
+          checkRings(regionFeature.geometry.coordinates);
+        else if (regionFeature.geometry.type === "MultiPolygon")
+          for (const poly of regionFeature.geometry.coordinates)
+            checkRings(poly);
+
+        if (closest) {
+          const lineId = `player-guess-line-${guess.playerId}`;
+          const closestCoords = (closest as { geometry: { coordinates: number[] } }).geometry.coordinates;
+          map.addSource(lineId, {
+            type: "geojson",
+            data: {
+              type: "Feature",
+              properties: {},
+              geometry: {
+                type: "LineString",
+                coordinates: [
+                  [guess.guessLong, guess.guessLat],
+                  closestCoords,
+                ],
+              },
+            },
+          });
+          map.addLayer({
+            id: lineId,
+            type: "line",
+            source: lineId,
+            paint: {
+              "line-color": markerColor,
+              "line-width": 2,
+              "line-dasharray": [2, 2],
+            },
+          });
+        }
+      }
+    }
   }, [
     roomState.matchRounds,
     roomState.currentRound,
     roomState.matchPlayers,
     correctLocation,
     playerId,
+    isConfirming,
   ]);
 
   useEffect(() => {
@@ -348,121 +401,20 @@ export default function MultiplayerMap({
 
   const handleConfirm = () => {
     if (!markerRef.current || !playerId || !mapRef.current) return;
-    const map = mapRef.current;
     const lngLat = markerRef.current.getLngLat();
     const answered = { lng: lngLat.lng, lat: lngLat.lat };
-    setConfirmedAnswer(answered);
 
     const regionFeature = accentToFeature(correctLocation);
-    const isInside = booleanPointInPolygon(
-      point([answered.lng, answered.lat]),
-      regionFeature
+    const roundScore = scoreCalculate(
+      answered.lat,
+      answered.lng,
+      regionFeature as never
     );
 
-    let totalDistance = 0;
-    let roundScore = 0;
-    let closest: any = null;
+    // Set loading state
+    setIsConfirming(true);
 
-    if (isInside) {
-      roundScore = 5000;
-    } else {
-      const guessPt = point([answered.lng, answered.lat]);
-      let minDist = Infinity;
-
-      const checkRings = (rings: number[][][]) => {
-        for (const ring of rings) {
-          const line = lineString(ring);
-          const snap = nearestPointOnLine(line, guessPt);
-          const distVal = distance(guessPt, snap, { units: "kilometers" });
-          if (distVal < minDist) {
-            minDist = distVal;
-            closest = snap;
-          }
-        }
-      };
-
-      if (regionFeature.geometry.type === "Polygon")
-        checkRings(regionFeature.geometry.coordinates);
-      else if (regionFeature.geometry.type === "MultiPolygon")
-        for (const poly of regionFeature.geometry.coordinates) checkRings(poly);
-
-      if (closest) {
-        totalDistance = haversineKm(
-          answered.lat,
-          answered.lng,
-          closest.geometry.coordinates[1],
-          closest.geometry.coordinates[0]
-        );
-        roundScore = scoreCalculate(
-          answered.lat,
-          answered.lng,
-          regionFeature as never
-        );
-      }
-    }
-
-    setAnswerDistance(totalDistance);
-    setScore(roundScore);
-
-    // *** IMMEDIATELY draw the correct region ***
-    const regionSourceId = "correct-region";
-    const regionLayerId = "correct-region-layer";
-    const borderLayerId = "correct-region-border";
-
-    if (map.getLayer(regionLayerId)) map.removeLayer(regionLayerId);
-    if (map.getLayer(borderLayerId)) map.removeLayer(borderLayerId);
-    if (map.getSource(regionSourceId)) map.removeSource(regionSourceId);
-
-    map.addSource(regionSourceId, { type: "geojson", data: regionFeature });
-    map.addLayer({
-      id: regionLayerId,
-      type: "fill",
-      source: regionSourceId,
-      paint: {
-        "fill-color": "#1abc9c",
-        "fill-opacity": 0.25,
-        "fill-outline-color": "#16a085",
-      },
-    });
-    map.addLayer({
-      id: borderLayerId,
-      type: "line",
-      source: regionSourceId,
-      paint: { "line-color": "#16a085", "line-width": 2 },
-    });
-
-    // *** IMMEDIATELY draw the line if outside the region ***
-    if (!isInside && closest) {
-      const lineId = `player-guess-line-${playerId}`;
-      if (map.getLayer(lineId)) map.removeLayer(lineId);
-      if (map.getSource(lineId)) map.removeSource(lineId);
-
-      map.addSource(lineId, {
-        type: "geojson",
-        data: {
-          type: "Feature",
-          properties: {},
-          geometry: {
-            type: "LineString",
-            coordinates: [
-              [answered.lng, answered.lat],
-              closest.geometry.coordinates,
-            ],
-          },
-        },
-      });
-      map.addLayer({
-        id: lineId,
-        type: "line",
-        source: lineId,
-        paint: {
-          "line-color": markerColor,
-          "line-width": 2,
-          "line-dasharray": [2, 2],
-        },
-      });
-    }
-
+    // Send guess to server
     confirmGuess(answered.lng, answered.lat, roundScore);
   };
 
@@ -492,11 +444,18 @@ export default function MultiplayerMap({
               srcs={roomState.matchRounds[roomState.currentRound].speaker.clips}
             />
             <button
-              className={`confirm-btn ${hasPin ? "active" : "disabled"}`}
+              className={`confirm-btn ${hasPin && !isConfirming ? "active" : "disabled"}`}
               onClick={handleConfirm}
-              disabled={!hasPin}
+              disabled={!hasPin || isConfirming}
             >
-              Confirm Guess
+              {isConfirming ? (
+                <>
+                  Confirming
+                  <span className="loading-spinner" />
+                </>
+              ) : (
+                "Confirm Guess"
+              )}
             </button>
           </div>
         ) : (

@@ -90,6 +90,25 @@
   &:disabled {
     opacity: 0.8;
   }
+
+  .loading-spinner {
+    margin-left: 0.5rem;
+    display: inline-block;
+    width: 0.9rem;
+    height: 0.9rem;
+    border-radius: 50%;
+    background: conic-gradient(
+      #3b82f6 0deg 120deg,
+      #06b6d4 120deg 240deg,
+      #10b981 240deg 360deg
+    );
+    mask: radial-gradient(
+      farthest-side,
+      transparent calc(50% - 2px),
+      white calc(50% - 2px)
+    );
+    animation: spin 1s linear infinite;
+  }
 }
 
 @media (max-width: 600px) {
@@ -142,5 +161,11 @@
   }
   50% {
     opacity: 0.7;
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
