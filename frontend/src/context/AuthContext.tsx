@@ -3,7 +3,7 @@ import React, { createContext, useEffect, useState } from "react";
 type AuthContextType = {
   token: string | null;
   isLoggedIn: boolean;
-  login: (token: string, username?: string, userPictureURL?: string) => void;
+  login: (token: string, username?: string, userPictureURL?: string, userId?: string) => void;
   logout: () => void;
   username: string | null;
   userPictureURL: string | null;

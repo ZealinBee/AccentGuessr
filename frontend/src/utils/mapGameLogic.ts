@@ -1,11 +1,14 @@
 import { point, booleanPointInPolygon, lineString, nearestPointOnLine, distance } from "@turf/turf";
 
 export function checkIfInsideRegion(guess: { lng: number; lat: number }, regionFeature: GeoJSON.Feature) {
-  return booleanPointInPolygon(point([guess.lng, guess.lat]), regionFeature);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return booleanPointInPolygon(point([guess.lng, guess.lat]), regionFeature as any);
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function getClosestBorderPoint(guess: { lng: number; lat: number }, regionFeature: any) {
   const guessPt = point([guess.lng, guess.lat]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let closest: any = null;
   let minDist = Infinity;
 
