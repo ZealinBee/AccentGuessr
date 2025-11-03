@@ -189,7 +189,10 @@ export default function MultiplayerMap({
     // Once we have the player's guess from server, stop loading and set local state
     if (isConfirming && currentPlayerGuess) {
       setIsConfirming(false);
-      setConfirmedAnswer({ lng: currentPlayerGuess.guessLong, lat: currentPlayerGuess.guessLat });
+      setConfirmedAnswer({
+        lng: currentPlayerGuess.guessLong,
+        lat: currentPlayerGuess.guessLat,
+      });
 
       // Calculate distance and score for this player
       const regionFeature = accentToFeature(correctLocation);
@@ -200,7 +203,10 @@ export default function MultiplayerMap({
 
       let totalDistance = 0;
       if (!isInside) {
-        const guessPt = point([currentPlayerGuess.guessLong, currentPlayerGuess.guessLat]);
+        const guessPt = point([
+          currentPlayerGuess.guessLong,
+          currentPlayerGuess.guessLat,
+        ]);
         let minDist = Infinity;
         let closest: ReturnType<typeof nearestPointOnLine> | null = null;
 
@@ -219,7 +225,8 @@ export default function MultiplayerMap({
         if (regionFeature.geometry.type === "Polygon")
           checkRings(regionFeature.geometry.coordinates);
         else if (regionFeature.geometry.type === "MultiPolygon")
-          for (const poly of regionFeature.geometry.coordinates) checkRings(poly);
+          for (const poly of regionFeature.geometry.coordinates)
+            checkRings(poly);
 
         if (closest) {
           totalDistance = distance(guessPt, closest, { units: "kilometers" });
@@ -320,7 +327,9 @@ export default function MultiplayerMap({
 
         if (closest) {
           const lineId = `player-guess-line-${guess.playerId}`;
-          const closestCoords = (closest as { geometry: { coordinates: number[] } }).geometry.coordinates;
+          const closestCoords = (
+            closest as { geometry: { coordinates: number[] } }
+          ).geometry.coordinates;
           map.addSource(lineId, {
             type: "geojson",
             data: {
@@ -328,10 +337,7 @@ export default function MultiplayerMap({
               properties: {},
               geometry: {
                 type: "LineString",
-                coordinates: [
-                  [guess.guessLong, guess.guessLat],
-                  closestCoords,
-                ],
+                coordinates: [[guess.guessLong, guess.guessLat], closestCoords],
               },
             },
           });
@@ -444,7 +450,9 @@ export default function MultiplayerMap({
               srcs={roomState.matchRounds[roomState.currentRound].speaker.clips}
             />
             <button
-              className={`confirm-btn ${hasPin && !isConfirming ? "active" : "disabled"}`}
+              className={`confirm-btn ${
+                hasPin && !isConfirming ? "active" : "disabled"
+              }`}
               onClick={handleConfirm}
               disabled={!hasPin || isConfirming}
             >

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import type { Match } from "../types/Match";
 import "../scss/MultiplayerLobby.scss";
 import MultiplayerMap from "../components/MultiplayerMap";
+import MultiplayerEndGameLeaderboard from "../components/MultiplayerEndGameLeaderboard";
 
 function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
@@ -80,6 +81,19 @@ function MultiplayerLobby() {
     );
   }
 
+  if (roomState.status === "finished") {
+    return (
+      <MultiplayerEndGameLeaderboard
+        roomState={roomState}
+        playerId={playerId}
+        onReturnToLobby={() => {
+          // You can navigate to home or refresh the lobby
+          window.location.href = "/";
+        }}
+      />
+    );
+  }
+
   return (
     <div className="lobby-container">
       <div className="lobby-background-image" />
@@ -120,7 +134,7 @@ function MultiplayerLobby() {
 
             {roomState?.matchPlayers && roomState.matchPlayers.length > 0 ? (
               <ul className="lobby-players-list">
-                {roomState.matchPlayers.map((player: any) => (
+                {roomState.matchPlayers.map((player) => (
                   <li
                     key={player.id}
                     className={`lobby-player-item ${
