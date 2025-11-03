@@ -2,7 +2,7 @@
   position: absolute;
   top: 1.5rem;
   right: 1.5rem;
-  width: 420px;
+  width: 520px;
   background-color: rgba(30, 41, 59, 0.85);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(148, 163, 184, 0.15);
@@ -46,16 +46,17 @@
 .columns-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
 .col-label {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.03em;
+  white-space: nowrap;
 
   &:nth-child(1) {
-    width: 48px;
+    width: 80px;
     text-align: right;
   }
 
@@ -156,7 +157,7 @@
 .player-right {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
   flex-shrink: 0;
 }
 
@@ -168,6 +169,10 @@
   min-width: 48px;
   text-align: right;
   font-variant-numeric: tabular-nums;
+}
+
+.round-score {
+  min-width: 80px;
 }
 
 .total-score {

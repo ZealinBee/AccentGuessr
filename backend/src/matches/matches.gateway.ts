@@ -45,6 +45,11 @@ export class MatchesGateway
       );
       if (match) {
         this.server.to(`match_${matchCode}`).emit('player_left', match);
+      } else {
+        // Match was closed because everyone left
+        this.server.to(`match_${matchCode}`).emit('match_closed', {
+          message: 'All players have left the match',
+        });
       }
       this.playerConnections.delete(socket.id);
     }

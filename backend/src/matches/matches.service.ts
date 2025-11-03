@@ -115,10 +115,18 @@ export class MatchesService {
     if (match.ownerId === playerId) {
       await this.assignOwnerFirstJoined(matchCode);
     }
-    return await this.prisma.match.findUnique({
+    const updatedMatch = await this.prisma.match.findUnique({
       where: { id: match.id },
       include: { matchPlayers: true, owner: true },
     });
+
+    // If no players left, close the room
+    if (updatedMatch && updatedMatch.matchPlayers.length === 0) {
+      await this.closeMatch(match.id);
+      return null; // Return null to indicate the match was closed
+    }
+
+    return updatedMatch;
   }
 
   async assignOwnerIfNone(matchCode: number, playerId: number) {
@@ -152,6 +160,27 @@ export class MatchesService {
         data: { ownerId: null },
       });
     }
+  }
+
+  async closeMatch(matchId: number) {
+    // Clear any existing timers for this match
+    const existingTimer = this.phaseTimers.get(matchId);
+    if (existingTimer) {
+      clearTimeout(existingTimer);
+      this.phaseTimers.delete(matchId);
+    }
+
+    // Mark the match as finished
+    await this.prisma.match.update({
+      where: { id: matchId },
+      data: {
+        status: 'finished',
+        phase: 'finished',
+        endedAt: new Date(),
+        phaseEndsAt: null,
+      },
+    });
+    console.log(`🚪 Match ${matchId} closed - all players left.`);
   }
 
   async startMatch(matchCode: number) {

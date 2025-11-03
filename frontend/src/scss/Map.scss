@@ -152,6 +152,15 @@
     background: rgba(231, 76, 60, 0.9);
     animation: pulse 1s infinite;
   }
+
+  @media (max-width: 600px) {
+    top: 18px;
+    left: 8px;
+    transform: none;
+    padding: 6px 10px;
+    font-size: 12px;
+    font-weight: 700;
+  }
 }
 
 @keyframes pulse {
