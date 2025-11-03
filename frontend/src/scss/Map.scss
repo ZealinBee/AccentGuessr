@@ -115,3 +115,32 @@
     bottom: max(12px, env(safe-area-inset-bottom));
   }
 }
+
+.timer-display {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 1000;
+
+  &.warning {
+    background: rgba(231, 76, 60, 0.9);
+    animation: pulse 1s infinite;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

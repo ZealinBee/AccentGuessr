@@ -7,6 +7,8 @@ type Events = {
   onPlayerLeft?: (data: any) => void;
   onMatchStarted?: (data: any) => void;
   onGuessConfirmed?: (data: any) => void;
+  onNewRound?: (data: any) => void;
+  onMatchFinished?: (data: any) => void;
 };
 
 export function useMatchSocket(matchCode: number, opts: Events = {}) {
@@ -26,6 +28,8 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
       player_left: opts.onPlayerLeft,
       match_started: opts.onMatchStarted,
       guess_confirmed: opts.onGuessConfirmed,
+      match_finished: opts.onMatchFinished,
+      new_round: opts.onNewRound,
     };
 
     for (const [event, handler] of Object.entries(eventHandlers)) {
@@ -39,7 +43,15 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
         else socket.off(event);
       }
     };
-  }, [opts.onMatchJoined, opts.onPlayerJoined, opts.onPlayerLeft, opts.onMatchStarted, opts.onGuessConfirmed]);
+  }, [
+    opts.onMatchJoined,
+    opts.onPlayerJoined,
+    opts.onPlayerLeft,
+    opts.onMatchStarted,
+    opts.onGuessConfirmed,
+    opts.onMatchFinished,
+    opts.onNewRound,
+  ]);
 
   const joinMatch = (playerName: string, isGuest: boolean) => {
     const socket = getSocket();
@@ -51,13 +63,23 @@ export function useMatchSocket(matchCode: number, opts: Events = {}) {
     const socket = getSocket();
     console.log("Emitting start_match", { matchCode });
     socket.emit("start_match", { matchCode });
-  }
+  };
 
   const confirmGuess = (lng: number, lat: number, score: number) => {
     const socket = getSocket();
-    console.log("Emitting confirm_guess", { matchCode, guessLong: lng, guessLat: lat, score });
-    socket.emit("confirm_guess", { matchCode, guessLong: lng, guessLat: lat, score });
-  }
+    console.log("Emitting confirm_guess", {
+      matchCode,
+      guessLong: lng,
+      guessLat: lat,
+      score,
+    });
+    socket.emit("confirm_guess", {
+      matchCode,
+      guessLong: lng,
+      guessLat: lat,
+      score,
+    });
+  };
 
   return { connected, joinMatch, startMatch, confirmGuess };
 }

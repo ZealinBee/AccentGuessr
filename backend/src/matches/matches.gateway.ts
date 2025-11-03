@@ -9,6 +9,7 @@ import {
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 import { MatchesService } from './matches.service';
+import { forwardRef, Inject } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
@@ -20,7 +21,10 @@ export class MatchesGateway
 {
   @WebSocketServer() server: Server;
 
-  constructor(private readonly matchesService: MatchesService) {}
+  constructor(
+    @Inject(forwardRef(() => MatchesService))
+    private readonly matchesService: MatchesService,
+  ) {}
   private playerConnections = new Map<
     string,
     { matchCode: number; playerId: number }

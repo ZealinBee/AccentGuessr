@@ -27,6 +27,10 @@ function MultiplayerLobby() {
       console.log("MATCH STARTED", data);
       setRoomState(data);
     },
+    onNewRound: (data) => {
+      console.log("NEW ROUND STARTED", data);
+      setRoomState(data);
+    }
   });
   const [roomState, setRoomState] = useState<Match | null>(null);
   const [isOwner, setIsOwner] = useState(false);
@@ -69,6 +73,7 @@ function MultiplayerLobby() {
           setRoomState(data);
           console.log("GUESS CONFIRMED", data);
         }}
+
       />
     );
   }

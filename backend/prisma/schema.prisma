@@ -113,7 +113,8 @@ model Match {
   createdAt    DateTime     @default(now())
   startedAt    DateTime?
   endedAt      DateTime?
-
+  phase        MatchPhase   @default(guessing)
+  phaseEndsAt  DateTime?
   ownerId Int? @unique
   owner MatchPlayer?   @relation("OwnerMatch", fields: [ownerId], references: [id])
 
@@ -128,7 +129,7 @@ model MatchPlayer {
   id          Int       @id @default(autoincrement())
 
   matchId      Int
-  match        Match     @relation(fields: [matchId], references: [id])
+  match        Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   userId       String?   // nullable → guest possible
   user         User?     @relation(fields: [userId], references: [id])
@@ -151,7 +152,7 @@ model MatchPlayer {
 model MatchRound {
   id           Int       @id @default(autoincrement())
   matchId      Int
-  match        Match     @relation(fields: [matchId], references: [id])
+  match        Match     @relation(fields: [matchId], references: [id], onDelete: Cascade)
 
   roundIndex   Int
   speakerId    Int
@@ -167,9 +168,9 @@ model MatchRound {
 model PlayerGuess {
   id           Int       @id @default(autoincrement())
   roundId      Int
-  round        MatchRound @relation(fields: [roundId], references: [id])
+  round        MatchRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
   playerId     Int
-  player       MatchPlayer @relation(fields: [playerId], references: [id])
+  player       MatchPlayer @relation(fields: [playerId], references: [id], onDelete: Cascade)
 
   guessLat     Float
   guessLong    Float
@@ -180,5 +181,11 @@ model PlayerGuess {
 enum MatchStatus {
   waiting
   in_progress
+  finished
+}
+
+enum MatchPhase {
+  guessing
+  post_results
   finished
 }

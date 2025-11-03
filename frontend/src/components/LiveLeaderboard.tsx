@@ -73,7 +73,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           <span className="col-label">Player</span>
         </div>
         <div className="columns-right">
-          <span className="col-label">Round</span>
+          <span className="col-label">Round Score</span>
           <span className="col-label">Total</span>
           <span className="col-label">Status</span>
         </div>

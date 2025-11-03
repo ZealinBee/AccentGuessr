@@ -1,7 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import AudioPlayer from "./AudioPlayer";
-import ResultCard from "./ResultCard";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
 import {
@@ -17,11 +16,13 @@ import { accentToFeature } from "../utils/accentToFeature";
 import type { Match } from "../types/Match";
 import LiveLeaderboard from "./LiveLeaderboard";
 import { useMatchSocket } from "../hooks/useMatchWebSocket";
+import MultiplayerResultCard from "./MultiplayerResultCard";
 
 interface MultiplayerMapProps {
   roomState: Match;
-  onGuessConfirmed?: (data: any) => void;
+  onGuessConfirmed?: (data: Match) => void;
   playerId: number | null;
+  onRoundStarted?: (data: Match) => void;
 }
 
 export default function MultiplayerMap({
@@ -47,11 +48,130 @@ export default function MultiplayerMap({
   const correctLocation =
     roomState.matchRounds[roomState.currentRound].speaker.accent;
 
-  const { confirmGuess } = useMatchSocket(roomState.code, { onGuessConfirmed });
+  const [timeRemaining, setTimeRemaining] = useState<number>(0);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     confirmedAnswerRef.current = confirmedAnswer;
   }, [confirmedAnswer]);
+
+  // Timer based on phaseEndsAt from backend
+
+  const { confirmGuess } = useMatchSocket(roomState.code, {
+    onGuessConfirmed,
+    onMatchFinished: onGuessConfirmed,
+    onNewRound: (updatedMatch) => {
+      console.log("New round started, cleaning up");
+
+      // Reset all state
+      setHasPin(false);
+      setConfirmedAnswer(null);
+      setAnswerDistance(null);
+      setScore(null);
+
+      // Remove player's own marker
+      if (markerRef.current) {
+        markerRef.current.remove();
+        markerRef.current = null;
+      }
+
+      // Clear all player markers
+      playerMarkersRef.current.forEach((marker) => marker.remove());
+      playerMarkersRef.current.clear();
+
+      // Clear map layers and sources
+      if (mapRef.current) {
+        const map = mapRef.current;
+
+        // Remove guess lines for all players
+        for (const player of roomState.matchPlayers) {
+          const lineId = `player-guess-line-${player.id}`;
+          if (map.getLayer(lineId)) map.removeLayer(lineId);
+          if (map.getSource(lineId)) map.removeSource(lineId);
+        }
+
+        // Remove region layers
+        const regionSourceId = "correct-region";
+        const regionLayerId = "correct-region-layer";
+        const borderLayerId = "correct-region-border";
+
+        if (map.getLayer(regionLayerId)) map.removeLayer(regionLayerId);
+        if (map.getLayer(borderLayerId)) map.removeLayer(borderLayerId);
+        if (map.getSource(regionSourceId)) map.removeSource(regionSourceId);
+      }
+    },
+  });
+
+  useEffect(() => {
+    // Clear existing timer
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+
+    // Only run timer during guessing phase
+    if (roomState.phase !== "guessing" || !roomState.phaseEndsAt) {
+      setTimeRemaining(0);
+      return;
+    }
+
+    const calculateTimeRemaining = () => {
+      const now = Date.now();
+      const endsAt = new Date(roomState.phaseEndsAt!).getTime();
+      const remaining = Math.max(0, Math.ceil((endsAt - now) / 1000));
+      return remaining;
+    };
+
+    // Set initial time
+    setTimeRemaining(calculateTimeRemaining());
+
+    // Update every second
+    timerRef.current = setInterval(() => {
+      const remaining = calculateTimeRemaining();
+      setTimeRemaining(remaining);
+
+      // Auto-submit when time runs out
+      if (remaining <= 0) {
+        if (timerRef.current) {
+          clearInterval(timerRef.current);
+          timerRef.current = null;
+        }
+
+        // Auto-submit if player hasn't confirmed yet
+        if (!confirmedAnswerRef.current && playerId) {
+          const accent =
+            roomState.matchRounds[roomState.currentRound].speaker.accent;
+
+          if (markerRef.current) {
+            const lngLat = markerRef.current.getLngLat();
+            const regionFeature = accentToFeature(accent);
+            const roundScore = scoreCalculate(
+              lngLat.lat,
+              lngLat.lng,
+              regionFeature as never
+            );
+            confirmGuess(lngLat.lng, lngLat.lat, roundScore);
+          } else {
+            confirmGuess(0, 0, 0);
+          }
+        }
+      }
+    }, 1000);
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [
+    roomState.phase,
+    roomState.phaseEndsAt,
+    roomState.currentRound,
+    roomState.matchRounds,
+    playerId,
+    confirmGuess,
+  ]);
 
   useEffect(() => {
     if (!mapRef.current || !roomState.matchRounds[roomState.currentRound])
@@ -78,7 +198,11 @@ export default function MultiplayerMap({
     }
 
     // Add markers for each guess
-    const guessesToShow = shouldShowAll ? guesses : currentPlayerGuess ? [currentPlayerGuess] : [];
+    const guessesToShow = shouldShowAll
+      ? guesses
+      : currentPlayerGuess
+      ? [currentPlayerGuess]
+      : [];
 
     for (const guess of guessesToShow) {
       const marker = new mapboxgl.Marker({ color: markerColor })
@@ -180,9 +304,6 @@ export default function MultiplayerMap({
     playerId,
   ]);
 
-  /** ─────────────────────────────
-   * Map initialization + click handler
-   * ─────────────────────────────*/
   useEffect(() => {
     const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as
       | string
@@ -201,7 +322,9 @@ export default function MultiplayerMap({
 
     try {
       map.getCanvas().style.cursor = 'url("/cursor.png") 16 16, crosshair';
-    } catch {}
+    } catch {
+      // Ignore cursor errors
+    }
 
     const handleClick = (e: mapboxgl.MapMouseEvent) => {
       if (confirmedAnswerRef.current) return;
@@ -223,9 +346,6 @@ export default function MultiplayerMap({
     };
   }, []);
 
-  /** ─────────────────────────────
-   * Confirm guess
-   * ─────────────────────────────*/
   const handleConfirm = () => {
     if (!markerRef.current || !playerId || !mapRef.current) return;
     const map = mapRef.current;
@@ -241,7 +361,7 @@ export default function MultiplayerMap({
 
     let totalDistance = 0;
     let roundScore = 0;
-    let closest = null;
+    let closest: any = null;
 
     if (isInside) {
       roundScore = 5000;
@@ -273,7 +393,11 @@ export default function MultiplayerMap({
           closest.geometry.coordinates[1],
           closest.geometry.coordinates[0]
         );
-        roundScore = scoreCalculate(answered.lat, answered.lng, regionFeature);
+        roundScore = scoreCalculate(
+          answered.lat,
+          answered.lng,
+          regionFeature as never
+        );
       }
     }
 
@@ -339,41 +463,7 @@ export default function MultiplayerMap({
       });
     }
 
-    confirmGuess(answered.lng, answered.lat, roundScore, playerId);
-  };
-
-  const handleNext = () => {
-    if (markerRef.current) markerRef.current.remove();
-    playerMarkersRef.current.forEach((m) => m.remove());
-    playerMarkersRef.current.clear();
-
-    const map = mapRef.current;
-    if (map) {
-      // Clean up correct region layers
-      ["correct-region-layer", "correct-region-border"].forEach((id) => {
-        if (map.getLayer(id)) map.removeLayer(id);
-      });
-      if (map.getSource("correct-region")) map.removeSource("correct-region");
-
-      // Clean up current player's line if it exists
-      if (playerId) {
-        const lineId = `player-guess-line-${playerId}`;
-        if (map.getLayer(lineId)) map.removeLayer(lineId);
-        if (map.getSource(lineId)) map.removeSource(lineId);
-      }
-
-      // Clean up all other player lines
-      for (const player of roomState.matchPlayers) {
-        const lineId = `player-guess-line-${player.id}`;
-        if (map.getLayer(lineId)) map.removeLayer(lineId);
-        if (map.getSource(lineId)) map.removeSource(lineId);
-      }
-    }
-
-    setHasPin(false);
-    setConfirmedAnswer(null);
-    setAnswerDistance(null);
-    setScore(null);
+    confirmGuess(answered.lng, answered.lat, roundScore);
   };
 
   return (
@@ -381,6 +471,15 @@ export default function MultiplayerMap({
       <div id="map-container" ref={mapContainerRef} />
 
       <LiveLeaderboard roomState={roomState} playerId={playerId} />
+
+      {!roomState.matchRounds[roomState.currentRound]?.isResolved && (
+        <div
+          className={`timer-display ${timeRemaining <= 10 ? "warning" : ""}`}
+        >
+          {Math.floor(timeRemaining / 60)}:
+          {(timeRemaining % 60).toString().padStart(2, "0")}
+        </div>
+      )}
 
       <div className="round-indicator">
         Round {roomState.currentRound + 1}/5
@@ -403,26 +502,26 @@ export default function MultiplayerMap({
         ) : (
           <>
             {/* Show result immediately after confirming */}
-            <ResultCard
+            <MultiplayerResultCard
               answerDistance={answerDistance ?? 0}
               score={score ?? 0}
-              gameRound={roomState.currentRound}
-              handleNext={handleNext}
               accentName={
                 roomState.matchRounds[roomState.currentRound].speaker.accent
                   .name
               }
-              accentDescription={
-                roomState.matchRounds[roomState.currentRound].speaker.accent
-                  .description
+              isResolved={
+                roomState.matchRounds[roomState.currentRound].isResolved
               }
+              phase={roomState.phase}
+              phaseEndsAt={roomState.phaseEndsAt}
             />
-            {/* Show waiting message if round not resolved yet */}
-            {!roomState.matchRounds[roomState.currentRound].isResolved && (
-              <div className="waiting-section">
-                <p>Waiting for other players to finish...</p>
-              </div>
-            )}
+            {/* Show waiting message only if round not resolved yet amd is still guessing */}
+            {!roomState.matchRounds[roomState.currentRound].isResolved &&
+              roomState.phase === "guessing" && (
+                <div className="waiting-section">
+                  <p>Waiting for other players to finish...</p>
+                </div>
+              )}
           </>
         )}
       </div>

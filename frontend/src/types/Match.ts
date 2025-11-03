@@ -13,7 +13,9 @@ export interface MatchPlayer {
 export interface Match {
   id: number;
   code: number;
-  status: "waiting" | "in_progress" | "ended";
+  status: "waiting" | "in_progress" | "ended" | "finished";
+  phase: "guessing" | "post_results" | "finished";
+  phaseEndsAt: string | null;
   createdAt: string;
   startedAt: string | null;
   endedAt: string | null;
