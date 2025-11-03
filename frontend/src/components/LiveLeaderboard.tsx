@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import type { Match } from "../types/Match";
+import { getPlayerColor } from "../utils/playerColors";
 import "../scss/LiveLeaderboard.scss";
 
 interface LiveLeaderboardProps {
@@ -75,6 +76,7 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           status,
           isCurrent,
           shouldShowScore,
+          color: getPlayerColor(p.id, playerId),
         };
       })
       .sort((a, b) => (b.totalScore ?? 0) - (a.totalScore ?? 0));
@@ -105,6 +107,10 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
           >
             <div className="player-left">
               <span className="player-rank">#{index + 1}</span>
+              <span
+                className="player-color"
+                style={{ backgroundColor: r.color }}
+              />
               <span className="player-name">
                 {r.name}
                 {r.isCurrent && <span className="you-tag"> (You)</span>}

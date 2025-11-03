@@ -16,6 +16,7 @@ import type { Match } from "../types/Match";
 import LiveLeaderboard from "./LiveLeaderboard";
 import { useMatchSocket } from "../hooks/useMatchWebSocket";
 import MultiplayerResultCard from "./MultiplayerResultCard";
+import { getPlayerColor } from "../utils/playerColors";
 
 interface MultiplayerMapProps {
   roomState: Match;
@@ -33,6 +34,7 @@ export default function MultiplayerMap({
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<mapboxgl.Marker | null>(null);
   const playerMarkersRef = useRef<Map<number, mapboxgl.Marker>>(new Map());
+  const playerIdRef = useRef<number | null>(playerId);
 
   const [hasPin, setHasPin] = useState(false);
   const [confirmedAnswer, setConfirmedAnswer] = useState<{
@@ -44,7 +46,6 @@ export default function MultiplayerMap({
   const [score, setScore] = useState<number | null>(null);
   const [isConfirming, setIsConfirming] = useState(false);
 
-  const markerColor = "#007bff"; // unified color for now
   const correctLocation =
     roomState.matchRounds[roomState.currentRound].speaker.accent;
 
@@ -54,6 +55,10 @@ export default function MultiplayerMap({
   useEffect(() => {
     confirmedAnswerRef.current = confirmedAnswer;
   }, [confirmedAnswer]);
+
+  useEffect(() => {
+    playerIdRef.current = playerId;
+  }, [playerId]);
 
   // Timer based on phaseEndsAt from backend
 
@@ -289,7 +294,8 @@ export default function MultiplayerMap({
 
     // Add markers for each guess
     for (const guess of guessesToShow) {
-      const marker = new mapboxgl.Marker({ color: markerColor })
+      const playerColor = getPlayerColor(guess.playerId, playerId);
+      const marker = new mapboxgl.Marker({ color: playerColor })
         .setLngLat([guess.guessLong, guess.guessLat])
         .addTo(map);
       playerMarkersRef.current.set(guess.playerId, marker);
@@ -297,6 +303,7 @@ export default function MultiplayerMap({
 
     // AFTER adding all markers, now draw all lines at once
     for (const guess of guessesToShow) {
+      const playerColor = getPlayerColor(guess.playerId, playerId);
       const isInside = booleanPointInPolygon(
         point([guess.guessLong, guess.guessLat]),
         regionFeature
@@ -346,7 +353,7 @@ export default function MultiplayerMap({
             type: "line",
             source: lineId,
             paint: {
-              "line-color": markerColor,
+              "line-color": playerColor,
               "line-width": 2,
               "line-dasharray": [2, 2],
             },
@@ -390,7 +397,8 @@ export default function MultiplayerMap({
       const { lng, lat } = e.lngLat;
       if (markerRef.current) markerRef.current.remove();
 
-      const marker = new mapboxgl.Marker({ color: markerColor })
+      const currentPlayerColor = playerIdRef.current ? getPlayerColor(playerIdRef.current, playerIdRef.current) : "#e74c3c";
+      const marker = new mapboxgl.Marker({ color: currentPlayerColor })
         .setLngLat([lng, lat])
         .addTo(map);
       markerRef.current = marker;
