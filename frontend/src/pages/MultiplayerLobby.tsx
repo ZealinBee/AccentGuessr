@@ -6,6 +6,7 @@ import type { Match } from "../types/Match";
 import "../scss/MultiplayerLobby.scss";
 import MultiplayerMap from "../components/MultiplayerMap";
 import MultiplayerEndGameLeaderboard from "../components/MultiplayerEndGameLeaderboard";
+import { Copy, Share2 } from "lucide-react";
 
 function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
@@ -38,6 +39,41 @@ function MultiplayerLobby() {
   const [isOwner, setIsOwner] = useState(false);
   const [playerId, setPlayerId] = useState<number | null>(null);
   const [isStartingGame, setIsStartingGame] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
+
+  const handleCopyCode = async () => {
+    try {
+      await navigator.clipboard.writeText(String(roomState?.code || matchCode));
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy:', err);
+    }
+  };
+
+  const handleShare = async () => {
+    const inviteLink = `${window.location.origin}/lobby/${roomState?.code || matchCode}`;
+    const shareText = `Can you beat me in guessing where this accent is from? ${inviteLink}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'AccentGuessr Challenge',
+          text: shareText,
+        });
+      } catch (err) {
+        console.error('Failed to share:', err);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareText);
+        alert('Share link copied to clipboard!');
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
+  };
 
   useEffect(() => {
     if (!connected || !numericCode) return;
@@ -106,9 +142,26 @@ function MultiplayerLobby() {
           <div className="lobby-info">
             <div className="lobby-info-item">
               <span className="lobby-info-label">Match Code</span>
-              <span className="lobby-info-value">
-                {roomState?.code || matchCode}
-              </span>
+              <div className="lobby-code-container">
+                <span className="lobby-info-value">
+                  {roomState?.code || matchCode}
+                </span>
+                <button
+                  className="lobby-icon-button"
+                  onClick={handleCopyCode}
+                  title="Copy match code"
+                >
+                  <Copy size={18} />
+                  {copySuccess && <span className="lobby-copy-tooltip">Copied!</span>}
+                </button>
+                <button
+                  className="lobby-icon-button"
+                  onClick={handleShare}
+                  title="Share match"
+                >
+                  <Share2 size={18} />
+                </button>
+              </div>
             </div>
 
             <div className="lobby-info-item">

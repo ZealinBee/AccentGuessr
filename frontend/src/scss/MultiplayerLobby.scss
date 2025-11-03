@@ -86,6 +86,70 @@
   color: #f8fafc;
 }
 
+.lobby-code-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.lobby-icon-button {
+  background-color: rgba(59, 130, 246, 0.15);
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 0.375rem;
+  padding: 0.4rem;
+  color: #60a5fa;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &:hover {
+    background-color: rgba(59, 130, 246, 0.25);
+    border-color: rgba(59, 130, 246, 0.5);
+    color: #93c5fd;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+.lobby-copy-tooltip {
+  position: absolute;
+  top: -2rem;
+  right: 0;
+  background-color: #10b981;
+  color: white;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translateY(0.25rem);
+  }
+  10% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  90% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-0.25rem);
+  }
+}
+
 .lobby-status-waiting {
   color: #fbbf24;
 }
@@ -277,6 +341,11 @@
     flex-direction: column;
     align-items: flex-start;
     gap: 0.25rem;
+  }
+
+  .lobby-code-container {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .lobby-players-heading {

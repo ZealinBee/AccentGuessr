@@ -6,12 +6,9 @@
 
 const PLAYER_COLORS = [
   "#3498db", // Blue
-  "#9b59b6", // Purple
-  "#f39c12", // Orange
-  "#1abc9c", // Teal
   "#e67e22", // Dark Orange
   "#8e44ad", // Dark Purple
-  "#2ecc71", // Green
+  "#d35400", // Pumpkin
 ];
 
 const CURRENT_PLAYER_COLOR = "#16a085";
