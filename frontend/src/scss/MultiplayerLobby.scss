@@ -227,10 +227,62 @@
   border-color: rgba(59, 130, 246, 0.3);
 }
 
+.lobby-player-current-user {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.2),
+    rgba(5, 150, 105, 0.15)
+  );
+  border: 2px solid rgba(16, 185, 129, 0.5);
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 4px;
+    background: linear-gradient(
+      to bottom,
+      #10b981,
+      #059669
+    );
+    border-radius: 0.5rem 0 0 0.5rem;
+  }
+}
+
+// When a player is both owner and current user
+.lobby-player-current-user.lobby-player-owner {
+  background: linear-gradient(
+    135deg,
+    rgba(16, 185, 129, 0.25),
+    rgba(59, 130, 246, 0.15)
+  );
+  border: 2px solid rgba(16, 185, 129, 0.6);
+
+  &::before {
+    background: linear-gradient(
+      to bottom,
+      #10b981,
+      #3b82f6
+    );
+  }
+}
+
 .lobby-player-name {
   font-size: 1rem;
   font-weight: 500;
   color: #e2e8f0;
+}
+
+.lobby-player-you-badge {
+  margin-left: 0.5rem;
+  font-size: 0.85rem;
+  color: #10b981;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
 }
 
 .lobby-player-badge {

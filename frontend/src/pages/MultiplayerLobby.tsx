@@ -209,9 +209,18 @@ function MultiplayerLobby() {
                       player.id === roomState.ownerId
                         ? "lobby-player-owner"
                         : ""
+                    } ${
+                      player.id === playerId
+                        ? "lobby-player-current-user"
+                        : ""
                     }`}
                   >
-                    <span className="lobby-player-name">{player.name}</span>
+                    <span className="lobby-player-name">
+                      {player.name}
+                      {player.id === playerId && (
+                        <span className="lobby-player-you-badge"> (You)</span>
+                      )}
+                    </span>
                     {player.id === roomState.ownerId && (
                       <span className="lobby-player-badge">(Host)</span>
                     )}
