@@ -8,7 +8,6 @@ interface ResultCardProps {
   isResolved: boolean;
   phase: string;
   phaseEndsAt: string | null;
-  currentRound: number;
 }
 
 function MultiplayerResultCard({
@@ -18,7 +17,6 @@ function MultiplayerResultCard({
   isResolved,
   phase,
   phaseEndsAt,
-  currentRound,
 }: ResultCardProps) {
   const maxScore = 5000;
   const safeScore = typeof score === "number" ? score : 0;

@@ -508,7 +508,6 @@ export default function MultiplayerMap({
               }
               phase={roomState.phase}
               phaseEndsAt={roomState.phaseEndsAt}
-              currentRound={roomState.currentRound}
             />
             {/* Show waiting message only if round not resolved yet and player confirmed */}
             {!roomState.matchRounds[roomState.currentRound].isResolved &&
