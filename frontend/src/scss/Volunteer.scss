@@ -25,6 +25,32 @@
   padding: 2rem 1rem;
   font-family: "Inter", system-ui, sans-serif;
 
+  .volunteer-back-home-button {
+    background: transparent;
+    color: #94a3b8;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: "Inter", system-ui, sans-serif;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    margin: 0 auto 1.5rem;
+    display: block;
+    max-width: 800px;
+
+    &:hover {
+      background-color: rgba(148, 163, 184, 0.1);
+      color: #cbd5e1;
+      border-color: rgba(148, 163, 184, 0.5);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
   .instructions {
     max-width: 800px;
     margin: 0 auto 2rem;

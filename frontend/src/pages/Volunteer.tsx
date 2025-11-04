@@ -232,6 +232,12 @@ function Volunteer() {
 
   return (
     <div className="volunteer-container">
+      <button
+        className="volunteer-back-home-button"
+        onClick={() => navigate("/")}
+      >
+        ← Home
+      </button>
       <div className="instructions">
         <h1>Thanks for Volunteering! Here's the instructions:</h1>
         <ol>

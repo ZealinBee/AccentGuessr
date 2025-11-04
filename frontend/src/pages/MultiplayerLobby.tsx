@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+ import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { useMatchSocket } from "../hooks/useMatchWebSocket";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import type { Match } from "../types/Match";
 import "../scss/MultiplayerLobby.scss";
 import MultiplayerMap from "../components/MultiplayerMap";
@@ -10,6 +10,7 @@ import { Copy, Share2 } from "lucide-react";
 
 function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
+  const navigate = useNavigate();
   const numericCode = Number(matchCode);
   const { userId, username } = useAuth();
   const { connected, joinMatch, startMatch } = useMatchSocket(numericCode, {
@@ -52,7 +53,7 @@ function MultiplayerLobby() {
   };
 
   const handleShare = async () => {
-    const inviteLink = `${window.location.origin}/lobby/${roomState?.code || matchCode}`;
+    const inviteLink = `${window.location.origin}/join/${roomState?.code || matchCode}`;
     const shareText = `Can you beat me in guessing where this accent is from? ${inviteLink}`;
 
     if (navigator.share) {
@@ -90,6 +91,12 @@ function MultiplayerLobby() {
 
         <div className="lobby-content">
           <div className="lobby-card">
+            <button
+              className="lobby-back-home-button"
+              onClick={() => navigate("/")}
+            >
+              ← Home
+            </button>
             <div className="lobby-loading">
               <div className="lobby-loading-spinner" />
               <h2 className="lobby-loading-title">Connecting to lobby...</h2>
@@ -137,6 +144,12 @@ function MultiplayerLobby() {
 
       <div className="lobby-content">
         <div className="lobby-card">
+          <button
+            className="lobby-back-home-button"
+            onClick={() => navigate("/")}
+          >
+            ← Home
+          </button>
           <h1 className="lobby-title">Multiplayer Lobby</h1>
 
           <div className="lobby-info">
