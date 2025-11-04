@@ -136,7 +136,14 @@
         position: relative;
         z-index: 10;
         width: 100%;
-        max-width: 40rem;
+        max-width: 45rem;
+      }
+
+      /* Adjust for laptop screens */
+      @media (min-width: 1024px) and (max-width: 1440px) {
+        .content {
+          max-width: 42rem;
+        }
       }
 
       .welcome-card {
@@ -144,24 +151,31 @@
         backdrop-filter: blur(10px);
         border: 1px solid rgba(148, 163, 184, 0.15);
         border-radius: 0.75rem;
-        padding: 2.5rem 2rem;
+        padding: 1.75rem 2.5rem;
         box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
         text-align: center;
       }
 
+      /* Reduce padding for laptop screens */
+      @media (min-width: 1024px) and (max-width: 1440px) {
+        .welcome-card {
+          padding: 1.5rem 2rem;
+        }
+      }
+
       .title {
-        font-size: 2.25rem;
+        font-size: 2rem;
         font-weight: 700;
         color: #f8fafc;
-        margin-bottom: 1rem;
+        margin-bottom: 0.75rem;
         letter-spacing: -0.02em;
       }
 
       .description {
-        font-size: 1.05rem;
+        font-size: 1rem;
         color: #cbd5e1;
-        margin-bottom: 2rem;
-        line-height: 1.7;
+        margin-bottom: 1.5rem;
+        line-height: 1.6;
         max-width: 32rem;
         margin-inline: auto;
       }
@@ -169,16 +183,16 @@
       .start-button {
         background: linear-gradient(to right, #f8fafc, #e2e8f0);
         color: #0f172a;
-        padding: 0.85rem 2rem;
+        padding: 0.75rem 1.75rem;
         border-radius: 0.5rem;
-        font-size: 1rem;
+        font-size: 0.95rem;
         font-weight: 600;
         font-family: "Inter", system-ui, sans-serif;
         border: none;
         cursor: pointer;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
         transition: all 0.2s ease-in-out;
-        margin-top: 0.75rem;
+        margin-top: 0.6rem;
         display: block;
         width: 100%;
         text-decoration: none;
@@ -195,7 +209,7 @@
       }
 
       .volunteer-button {
-        margin-top: 0.75rem;
+        margin-top: 0.6rem;
       }
 
       .buy-me-coffee-wrapper {
@@ -322,7 +336,7 @@
             onclick="startGame()"
             aria-label="Start a new accent guessing game"
           >
-            Start Game
+            Singleplayer
             <span id="loadingSpinner" class="loading-spinner hidden" aria-hidden="true"></span>
             <span id="loadingText" class="sr-only hidden">Loading…</span>
           </button>

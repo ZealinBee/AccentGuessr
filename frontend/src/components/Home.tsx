@@ -51,7 +51,7 @@ function Home() {
                   disabled={isLoading}
                   aria-busy={isLoading}
                 >
-                  Start Game
+                  Singleplayer
                   {isLoading && (
                     <>
                       <span className="loading-spinner" aria-hidden="true" />

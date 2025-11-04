@@ -1,6 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { Match } from "../types/Match";
 import { getPlayerColor } from "../utils/playerColors";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import "../scss/LiveLeaderboard.scss";
 
 interface LiveLeaderboardProps {
@@ -13,6 +14,7 @@ export default function LiveLeaderboard({
   playerId,
 }: LiveLeaderboardProps) {
   const currentRound = roomState.currentRound ?? 0;
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const rows = useMemo(() => {
     const totals = new Map<number, number>();
@@ -86,53 +88,68 @@ export default function LiveLeaderboard({
   }, [roomState, playerId, currentRound]);
 
   return (
-    <aside className="live-leaderboard" aria-label="Live leaderboard">
-      <div className="leaderboard-header">
-        <h2 className="header-title">LEADERBOARD</h2>
-      </div>
+    <aside
+      className={`live-leaderboard ${isExpanded ? 'expanded' : 'collapsed'}`}
+      aria-label="Live leaderboard"
+    >
+      <button
+        className="leaderboard-toggle"
+        onClick={() => setIsExpanded(!isExpanded)}
+        aria-label={isExpanded ? "Hide leaderboard" : "Show leaderboard"}
+      >
+        {isExpanded ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+      </button>
 
-      <div className="columns-row" aria-hidden="true">
-        <div className="columns-left">
-          <span className="col-label">Player</span>
-        </div>
-        <div className="columns-right">
-          <span className="col-label">Score</span>
-          <span className="col-label">Total</span>
-          <span className="col-label">Status</span>
-        </div>
-      </div>
+      {isExpanded && (
+        <>
+          <div className="leaderboard-header">
+            <h2 className="header-title">LEADERBOARD</h2>
+          </div>
 
-      <ul className="leaderboard-list">
-        {rows.map((r, index) => (
-          <li
-            key={r.id}
-            className={`leaderboard-row ${r.isCurrent ? "you" : ""}`}
-          >
-            <div className="player-left">
-              <span className="player-rank">#{index + 1}</span>
-              <span
-                className="player-color"
-                style={{ backgroundColor: r.color }}
-              />
-              <span className="player-name">
-                {r.name}
-                {r.isCurrent && <span className="you-tag"> (You)</span>}
-              </span>
+          <div className="columns-row" aria-hidden="true">
+            <div className="columns-left">
+              <span className="col-label">Player</span>
             </div>
-            <div className="player-right">
-              <span className="round-score">
-                {r.shouldShowScore ? r.currentRoundScore : "—"}
-              </span>
-              <span className="total-score">
-                {r.totalScore !== null ? r.totalScore : "—"}
-              </span>
-              <span className={`status status-${r.status.toLowerCase()}`}>
-                {r.status}
-              </span>
+            <div className="columns-right">
+              <span className="col-label">Score</span>
+              <span className="col-label">Total</span>
+              <span className="col-label">Status</span>
             </div>
-          </li>
-        ))}
-      </ul>
+          </div>
+
+          <ul className="leaderboard-list">
+            {rows.map((r, index) => (
+              <li
+                key={r.id}
+                className={`leaderboard-row ${r.isCurrent ? "you" : ""}`}
+              >
+                <div className="player-left">
+                  <span className="player-rank">#{index + 1}</span>
+                  <span
+                    className="player-color"
+                    style={{ backgroundColor: r.color }}
+                  />
+                  <span className="player-name">
+                    {r.name}
+                    {r.isCurrent && <span className="you-tag"> (You)</span>}
+                  </span>
+                </div>
+                <div className="player-right">
+                  <span className="round-score">
+                    {r.shouldShowScore ? r.currentRoundScore : "—"}
+                  </span>
+                  <span className="total-score">
+                    {r.totalScore !== null ? r.totalScore : "—"}
+                  </span>
+                  <span className={`status status-${r.status.toLowerCase()}`}>
+                    {r.status}
+                  </span>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </aside>
   );
 }
