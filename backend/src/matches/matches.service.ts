@@ -282,35 +282,9 @@ export class MatchesService {
     });
     if (!matchRound) return;
 
-    const totalPlayers = match.matchPlayers.length;
-    const guessesCount = await this.prisma.playerGuess.count({
-      where: { roundId: matchRound.id },
-    });
-
-    // Submit 0-score guesses for players who didn't guess
-    if (guessesCount < totalPlayers) {
-      const playersWhoGuessed = await this.prisma.playerGuess.findMany({
-        where: { roundId: matchRound.id },
-        select: { playerId: true },
-      });
-      const guessedPlayerIds = new Set(
-        playersWhoGuessed.map((g) => g.playerId),
-      );
-
-      const playersWhoDidntGuess = match.matchPlayers.filter(
-        (p) => !guessedPlayerIds.has(p.id),
-      );
-
-      await this.prisma.playerGuess.createMany({
-        data: playersWhoDidntGuess.map((p) => ({
-          roundId: matchRound.id,
-          playerId: p.id,
-          guessLong: 0,
-          guessLat: 0,
-          score: 0,
-        })),
-      });
-    }
+    // Don't create 0-score guesses for players who didn't submit
+    // The frontend will auto-submit if they placed a pin but didn't confirm
+    // If they didn't place a pin at all, they simply don't get a guess
 
     // Mark round as resolved and move to post_results phase
     const phaseEndsAt = new Date(Date.now() + 7000);
@@ -332,6 +306,12 @@ export class MatchesService {
 
     // Schedule next phase transition
     this.schedulePhaseTransition(matchId, matchCode, 7000);
+
+    // Notify frontend about the phase transition
+    const updatedMatch = await this.getFullMatchState(matchId);
+    this.gateway.server
+      .to(`match_${matchCode}`)
+      .emit('guess_confirmed', updatedMatch);
   }
 
   private async moveToNextRound(matchId: number, matchCode: number) {

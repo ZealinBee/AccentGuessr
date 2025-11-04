@@ -143,24 +143,28 @@ export default function MultiplayerMap({
           timerRef.current = null;
         }
 
-        // Auto-submit if player hasn't confirmed yet
-        if (!confirmedAnswerRef.current && playerId) {
+        // Auto-submit if player hasn't confirmed yet and has placed a pin
+        if (!confirmedAnswerRef.current && playerId && markerRef.current) {
           const accent =
             roomState.matchRounds[roomState.currentRound].speaker.accent;
+          const lngLat = markerRef.current.getLngLat();
+          const regionFeature = accentToFeature(accent);
+          const roundScore = scoreCalculate(
+            lngLat.lat,
+            lngLat.lng,
+            regionFeature as never
+          );
 
-          if (markerRef.current) {
-            const lngLat = markerRef.current.getLngLat();
-            const regionFeature = accentToFeature(accent);
-            const roundScore = scoreCalculate(
-              lngLat.lat,
-              lngLat.lng,
-              regionFeature as never
-            );
-            confirmGuess(lngLat.lng, lngLat.lat, roundScore);
-          } else {
-            confirmGuess(0, 0, 0);
-          }
+          // Set confirming state (will show loading UI)
+          setIsConfirming(true);
+
+          // Remove the temporary marker since it will be redrawn by the effect
+          markerRef.current.remove();
+          markerRef.current = null;
+
+          confirmGuess(lngLat.lng, lngLat.lat, roundScore);
         }
+        // If no pin was placed, don't submit anything - player gets 0 points
       }
     }, 1000);
 
@@ -191,8 +195,17 @@ export default function MultiplayerMap({
     // If player confirmed but hasn't received server update yet, don't draw anything
     if (isConfirming && !currentPlayerGuess) return;
 
-    // Once we have the player's guess from server, stop loading and set local state
-    if (isConfirming && currentPlayerGuess) {
+    // Clear the player's unconfirmed marker if they didn't submit a guess
+    // This handles the case where they placed a pin but didn't confirm before new round
+    if (!currentPlayerGuess && !isConfirming && markerRef.current) {
+      markerRef.current.remove();
+      markerRef.current = null;
+      setHasPin(false);
+    }
+
+    // Once we have the player's guess from server, set local state
+    // This works for both manual confirm and auto-submit
+    if (currentPlayerGuess && !confirmedAnswer) {
       setIsConfirming(false);
       setConfirmedAnswer({
         lng: currentPlayerGuess.guessLong,
@@ -371,6 +384,7 @@ export default function MultiplayerMap({
     correctLocation,
     playerId,
     isConfirming,
+    confirmedAnswer,
   ]);
 
   useEffect(() => {
@@ -457,7 +471,7 @@ export default function MultiplayerMap({
       </div>
 
       <div className="bottom-controls">
-        {!confirmedAnswer ? (
+        {roomState.phase === "guessing" && !confirmedAnswer ? (
           <div className="guess-section">
             <AudioPlayer
               srcs={roomState.matchRounds[roomState.currentRound].speaker.clips}
@@ -481,7 +495,7 @@ export default function MultiplayerMap({
           </div>
         ) : (
           <>
-            {/* Show result immediately after confirming */}
+            {/* Show result when round is resolved or in post_results phase */}
             <MultiplayerResultCard
               answerDistance={answerDistance ?? 0}
               score={score ?? 0}
@@ -496,9 +510,10 @@ export default function MultiplayerMap({
               phaseEndsAt={roomState.phaseEndsAt}
               currentRound={roomState.currentRound}
             />
-            {/* Show waiting message only if round not resolved yet amd is still guessing */}
+            {/* Show waiting message only if round not resolved yet and player confirmed */}
             {!roomState.matchRounds[roomState.currentRound].isResolved &&
-              roomState.phase === "guessing" && (
+              roomState.phase === "guessing" &&
+              confirmedAnswer && (
                 <div className="waiting-section">
                   <p>Waiting for other players to finish...</p>
                 </div>
