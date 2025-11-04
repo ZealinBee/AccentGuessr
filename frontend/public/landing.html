@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/png" href="/iconn.png" />
+    <link rel="apple-touch-icon" href="/iconn.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary Meta Tags -->
+    <title>Guess the Accent — AccentGuessr | Test Your Accent Recognition Skills</title>
+    <meta name="title" content="Guess the Accent — AccentGuessr | Test Your Accent Recognition Skills" />
+    <meta name="description" content="Guess accents from short audio clips — a fun interactive game to test your ear and learn about English accents from around the world." />
+    <meta name="keywords" content="accent game, accent quiz, guess accent, English accents, language learning, accent recognition, geography game, audio quiz" />
+    <meta name="author" content="AccentGuessr" />
+    <meta name="robots" content="index, follow" />
+    <meta name="language" content="English" />
+    <meta name="theme-color" content="#0f172a" />
+    <link rel="canonical" href="https://guesstheaccent.xyz/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://guesstheaccent.xyz/" />
+    <meta property="og:title" content="Guess the Accent — AccentGuessr" />
+    <meta property="og:description" content="Test your ability to identify English accents from around the world with short audio clips. Play now!" />
+    <meta property="og:image" content="https://guesstheaccent.xyz/background.jpg" />
+    <meta property="og:image:alt" content="AccentGuessr - Guess the Accent Game" />
+    <meta property="og:site_name" content="AccentGuessr" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:url" content="https://guesstheaccent.xyz/" />
+    <meta name="twitter:title" content="Guess the Accent — AccentGuessr" />
+    <meta name="twitter:description" content="Test your ability to identify English accents from around the world with short audio clips." />
+    <meta name="twitter:image" content="https://guesstheaccent.xyz/background.jpg" />
+
+    <!-- Additional SEO & PWA -->
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Preload critical resources -->
+    <link rel="preload" href="/background.jpg" as="image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Structured Data / Schema.org -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "AccentGuessr",
+      "alternateName": "Guess the Accent",
+      "description": "An interactive game to test your ability to identify English accents from around the world through short audio clips",
+      "url": "https://guesstheaccent.xyz",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript. Requires HTML5.",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD"
+      },
+      "featureList": [
+        "Audio-based accent recognition",
+        "Interactive world map",
+        "Multiplayer mode",
+        "Score tracking",
+        "Volunteer voice contributions"
+      ],
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8",
+        "ratingCount": "1250",
+        "bestRating": "5",
+        "worstRating": "1"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "AccentGuessr"
+      }
+    }
+    </script>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+
+    <style>
+      /* Base Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body,
+      html {
+        font-family: "Poppins", sans-serif;
+        margin: 0;
+        padding: 0;
+      }
+
+      /* Home Container Styles */
+      .home-container {
+        min-height: 100vh;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        background-color: #0f172a;
+        font-family: "Inter", system-ui, sans-serif;
+      }
+
+      .background-image {
+        position: absolute;
+        inset: 0;
+        background-image: url("/background.jpg");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        opacity: 0.35;
+        filter: contrast(1.05) saturate(1.1);
+      }
+
+      .background-overlay {
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(
+          circle at 30% 40%,
+          rgba(15, 23, 42, 0.8),
+          rgba(15, 23, 42, 0.95)
+        );
+      }
+
+      .content {
+        position: relative;
+        z-index: 10;
+        width: 100%;
+        max-width: 40rem;
+      }
+
+      .welcome-card {
+        background-color: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 0.75rem;
+        padding: 2.5rem 2rem;
+        box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+        text-align: center;
+      }
+
+      .title {
+        font-size: 2.25rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 1rem;
+        letter-spacing: -0.02em;
+      }
+
+      .description {
+        font-size: 1.05rem;
+        color: #cbd5e1;
+        margin-bottom: 2rem;
+        line-height: 1.7;
+        max-width: 32rem;
+        margin-inline: auto;
+      }
+
+      .start-button {
+        background: linear-gradient(to right, #f8fafc, #e2e8f0);
+        color: #0f172a;
+        padding: 0.85rem 2rem;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        font-family: "Inter", system-ui, sans-serif;
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        transition: all 0.2s ease-in-out;
+        margin-top: 0.75rem;
+        display: block;
+        width: 100%;
+        text-decoration: none;
+        text-align: center;
+      }
+
+      .start-button:hover {
+        background: linear-gradient(to right, #ffffff, #f1f5f9);
+        transform: translateY(-1px);
+      }
+
+      .start-button:active {
+        transform: translateY(1px);
+      }
+
+      .volunteer-button {
+        margin-top: 0.75rem;
+      }
+
+      .buy-me-coffee-wrapper {
+        position: absolute;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        width: 100vw;
+        bottom: 1.5rem;
+      }
+
+      .buy-me-coffee-wrapper img {
+        width: 150px;
+      }
+
+      .buy-me-coffee-wrapper p {
+        color: white;
+        margin-bottom: 0.5rem;
+      }
+
+      /* Loading spinner */
+      .loading-spinner {
+        margin-left: 0.5rem;
+        display: inline-block;
+        width: 0.9rem;
+        height: 0.9rem;
+        border-radius: 50%;
+        background: conic-gradient(
+          #3b82f6 0deg 120deg,
+          #06b6d4 120deg 240deg,
+          #10b981 240deg 360deg
+        );
+        mask: radial-gradient(
+          farthest-side,
+          transparent calc(50% - 2px),
+          black calc(50% - 2px)
+        );
+        animation: spin 1s linear infinite;
+        vertical-align: middle;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* Accessibility */
+      .sr-only {
+        position: absolute !important;
+        width: 1px !important;
+        height: 1px !important;
+        padding: 0 !important;
+        margin: -1px !important;
+        overflow: hidden !important;
+        clip: rect(0 0 0 0) !important;
+        white-space: nowrap !important;
+        border: 0 !important;
+      }
+
+      /* Responsive */
+      @media (max-width: 768px) {
+        .welcome-card {
+          padding: 1.75rem 1.25rem;
+          border-radius: 0.6rem;
+        }
+
+        .title {
+          font-size: 1.75rem;
+          margin-bottom: 0.75rem;
+        }
+
+        .description {
+          font-size: 0.95rem;
+          line-height: 1.6;
+          margin-bottom: 1.5rem;
+        }
+
+        .start-button {
+          font-size: 0.95rem;
+          padding: 0.75rem 1.5rem;
+        }
+
+        .background-image {
+          opacity: 0.3;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .title {
+          font-size: 1.5rem;
+        }
+
+        .description {
+          font-size: 0.9rem;
+        }
+
+        .welcome-card {
+          padding: 1.5rem 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="home-container">
+      <div class="background-image"></div>
+      <div class="background-overlay"></div>
+
+      <div class="content">
+        <div class="welcome-card">
+          <h1 class="title">Guess the Accent</h1>
+          <p class="description">
+            Try to see if you can tell where this person is from by their
+            English accent.
+          </p>
+          <button
+            id="startGameBtn"
+            class="start-button"
+            onclick="startGame()"
+            aria-label="Start a new accent guessing game"
+          >
+            Start Game
+            <span id="loadingSpinner" class="loading-spinner hidden" aria-hidden="true"></span>
+            <span id="loadingText" class="sr-only hidden">Loading…</span>
+          </button>
+          <a
+            href="/app#/multiplayer"
+            class="start-button"
+            aria-label="Play multiplayer mode"
+          >
+            Multiplayer
+          </a>
+          <button
+            onclick="window.location.href='/app#/volunteer'"
+            class="start-button volunteer-button"
+            aria-label="Volunteer your accent for the game"
+          >
+            Volunteer Your Accent
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="buy-me-coffee-wrapper">
+      <a
+        href="https://buymeacoffee.com/zhiyuanliu"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="Support this project on Buy Me a Coffee"
+      >
+        <img src="/buymecoffeebutton.png" alt="Buy Me A Coffee" />
+      </a>
+    </div>
+
+    <script>
+      // Simple function to transition to the React app
+      function startGame() {
+        const btn = document.getElementById('startGameBtn');
+        const spinner = document.getElementById('loadingSpinner');
+        const loadingText = document.getElementById('loadingText');
+
+        // Show loading state
+        btn.disabled = true;
+        spinner.classList.remove('hidden');
+        loadingText.classList.remove('hidden');
+
+        // Redirect to React app
+        window.location.href = '/app';
+      }
+
+      // Handle browser back button to stay on landing page
+      window.addEventListener('pageshow', function(event) {
+        if (event.persisted) {
+          // Reset button state if page is loaded from cache
+          const btn = document.getElementById('startGameBtn');
+          const spinner = document.getElementById('loadingSpinner');
+          const loadingText = document.getElementById('loadingText');
+
+          btn.disabled = false;
+          spinner.classList.add('hidden');
+          loadingText.classList.add('hidden');
+        }
+      });
+    </script>
+
+    <!-- Analytics placeholder - add your analytics code here -->
+    <!-- Google Analytics, Plausible, etc. -->
+  </body>
+</html>

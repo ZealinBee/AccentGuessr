@@ -1,1 +1,15 @@
-/*    /index.html   200
+# Serve static landing page for root
+/                  /landing.html    200
+
+# Serve React app for all other routes (SPA)
+/app               /index.html      200
+/app/*             /index.html      200
+
+# Other routes go to React app
+/volunteer         /index.html      200
+/dashboard         /index.html      200
+/multiplayer       /index.html      200
+/join/*            /index.html      200
+
+# Fallback for any other route
+/*                 /index.html      200
