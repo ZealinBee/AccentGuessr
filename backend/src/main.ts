@@ -1,9 +1,14 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
+import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+
+  // Register global exception filter to prevent server crashes
+  app.useGlobalFilters(new AllExceptionsFilter());
+
   const allowedOrigins = [
     'http://localhost:5173',
     'https://guesstheaccent.xyz',
@@ -26,4 +31,4 @@ async function bootstrap() {
   console.log('HELOW');
   await app.listen(process.env.PORT ?? 3000);
 }
-bootstrap();
+void bootstrap();

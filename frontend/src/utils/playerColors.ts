@@ -5,13 +5,16 @@
  */
 
 const PLAYER_COLORS = [
-  "#3498db", // Blue
-  "#e67e22", // Dark Orange
   "#8e44ad", // Dark Purple
   "#d35400", // Pumpkin
+  "#c0392b", // Dark Red
+  "#ffd93d", // Yellow
+  "#ee5a6f", // Rose
+  "#fd79a8", // Light Pink
+  "#fab1a0", // Peach
 ];
 
-const CURRENT_PLAYER_COLOR = "#16a085";
+const CURRENT_PLAYER_COLOR = "#3498db";
 
 /**
  * Gets the color for a specific player.

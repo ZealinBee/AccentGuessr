@@ -8,7 +8,10 @@ interface LiveLeaderboardProps {
   playerId: number | null;
 }
 
-export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboardProps) {
+export default function LiveLeaderboard({
+  roomState,
+  playerId,
+}: LiveLeaderboardProps) {
   const currentRound = roomState.currentRound ?? 0;
 
   const rows = useMemo(() => {
@@ -51,14 +54,14 @@ export default function LiveLeaderboard({ roomState, playerId }: LiveLeaderboard
         const hasPreviousRounds = currentRound > 0;
         let totalScore: number | null;
 
-        if (isCurrent && typeof curGuess?.score === "number") {
-          // Current player: show previous rounds + current round score
+        if (
+          typeof curGuess?.score === "number" &&
+          (isCurrent || isRoundResolved)
+        ) {
           totalScore = (totals.get(p.id) || 0) + curGuess.score;
         } else if (hasPreviousRounds) {
-          // Other players: show only previous rounds
           totalScore = totals.get(p.id) || 0;
         } else {
-          // First round, no previous scores
           totalScore = null;
         }
 

@@ -89,14 +89,15 @@ function MultiplayerLobby() {
         <div className="lobby-background-image" />
         <div className="lobby-background-overlay" />
 
+        <button
+          className="lobby-back-home-button"
+          onClick={() => navigate("/")}
+        >
+          ← Home
+        </button>
+
         <div className="lobby-content">
           <div className="lobby-card">
-            <button
-              className="lobby-back-home-button"
-              onClick={() => navigate("/")}
-            >
-              ← Home
-            </button>
             <div className="lobby-loading">
               <div className="lobby-loading-spinner" />
               <h2 className="lobby-loading-title">Connecting to lobby...</h2>
@@ -142,14 +143,15 @@ function MultiplayerLobby() {
       <div className="lobby-background-image" />
       <div className="lobby-background-overlay" />
 
+      <button
+        className="lobby-back-home-button"
+        onClick={() => navigate("/")}
+      >
+        ← Home
+      </button>
+
       <div className="lobby-content">
         <div className="lobby-card">
-          <button
-            className="lobby-back-home-button"
-            onClick={() => navigate("/")}
-          >
-            ← Home
-          </button>
           <h1 className="lobby-title">Multiplayer Lobby</h1>
 
           <div className="lobby-info">

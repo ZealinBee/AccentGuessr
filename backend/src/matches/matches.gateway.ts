@@ -38,20 +38,23 @@ export class MatchesGateway
     console.log(`Client disconnected: ${socket.id}`);
     const connectionInfo = this.playerConnections.get(socket.id);
     if (connectionInfo) {
-      const { matchCode, playerId } = connectionInfo;
-      const match = await this.matchesService.removePlayerFromMatch(
-        matchCode,
-        playerId,
-      );
-      if (match) {
+      try {
+        const { matchCode, playerId } = connectionInfo;
+        const match = await this.matchesService.removePlayerFromMatch(
+          matchCode,
+          playerId,
+        );
+        if (!match) {
+          // Match prolly already ended
+          return;
+        }
+
         this.server.to(`match_${matchCode}`).emit('player_left', match);
-      } else {
-        // Match was closed because everyone left
-        this.server.to(`match_${matchCode}`).emit('match_closed', {
-          message: 'All players have left the match',
-        });
+        this.playerConnections.delete(socket.id);
+      } catch (error) {
+        console.error('Error handling disconnect:', error);
+        this.playerConnections.delete(socket.id);
       }
-      this.playerConnections.delete(socket.id);
     }
   }
 
@@ -61,39 +64,47 @@ export class MatchesGateway
     @MessageBody()
     payload: { matchCode: number; playerName: string; isGuest: boolean },
   ) {
-    const { matchCode, playerName, isGuest } = payload;
-    const match = await this.matchesService.joinRoom(
-      matchCode,
-      playerName,
-      isGuest,
-    );
-    if (!match) {
-      socket.emit('error', { message: 'Match not found' });
-      return;
-    }
+    try {
+      const { matchCode, playerName, isGuest } = payload;
+      const match = await this.matchesService.joinRoom(
+        matchCode,
+        playerName,
+        isGuest,
+      );
+      if (!match) {
+        socket.emit('error', { message: 'Match not found' });
+        return;
+      }
 
-    const player = match.matchPlayers.find(
-      (p) => p.name === payload.playerName,
-    );
-    if (!player) {
-      return;
+      const player = match.matchPlayers.find(
+        (p) => p.name === payload.playerName,
+      );
+      if (!player) {
+        return;
+      }
+      await this.matchesService.assignOwnerIfNone(matchCode, player.id);
+      const updatedMatch = await this.matchesService.findByCode(matchCode);
+      if (!updatedMatch) {
+        return;
+      }
+      this.playerConnections.set(socket.id, {
+        matchCode: payload.matchCode,
+        playerId: player.id,
+      });
+      await socket.join(`match_${matchCode}`);
+      socket.emit('match_joined', {
+        match: updatedMatch,
+        isOwner: updatedMatch.ownerId === player?.id,
+        playerId: player.id,
+      });
+      socket.broadcast.to(`match_${matchCode}`).emit('player_joined', match);
+    } catch (error) {
+      console.error('Error joining match:', error);
+      socket.emit('error', {
+        message:
+          error instanceof Error ? error.message : 'Failed to join match',
+      });
     }
-    await this.matchesService.assignOwnerIfNone(matchCode, player.id);
-    const updatedMatch = await this.matchesService.findByCode(matchCode);
-    if (!updatedMatch) {
-      return;
-    }
-    this.playerConnections.set(socket.id, {
-      matchCode: payload.matchCode,
-      playerId: player.id,
-    });
-    await socket.join(`match_${matchCode}`);
-    socket.emit('match_joined', {
-      match: updatedMatch,
-      isOwner: updatedMatch.ownerId === player?.id,
-      playerId: player.id,
-    });
-    socket.broadcast.to(`match_${matchCode}`).emit('player_joined', match);
   }
 
   @SubscribeMessage('start_match')
@@ -101,12 +112,22 @@ export class MatchesGateway
     @ConnectedSocket() socket: Socket,
     @MessageBody() payload: { matchCode: number },
   ) {
-    const match = await this.matchesService.startMatch(payload.matchCode);
-    if (!match) {
-      socket.emit('error', { message: 'Match not found or cannot be started' });
-      return;
+    try {
+      const match = await this.matchesService.startMatch(payload.matchCode);
+      if (!match) {
+        socket.emit('error', {
+          message: 'Match not found or cannot be started',
+        });
+        return;
+      }
+      this.server.to(`match_${payload.matchCode}`).emit('match_started', match);
+    } catch (error) {
+      console.error('Error starting match:', error);
+      socket.emit('error', {
+        message:
+          error instanceof Error ? error.message : 'Failed to start match',
+      });
     }
-    this.server.to(`match_${payload.matchCode}`).emit('match_started', match);
   }
 
   @SubscribeMessage('confirm_guess')
@@ -120,27 +141,35 @@ export class MatchesGateway
       score: number;
     },
   ) {
-    const connectionInfo = this.playerConnections.get(socket.id);
-    if (!connectionInfo) {
+    try {
+      const connectionInfo = this.playerConnections.get(socket.id);
+      if (!connectionInfo) {
+        socket.emit('error', {
+          message: 'Player not found in connection records',
+        });
+        return;
+      }
+      const playerId = connectionInfo.playerId;
+      const updatedMatch = await this.matchesService.confirmGuess(
+        payload.matchCode,
+        playerId,
+        payload.guessLong,
+        payload.guessLat,
+        payload.score,
+      );
+      if (!updatedMatch) {
+        socket.emit('error', { message: 'Match or player not found' });
+        return;
+      }
+      this.server
+        .to(`match_${payload.matchCode}`)
+        .emit('guess_confirmed', updatedMatch);
+    } catch (error) {
+      console.error('Error confirming guess:', error);
       socket.emit('error', {
-        message: 'Player not found in connection records',
+        message:
+          error instanceof Error ? error.message : 'Failed to confirm guess',
       });
-      return;
     }
-    const playerId = connectionInfo.playerId;
-    const updatedMatch = await this.matchesService.confirmGuess(
-      payload.matchCode,
-      playerId,
-      payload.guessLong,
-      payload.guessLat,
-      payload.score,
-    );
-    if (!updatedMatch) {
-      socket.emit('error', { message: 'Match or player not found' });
-      return;
-    }
-    this.server
-      .to(`match_${payload.matchCode}`)
-      .emit('guess_confirmed', updatedMatch);
   }
 }

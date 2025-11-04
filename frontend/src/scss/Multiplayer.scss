@@ -58,7 +58,10 @@
   border: 1px solid rgba(148, 163, 184, 0.3);
   cursor: pointer;
   transition: all 0.2s ease-in-out;
-  margin-bottom: 1rem;
+  position: absolute;
+  top: 1.5rem;
+  left: 1.5rem;
+  z-index: 100;
 }
 
 .multiplayer-back-home-button:hover {

@@ -1,4 +1,10 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  forwardRef,
+  Inject,
+  Injectable,
+  NotFoundException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { SpeakersService } from 'src/speakers/speakers.service';
 import { MatchesGateway } from './matches.gateway';
@@ -61,7 +67,7 @@ export class MatchesService {
     }
 
     if (!match) {
-      throw new Error(
+      throw new InternalServerErrorException(
         'Failed to generate unique match code after multiple attempts',
       );
     }
@@ -86,7 +92,7 @@ export class MatchesService {
   ): Promise<MatchWithRelations | null> {
     const match = await this.findByCode(matchCode);
     if (!match) {
-      throw new Error('Match not found');
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
     }
     await this.prisma.matchPlayer.create({
       data: {
@@ -107,7 +113,7 @@ export class MatchesService {
   async removePlayerFromMatch(matchCode: number, playerId: number) {
     const match = await this.findByCode(matchCode);
     if (!match) {
-      throw new Error('Match not found');
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
     }
     await this.prisma.matchPlayer.delete({
       where: { id: playerId },
@@ -132,7 +138,7 @@ export class MatchesService {
   async assignOwnerIfNone(matchCode: number, playerId: number) {
     const match = await this.findByCode(matchCode);
     if (!match) {
-      throw new Error('Match not found');
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
     }
     if (!match.ownerId) {
       await this.prisma.match.update({
@@ -145,7 +151,7 @@ export class MatchesService {
   async assignOwnerFirstJoined(matchCode: number) {
     const match = await this.findByCode(matchCode);
     if (!match) {
-      throw new Error('Match not found');
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
     }
     console.log('Assigning new owner for matchCode', matchCode);
     if (match.matchPlayers.length > 0) {
@@ -186,7 +192,7 @@ export class MatchesService {
   async startMatch(matchCode: number) {
     const match = await this.findByCode(matchCode);
     if (!match) {
-      throw new Error('Match not found');
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
     }
     const speakers = await this.speakerService.getFiveRandomSpeakers(null);
 
@@ -403,14 +409,15 @@ export class MatchesService {
     score: number,
   ) {
     const match = await this.findByCode(matchCode);
-    if (!match) throw new Error('Match not found');
+    if (!match)
+      throw new NotFoundException(`Match with code ${matchCode} not found`);
 
     const currentRoundIndex = match.currentRound;
 
     const matchRound = await this.prisma.matchRound.findFirst({
       where: { matchId: match.id, roundIndex: currentRoundIndex },
     });
-    if (!matchRound) throw new Error('Match round not found');
+    if (!matchRound) throw new NotFoundException('Match round not found');
 
     const totalPlayers = match.matchPlayers.length;
 

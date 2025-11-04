@@ -337,6 +337,9 @@ export default function MultiplayerMap({
           const closestCoords = (
             closest as { geometry: { coordinates: number[] } }
           ).geometry.coordinates;
+          if (map.getLayer(lineId)) map.removeLayer(lineId);
+          if (map.getSource(lineId)) map.removeSource(lineId);
+
           map.addSource(lineId, {
             type: "geojson",
             data: {
@@ -397,7 +400,9 @@ export default function MultiplayerMap({
       const { lng, lat } = e.lngLat;
       if (markerRef.current) markerRef.current.remove();
 
-      const currentPlayerColor = playerIdRef.current ? getPlayerColor(playerIdRef.current, playerIdRef.current) : "#e74c3c";
+      const currentPlayerColor = playerIdRef.current
+        ? getPlayerColor(playerIdRef.current, playerIdRef.current)
+        : "#e74c3c";
       const marker = new mapboxgl.Marker({ color: currentPlayerColor })
         .setLngLat([lng, lat])
         .addTo(map);
@@ -489,6 +494,7 @@ export default function MultiplayerMap({
               }
               phase={roomState.phase}
               phaseEndsAt={roomState.phaseEndsAt}
+              currentRound={roomState.currentRound}
             />
             {/* Show waiting message only if round not resolved yet amd is still guessing */}
             {!roomState.matchRounds[roomState.currentRound].isResolved &&

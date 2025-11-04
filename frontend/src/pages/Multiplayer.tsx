@@ -51,14 +51,15 @@ function Multiplayer() {
       <div className="multiplayer-background-image" />
       <div className="multiplayer-background-overlay" />
 
+      <button
+        className="multiplayer-back-home-button"
+        onClick={() => navigate("/")}
+      >
+        ← Home
+      </button>
+
       <div className="multiplayer-content">
         <div className="multiplayer-card">
-          <button
-            className="multiplayer-back-home-button"
-            onClick={() => navigate("/")}
-          >
-            ← Home
-          </button>
           <h1 className="multiplayer-title">Multiplayer</h1>
           <p className="multiplayer-subtitle">
             Create a new room or join an existing one to play with friends
