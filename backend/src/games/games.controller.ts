@@ -1,6 +1,7 @@
 import {
   Controller,
   Get,
+  Delete,
   UseGuards,
   Request,
   NotFoundException,
@@ -25,5 +26,13 @@ export class GamesController {
     const userId = req.user?.id;
     if (!userId) throw new NotFoundException('User not found');
     return this.gamesService.findByUser(userId);
+  }
+
+  @Delete('my-games')
+  @UseGuards(OptionalJwtAuthGuard)
+  async deleteAllMyGames(@Request() req: RequestWithUser) {
+    const userId = req.user?.id;
+    if (!userId) throw new NotFoundException('User not found');
+    return this.gamesService.deleteAllUserGames(userId);
   }
 }

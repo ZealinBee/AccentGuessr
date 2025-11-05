@@ -42,6 +42,8 @@ function Dashboard() {
   );
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     const fetchGames = async () => {
@@ -75,6 +77,23 @@ function Dashboard() {
     setExpandedGames((prev) => ({ ...prev, [gameId]: !prev[gameId] }));
   };
 
+  const handleDeleteAllGames = async () => {
+    setIsDeleting(true);
+    try {
+      const base = import.meta.env.VITE_API_URL;
+      const headers = token ? { Authorization: `Bearer ${token}` } : {};
+      await axios.delete(`${base}/games/my-games`, { headers });
+      setGames([]);
+      setShowDeleteModal(false);
+      setError(null);
+    } catch (err: unknown) {
+      console.error("Failed to delete games", err);
+      setError("Failed to delete games. Please try again.");
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-content">
@@ -89,11 +108,18 @@ function Dashboard() {
         </div>
         <div className="games-section">
           {/* Chart showing totalScore across all games */}
-          <div style={{ marginBottom: 12 }}>
-            <DashboardChart games={games ?? []} height={220} />
-          </div>
+          {!loading && (
+            <div style={{ marginBottom: 12 }}>
+              <DashboardChart games={games ?? []} height={220} />
+            </div>
+          )}
 
-          {loading && <div className="loading-text">Loading...</div>}
+          {loading && (
+            <div className="loading-container">
+              <div className="loading-spinner"></div>
+              <div className="loading-text">Loading your games...</div>
+            </div>
+          )}
           {error && <div className="error">{error}</div>}
 
           {!loading && !error && (
@@ -182,8 +208,64 @@ function Dashboard() {
               </table>
             </div>
           )}
+
+          {!loading && games && games.length > 0 && (
+            <div className="delete-section">
+              <button
+                className="delete-all-button"
+                onClick={() => setShowDeleteModal(true)}
+                disabled={isDeleting}
+              >
+                🗑️ Delete All My Games
+              </button>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Dangerous Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={() => setShowDeleteModal(false)}>
+          <div className="modal-content danger" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="danger-icon">⚠️</div>
+              <h2>Delete All Games</h2>
+            </div>
+            <div className="modal-body">
+              <p className="danger-warning">
+                <strong>WARNING: This action cannot be undone!</strong>
+              </p>
+              <p>
+                You are about to permanently delete <strong>all {games?.length || 0} of your games</strong> and their associated data. This is so that you can play all the games again.
+              </p>
+              <ul className="danger-list">
+                <li>All game scores will be lost</li>
+                <li>All round history will be deleted</li>
+                <li>This data cannot be recovered</li>
+              </ul>
+              <p className="confirmation-text">
+                Are you absolutely sure you want to continue?
+              </p>
+            </div>
+            <div className="modal-actions">
+              <button
+                className="modal-button cancel"
+                onClick={() => setShowDeleteModal(false)}
+                disabled={isDeleting}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-button delete-confirm"
+                onClick={handleDeleteAllGames}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Yes, Delete Everything"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

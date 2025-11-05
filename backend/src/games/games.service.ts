@@ -51,4 +51,11 @@ export class GamesService {
       orderBy: { createdAt: 'desc' },
     }) as Promise<GameShape[]>;
   }
+
+  async deleteAllUserGames(userId: string): Promise<{ count: number }> {
+    const result = await this.prisma.game.deleteMany({
+      where: { userId },
+    });
+    return { count: result.count };
+  }
 }
