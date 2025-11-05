@@ -138,9 +138,7 @@
   }
 
   .bottom-controls {
-    // Add more padding to account for mobile navigation buttons
-    // Use max to ensure minimum 80px from bottom to avoid physical buttons
-    bottom: max(80px, calc(env(safe-area-inset-bottom) + 60px));
+    bottom: calc(50px + env(safe-area-inset-bottom));
   }
 }
 
