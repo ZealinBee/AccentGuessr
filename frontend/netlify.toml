@@ -1,62 +1,37 @@
+# Serve landing page at root
 [[redirects]]
-  from = "/"
-  to = "/landing.html"
-  status = 200
+from = "/"
+to = "/landing.html"
+status = 200
 
+# Serve SPA under /app and other app routes
 [[redirects]]
-  from = "/app"
-  to = "/index.html"
-  status = 200
-
-[[redirects]]
-  from = "/app/*"
-  to = "/index.html"
-  status = 200
+from = "/app/*"
+to = "/index.html"
+status = 200
 
 [[redirects]]
-  from = "/volunteer"
-  to = "/index.html"
-  status = 200
+from = "/volunteer"
+to = "/index.html"
+status = 200
 
 [[redirects]]
-  from = "/dashboard"
-  to = "/index.html"
-  status = 200
+from = "/dashboard"
+to = "/index.html"
+status = 200
 
 [[redirects]]
-  from = "/multiplayer"
-  to = "/index.html"
-  status = 200
+from = "/multiplayer"
+to = "/index.html"
+status = 200
 
 [[redirects]]
-  from = "/join/*"
-  to = "/index.html"
-  status = 200
+from = "/join/*"
+to = "/index.html"
+status = 200
 
+# Fallback only for unknown SPA routes, not for root
 [[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
-
-[[headers]]
-  for = "/landing.html"
-  [headers.values]
-    Cache-Control = "public, max-age=3600, must-revalidate"
-    X-Content-Type-Options = "nosniff"
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
-
-[[headers]]
-  for = "/*.js"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/*.css"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
-
-[[headers]]
-  for = "/background.jpg"
-  [headers.values]
-    Cache-Control = "public, max-age=31536000, immutable"
+from = "/app"
+to = "/index.html"
+status = 200
