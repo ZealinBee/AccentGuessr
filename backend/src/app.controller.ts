@@ -28,7 +28,7 @@ export class AppController {
   @UseGuards(OptionalJwtAuthGuard)
   async getGame(@Request() req: RequestWithUser): Promise<any[]> {
     const userId = req.user?.id || null;
-    return this.speakersService.getFiveLatestSpeakers();
+    // return this.speakersService.getFiveLatestSpeakers();
     return this.speakersService.getFiveRandomSpeakers(userId);
   }
 }

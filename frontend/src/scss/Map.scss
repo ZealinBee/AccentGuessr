@@ -52,6 +52,10 @@
 .guess-section {
   padding-bottom: 20px;
   text-align: center;
+
+  @media (max-width: 600px) {
+    padding-bottom: 0;
+  }
 }
 
 .waiting-section {
@@ -66,6 +70,15 @@
     font-size: 18px;
     color: #333;
     font-weight: 500;
+  }
+
+  @media (max-width: 600px) {
+    padding: 16px;
+    max-width: calc(100vw - 24px);
+
+    p {
+      font-size: 15px;
+    }
   }
 }
 
@@ -131,7 +144,9 @@
   }
 
   .bottom-controls {
-    bottom: max(12px, env(safe-area-inset-bottom));
+    // Add more padding to account for mobile navigation buttons
+    // Use max to ensure minimum 80px from bottom to avoid physical buttons
+    bottom: max(80px, calc(env(safe-area-inset-bottom) + 60px));
   }
 }
 

@@ -70,8 +70,31 @@
 
 @media (max-width: 480px) {
   .result-card {
-    min-width: 300px;
-    max-width: 100%;
-    width: 100%;
+    min-width: 280px;
+    max-width: calc(100vw - 24px);
+    width: auto;
+  }
+
+  .result-card-header {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .result-title {
+    font-size: 16px;
+  }
+
+  .result-text {
+    font-size: 14px;
+  }
+
+  .score-text {
+    font-size: 16px;
+  }
+
+  .next-round-countdown {
+    font-size: 14px;
+    padding: 10px 16px;
+    margin-top: 8px;
   }
 }

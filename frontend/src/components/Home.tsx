@@ -59,12 +59,12 @@ function Home() {
                     </>
                   )}
                 </button>
-                <a
+                <button
                   onClick={() => navigate("/multiplayer")}
                   className="start-button"
                 >
                   Multiplayer
-                </a>
+                </button>
                 <button
                   onClick={() => navigate("/volunteer")}
                   className="start-button volunteer-button"

@@ -42,7 +42,7 @@ function EndScreen({ totalScore }: EndScreenProps) {
         {!isLoggedIn && (
           <>
             <p className="end-screen-message">
-              Sign up to play more and save your progress:
+              Sign up to save your progress so no repeating games:
             </p>
             <div className="end-screen-google-button">
               <LoginButton message="Continue with Google" />

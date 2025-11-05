@@ -1,7 +1,7 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import type { Match } from "../types/Match";
 import { getPlayerColor } from "../utils/playerColors";
-import { ChevronRight, ChevronLeft } from "lucide-react";
+import { ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react";
 import "../scss/LiveLeaderboard.scss";
 
 interface LiveLeaderboardProps {
@@ -15,6 +15,30 @@ export default function LiveLeaderboard({
 }: LiveLeaderboardProps) {
   const currentRound = roomState.currentRound ?? 0;
   const [isExpanded, setIsExpanded] = useState(true);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Detect mobile screen size
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 600);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Auto-collapse on mobile during guessing phase, auto-expand during post_results
+  useEffect(() => {
+    if (isMobile) {
+      if (roomState.phase === 'post_results') {
+        setIsExpanded(true);
+      } else if (roomState.phase === 'guessing') {
+        setIsExpanded(false);
+      }
+    }
+  }, [isMobile, roomState.phase]);
 
   const rows = useMemo(() => {
     const totals = new Map<number, number>();
@@ -97,7 +121,11 @@ export default function LiveLeaderboard({
         onClick={() => setIsExpanded(!isExpanded)}
         aria-label={isExpanded ? "Hide leaderboard" : "Show leaderboard"}
       >
-        {isExpanded ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+        {isMobile ? (
+          isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />
+        ) : (
+          isExpanded ? <ChevronRight size={20} /> : <ChevronLeft size={20} />
+        )}
       </button>
 
       {isExpanded && (

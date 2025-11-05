@@ -306,11 +306,82 @@
   }
 }
 
-@media (max-width: 480px) {
+// Mobile-specific improvements (covers all mobile devices)
+@media (max-width: 600px) {
   .live-leaderboard {
-    width: 320px;
-    top: 0.75rem;
-    right: 0.75rem;
+    // When expanded, position from top center
+    &.expanded {
+      top: 0;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+      width: calc(100vw - 1.5rem);
+      max-width: 380px;
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    // When collapsed, make it invisible (only toggle button shows)
+    &.collapsed {
+      top: 0;
+      left: 50%;
+      right: auto;
+      transform: translateX(-50%);
+    }
+  }
+
+  .leaderboard-toggle {
+    // When expanded, position at bottom center of leaderboard
+    top: auto;
+    bottom: -2.5rem;
+    right: auto;
+    left: 50%;
+    transform: translateX(-50%);
+    border-radius: 0 0 0.625rem 0.625rem;
+    border-top: none;
+    padding: 0.5rem 1.5rem;
+
+    .live-leaderboard.collapsed & {
+      // When collapsed, position at top center of screen
+      position: fixed;
+      top: 0;
+      left: 50%;
+      right: auto;
+      bottom: auto;
+      transform: translateX(-50%);
+      z-index: 25;
+      border-radius: 0 0 0.625rem 0.625rem;
+      border-top: none;
+      padding: 0.5rem 1.5rem;
+      background: linear-gradient(135deg, rgba(30, 41, 59, 0.95), rgba(15, 23, 42, 0.95));
+      border: 1px solid rgba(148, 163, 184, 0.3);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+
+      &:hover {
+        background: linear-gradient(135deg, rgba(59, 130, 246, 0.4), rgba(37, 99, 235, 0.35));
+        border-color: rgba(59, 130, 246, 0.7);
+        transform: translateX(-50%) translateY(2px) scale(1.05);
+      }
+
+      &:active {
+        transform: translateX(-50%) translateY(0);
+      }
+    }
+
+    &:hover {
+      transform: translateX(-50%) translateY(2px);
+    }
+
+    &:active {
+      transform: translateX(-50%) translateY(0);
+    }
+  }
+}@media (max-width: 480px) {
+  .live-leaderboard {
+    &.expanded {
+      width: calc(100vw - 1rem);
+      max-width: 340px;
+    }
   }
 
   .leaderboard-header {
