@@ -285,30 +285,55 @@
 }
 
 .transcript-word {
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  color: #ddd;
+  color: #94a3b8;
   font-size: 1rem;
-  padding-right: 2px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: inline;
+  position: relative;
 }
 
-.transcript-word.visible {
-  opacity: 1;
+.transcript-word.spoken {
+  color: #e2e8f0;
 }
 
-.transcript-word.hidden {
-  opacity: 0;
+.transcript-word.active {
+  color: #ffffff;
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.3);
+}
+
+.transcript-wrapper {
+  margin-top: 1rem;
+  min-height: 4rem;
+  max-height: 4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 1rem;
 }
 
 .transcript-container {
-  margin-top: 1rem;
-  line-height: 1.8;
-  text-align: left;
-  /* ensure transcript never forces the player wider than its container */
+  line-height: 1.6;
+  text-align: center;
   width: 100%;
   box-sizing: border-box;
-  overflow-wrap: break-word;
-  word-break: break-word;
+  font-size: 0.95rem;
+}
+
+.transcript-segment {
+  display: block;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .subtitle-toggle {

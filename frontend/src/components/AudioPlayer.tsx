@@ -35,11 +35,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
 
   const currentSrc = srcs && srcs.length > 0 ? srcs[index].audioUrl : "";
 
-  // Track how many times each clip has been played in this session.
-  // Keyed by Clip.id (fallback to index if id missing).
-  const playCountsRef = useRef<Record<number, number>>({});
-  const [playCountForCurrent, setPlayCountForCurrent] = useState<number>(0);
-
   const resetForIndexChange = useCallback(() => {
     const a = audioRef.current;
     setPlaying(false);
@@ -86,21 +81,12 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
       try {
         await a.play();
         setPlaying(true);
-        // increment play count for this clip after a successful start
-        try {
-          const clipId = srcs && srcs.length > 0 ? srcs[index]?.id ?? index : index;
-          const prev = playCountsRef.current[clipId] || 0;
-          playCountsRef.current[clipId] = prev + 1;
-          setPlayCountForCurrent(playCountsRef.current[clipId]);
-        } catch {
-          // ignore
-        }
       } catch (err) {
         console.warn("Playback failed:", err);
         setPlaying(false);
       }
     }
-  }, [index, srcs]);
+  }, []);
 
 
   const prevClip = useCallback(() => {
@@ -156,12 +142,6 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
     if (!a) return;
     a.volume = volume;
   }, [volume]);
-
-  // When index or srcs change, update playCountForCurrent to the stored value (or 0)
-  useEffect(() => {
-    const clipId = srcs && srcs.length > 0 ? srcs[index]?.id ?? index : index;
-    setPlayCountForCurrent(playCountsRef.current[clipId] || 0);
-  }, [index, srcs]);
 
   // Sync subtitle setting across components/tabs via localStorage
   useEffect(() => {
@@ -274,32 +254,74 @@ export default function AudioPlayer({ srcs }: AudioPlayerProps) {
 
       {showSubtitles &&
         Array.isArray(srcs[index]?.transcription?.segments) &&
-        srcs[index]!.transcription!.segments!.length > 0 && (
-          <div className="transcript-wrapper">
-            <div className="transcript-container">
-              {srcs[index]!.transcription!.segments!.map((segment) => (
-                <div key={segment.id} className="transcript-segment">
-                  {segment.words?.map((w, i) => {
-                    const showAll = playCountForCurrent > 1;
-                    // Don't reveal words at time 0 before playback starts.
-                    // Only reveal progressively when currentTime > 0 (or show all on repeats).
-                    const shouldShow = showAll || (currentTime > 0 && currentTime >= w.start);
-                    return (
-                      <span
-                        key={i}
-                        className={`transcript-word ${
-                          shouldShow ? "visible" : "hidden"
-                        }`}
-                      >
-                        {shouldShow ? w.word + " " : ""}
-                      </span>
-                    );
-                  })}
-                </div>
-              ))}
+        srcs[index]!.transcription!.segments!.length > 0 && (() => {
+          // Find the current active segment based on current time
+          // Like YouTube/Netflix: show the complete current sentence/phrase
+          let currentSegment = null;
+
+          for (const segment of srcs[index]!.transcription!.segments!) {
+            if (segment.words && segment.words.length > 0) {
+              const segmentStart = segment.words[0].start;
+              const segmentEnd = segment.words[segment.words.length - 1].end;
+
+              // Show segment if we're within its time range
+              if (currentTime >= segmentStart && currentTime <= segmentEnd) {
+                currentSegment = segment;
+                break;
+              }
+            }
+          }
+
+          // If no segment is active yet (before playback or between segments),
+          // find the next upcoming segment
+          if (!currentSegment) {
+            for (const segment of srcs[index]!.transcription!.segments!) {
+              if (segment.words && segment.words.length > 0) {
+                const segmentStart = segment.words[0].start;
+                if (currentTime < segmentStart) {
+                  currentSegment = segment;
+                  break;
+                }
+              }
+            }
+
+            // If still nothing (we're past everything), show the last segment
+            if (!currentSegment && srcs[index]!.transcription!.segments!.length > 0) {
+              const segments = srcs[index]!.transcription!.segments!;
+              for (let i = segments.length - 1; i >= 0; i--) {
+                if (segments[i].words && segments[i].words!.length > 0) {
+                  currentSegment = segments[i];
+                  break;
+                }
+              }
+            }
+          }
+
+          return (
+            <div className="transcript-wrapper">
+              <div className="transcript-container">
+                {currentSegment && (
+                  <div key={currentSegment.id} className="transcript-segment">
+                    {currentSegment.words?.map((w, i) => {
+                      // Show all words in the current segment, highlight the active one
+                      const isActive = currentTime >= w.start && currentTime <= w.end;
+                      const hasBeenSpoken = currentTime >= w.start;
+
+                      return (
+                        <span
+                          key={i}
+                          className={`transcript-word ${isActive ? "active" : ""} ${hasBeenSpoken ? "spoken" : ""}`}
+                        >
+                          {w.word}{" "}
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
     </div>
   );
 }
