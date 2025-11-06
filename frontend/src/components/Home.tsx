@@ -40,7 +40,7 @@ function Home() {
 
             <div className="content">
               <div className="welcome-card">
-                <h1 className="title">Guess the Accent</h1>
+                <h1 className="title">Can you Guess the English Accent?</h1>
                 <p className="description">
                   Try to see if you can tell where this person is from by their
                   English accent.
