@@ -110,17 +110,11 @@
     width: 0.9rem;
     height: 0.9rem;
     border-radius: 50%;
-    background: conic-gradient(
-      #3b82f6 0deg 120deg,
-      #06b6d4 120deg 240deg,
-      #10b981 240deg 360deg
-    );
-    mask: radial-gradient(
-      farthest-side,
-      transparent calc(50% - 2px),
-      white calc(50% - 2px)
-    );
-    animation: spin 1s linear infinite;
+    border: 2px solid transparent;
+    border-top: 2px solid #3b82f6;
+    border-right: 2px solid #06b6d4;
+    border-bottom: 2px solid #10b981;
+    animation: spin 0.8s linear infinite;
   }
 }
 
@@ -144,9 +138,7 @@
   }
 
   .bottom-controls {
-    // Add more padding to account for mobile navigation buttons
-    // Use max to ensure minimum 80px from bottom to avoid physical buttons
-    bottom: max(80px, calc(env(safe-area-inset-bottom) + 60px));
+    bottom: calc(50px + env(safe-area-inset-bottom));
   }
 }
 
