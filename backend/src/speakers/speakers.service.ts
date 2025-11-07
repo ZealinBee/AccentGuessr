@@ -29,7 +29,6 @@ export class SpeakersService {
     const speakers = await this.prisma.speaker.findMany({
       include: { clips: true, accent: true },
     });
-    console.log('yoyoyoo:', userId);
 
     let playableSpeakers = speakers;
 
@@ -55,9 +54,29 @@ export class SpeakersService {
       }
     }
 
-    console.log('Playable speakers count:', playableSpeakers.length);
+    console.log(
+      'Playable speakers before filtering clips:',
+      playableSpeakers.length,
+    );
+
+    // Check if we have at least 5 speakers before filtering
     if (!playableSpeakers || playableSpeakers.length < 5) {
       throw new BadRequestException('Unfortunately we ran out of games');
+    }
+
+    // Filter out speakers with no clips
+    playableSpeakers = playableSpeakers.filter(
+      (s) => Array.isArray(s.clips) && s.clips.length > 0,
+    );
+
+    console.log('Playable speakers with clips:', playableSpeakers.length);
+
+    // If after filtering we don't have enough, we still throw an error
+    // because we can't return speakers without clips
+    if (playableSpeakers.length < 5) {
+      throw new BadRequestException(
+        'Unfortunately we ran out of games with available clips',
+      );
     }
 
     const shuffled = [...playableSpeakers].sort(() => Math.random() - 0.5);
