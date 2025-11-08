@@ -5,6 +5,7 @@ export interface RecordingSubmission {
   nativeLanguage: string;
   countryOfOrigin?: string;
   quoteId: string | number;
+  userId?: string;
 }
 
 @Injectable()
@@ -78,6 +79,7 @@ export class RecordingsService {
           body.countryOfOrigin
             ? this.sanitizeFilename(body.countryOfOrigin)
             : undefined,
+          body.userId,
         );
         urls.push(url);
       } catch (err) {

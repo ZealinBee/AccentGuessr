@@ -3,6 +3,7 @@ import { BlobServiceClient } from '@azure/storage-blob';
 import { v4 as uuidv4 } from 'uuid';
 import * as path from 'path';
 import * as dotenv from 'dotenv';
+import { UserService } from '../user/user.service';
 
 dotenv.config();
 
@@ -11,7 +12,7 @@ export class BlobService {
   private blobServiceClient: BlobServiceClient;
   private containerName: string;
 
-  constructor() {
+  constructor(private readonly userService: UserService) {
     const conn = process.env.AZURE_STORAGE_CONNECTION_STRING;
     if (!conn) throw new Error('AZURE_STORAGE_CONNECTION_STRING not set');
     this.blobServiceClient = BlobServiceClient.fromConnectionString(conn);
@@ -23,6 +24,7 @@ export class BlobService {
     quoteId: string | number,
     nativeLanguage: string,
     countryOfOrigin?: string,
+    userId?: string,
   ): Promise<string> {
     try {
       const containerClient = this.blobServiceClient.getContainerClient(
@@ -33,8 +35,25 @@ export class BlobService {
       const extension = path.extname(file.originalname) || '.mp3';
       const randomId = uuidv4();
 
+      // Fetch user email if userId is provided
+      let userEmail: string | undefined;
+      if (userId) {
+        try {
+          const user = await this.userService.findOne(userId);
+          if (user?.email) {
+            userEmail = user.email.replace(/[^a-zA-Z0-9._-]/g, '_');
+          }
+        } catch (error) {
+          console.warn(
+            `Failed to fetch user email for userId ${userId}:`,
+            error,
+          );
+          // Continue without email if fetching fails
+        }
+      }
+
       const filename =
-        [randomId, quoteId, nativeLanguage, countryOfOrigin]
+        [randomId, quoteId, nativeLanguage, countryOfOrigin, userEmail]
           .filter(Boolean) // remove undefined
           .join('-')
           .replace(/\s+/g, '_') + extension;
