@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
 import useAuth from "../hooks/useAuth";
 import { useGame } from "../hooks/useGame";
+import { Share2 } from "lucide-react";
 
 interface EndScreenProps {
   totalScore: number;
@@ -10,6 +12,7 @@ interface EndScreenProps {
 
 function EndScreen({ totalScore }: EndScreenProps) {
   const navigate = useNavigate();
+  const [shareSuccess, setShareSuccess] = useState(false);
 
   const { isLoggedIn } = useAuth();
   const { resetGame, startGame } = useGame();
@@ -17,6 +20,34 @@ function EndScreen({ totalScore }: EndScreenProps) {
   const newGame = () => {
     resetGame();
     startGame();
+  };
+
+  const handleShare = async () => {
+    const homeLink = window.location.origin;
+    const scorePercentage = ((totalScore / 25000) * 100).toFixed(1);
+
+    const shareText = `🎯 Just played AccentGuessr!\n\n📊 My Score:\n${totalScore.toLocaleString()} / 25,000 (${scorePercentage}%)\n\n🌍 Can you beat my score?\nPlay now: ${homeLink}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: '🎯 My AccentGuessr Score',
+          text: shareText,
+          url: homeLink,
+        });
+      } catch (err) {
+        console.error('Failed to share:', err);
+      }
+    } else {
+      // Fallback: copy to clipboard
+      try {
+        await navigator.clipboard.writeText(shareText);
+        setShareSuccess(true);
+        setTimeout(() => setShareSuccess(false), 2000);
+      } catch (err) {
+        console.error('Failed to copy:', err);
+      }
+    }
   };
 
   return (
@@ -38,6 +69,16 @@ function EndScreen({ totalScore }: EndScreenProps) {
         <div className="end-screen-score">
           {totalScore.toLocaleString()} / 25,000
         </div>
+
+        <button
+          className="end-screen-share-button"
+          onClick={handleShare}
+          title="Share your score"
+        >
+          <Share2 size={18} />
+          <span>Share Score</span>
+          {shareSuccess && <span className="end-screen-share-tooltip">Copied to clipboard!</span>}
+        </button>
 
         {!isLoggedIn && (
           <>

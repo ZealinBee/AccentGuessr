@@ -68,6 +68,57 @@
   color: #f8fafc;
 }
 
+.end-screen-share-button {
+  background: linear-gradient(to right, #f8fafc, #e2e8f0);
+  color: #0f172a;
+  padding: 0.75rem 1.75rem;
+  border-radius: 0.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  font-family: "Inter", system-ui, sans-serif;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.2s ease-in-out;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  margin: 0.6rem auto 0;
+  width: 100%;
+}
+
+.end-screen-share-button:hover {
+  background: linear-gradient(to right, #ffffff, #f1f5f9);
+  transform: translateY(-1px);
+}
+
+.end-screen-share-button:active {
+  transform: translateY(1px);
+}
+
+.end-screen-share-tooltip {
+  position: absolute;
+  top: -2.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #10b981;
+  color: white;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  animation: fadeInOut 2s ease-in-out;
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0; }
+  10%, 90% { opacity: 1; }
+}
+
 .end-screen-message {
   font-size: 1.05rem;
   color: #cbd5e1;
@@ -165,6 +216,11 @@
     padding: 0.75rem 1.5rem;
     font-size: 0.95rem;
   }
+
+  .end-screen-share-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -185,7 +241,8 @@
   }
 
   .end-screen-volunteer-button,
-  .end-screen-play-again-button {
+  .end-screen-play-again-button,
+  .end-screen-share-button {
     font-size: 0.9rem;
     padding: 0.65rem 1.25rem;
   }
