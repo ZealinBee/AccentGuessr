@@ -6,6 +6,7 @@ import LoginButton from "./GoogleLoginButton";
 import { useGame } from "../hooks/useGame";
 import useAuth from "../hooks/useAuth";
 import DashboardIcon from "./DashboardIcon";
+import { User, Users, Mic } from "lucide-react";
 
 function Home() {
   const navigate = useNavigate();
@@ -51,7 +52,8 @@ function Home() {
                   disabled={isLoading}
                   aria-busy={isLoading}
                 >
-                  Singleplayer
+                  <User size={18} />
+                  <span>Singleplayer</span>
                   {isLoading && (
                     <>
                       <span className="loading-spinner" aria-hidden="true" />
@@ -63,13 +65,15 @@ function Home() {
                   onClick={() => navigate("/multiplayer")}
                   className="start-button"
                 >
-                  Multiplayer
+                  <Users size={18} />
+                  <span>Multiplayer</span>
                 </button>
                 <button
                   onClick={() => navigate("/volunteer")}
                   className="start-button volunteer-button"
                 >
-                  Volunteer Your Accent
+                  <Mic size={18} />
+                  <span>Volunteer Your Accent</span>
                 </button>
               </div>
             </div>

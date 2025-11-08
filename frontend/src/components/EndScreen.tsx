@@ -4,7 +4,7 @@ import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
 import useAuth from "../hooks/useAuth";
 import { useGame } from "../hooks/useGame";
-import { Share2 } from "lucide-react";
+import { Share2, Play } from "lucide-react";
 
 interface EndScreenProps {
   totalScore: number;
@@ -98,7 +98,8 @@ function EndScreen({ totalScore }: EndScreenProps) {
                 className="end-screen-play-again-button"
                 onClick={newGame}
               >
-                Play again
+                <Play size={18} />
+                <span>Play again</span>
               </button>
             </div>
           </>
