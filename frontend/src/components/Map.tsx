@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { X } from "lucide-react";
 import AudioPlayer from "./AudioPlayer";
 import ResultCard from "./ResultCard";
 import InstructionCard from "./InstructionCard";
@@ -45,6 +46,8 @@ function Map({ roundData }: MapProps) {
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [percentile, setPercentile] = useState<number | null>(null);
+  const [showModal, setShowModal] = useState(false);
   const { nextRound, pushRoundResult, gameRound } = useGame();
 
   const correctLocation = roundData.accent;
@@ -248,6 +251,14 @@ function Map({ roundData }: MapProps) {
       guessLat: answered.lat,
       speakerId: roundData.id,
     });
+
+    // Fetch percentile from backend
+    fetch(
+      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${roundScore}`
+    )
+      .then((res) => res.json())
+      .then((data) => setPercentile(data.percentile))
+      .catch((err) => console.error("Failed to fetch percentile:", err));
   };
 
   const handleNext = () => {
@@ -273,6 +284,8 @@ function Map({ roundData }: MapProps) {
     setConfirmedAnswer(null);
     setAnswerDistance(null);
     setScore(null);
+    setPercentile(null);
+    setShowModal(false);
 
     nextRound();
   };
@@ -308,9 +321,32 @@ function Map({ roundData }: MapProps) {
             accentName={roundData.accent.name}
             accentDescription={roundData.accent.description}
             audioClipUrl={roundData.clips[0]}
+            percentile={percentile}
+            onOpenModal={() => setShowModal(true)}
           />
         )}
       </div>
+
+      {/* Modal for accent description */}
+      {showModal && (
+        <div className="result-card-modal-overlay" onClick={() => setShowModal(false)}>
+          <div className="result-card-modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="result-card-modal-header">
+              <h3>About the {roundData.accent.name} Accent</h3>
+              <button
+                onClick={() => setShowModal(false)}
+                className="result-card-modal-close"
+                aria-label="Close"
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <div className="result-card-modal-body">
+              <p>{roundData.accent.description}</p>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

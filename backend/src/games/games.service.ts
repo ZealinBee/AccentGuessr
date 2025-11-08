@@ -58,4 +58,26 @@ export class GamesService {
     });
     return { count: result.count };
   }
+
+  async calculatePercentileForSpeaker(
+    speakerId: number,
+    currentScore: number,
+  ): Promise<number> {
+    // Count total rounds for this speaker
+    const totalCount = await this.prisma.round.count({
+      where: { speakerId },
+    });
+
+    if (totalCount === 0) return 100;
+
+    // Count rounds with score <= current score
+    const lowerOrEqualCount = await this.prisma.round.count({
+      where: {
+        speakerId,
+        score: { lte: currentScore },
+      },
+    });
+
+    return Math.round((lowerOrEqualCount / totalCount) * 100);
+  }
 }

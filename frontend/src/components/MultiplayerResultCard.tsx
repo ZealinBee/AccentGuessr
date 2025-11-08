@@ -55,11 +55,11 @@ function MultiplayerResultCard({
 
   return (
     <>
-      <div className={`result-card`}>
-        <div className="result-card-header">
-          <div className="result-title">Accent: {accentName}</div>
+      <div className={`multiplayer-result-card`}>
+        <div className="multiplayer-result-card-header">
+          <div className="multiplayer-result-title">Accent: {accentName}</div>
 
-          <div className="result-text">
+          <div className="multiplayer-result-text">
             {score === 5000 ? (
               <>Perfect! You nailed it exactly!</>
             ) : (
@@ -67,7 +67,7 @@ function MultiplayerResultCard({
             )}
           </div>
 
-          <div className="score-text">
+          <div className="multiplayer-score-text">
             Score: {score ?? "-"} / {maxScore}
           </div>
 
@@ -76,14 +76,14 @@ function MultiplayerResultCard({
             aria-valuemin={0}
             aria-valuemax={maxScore}
             aria-valuenow={typeof score === "number" ? Math.round(score) : 0}
-            className="progress-container"
+            className="multiplayer-progress-container"
           >
-            <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${percent}%` }} />
+            <div className="multiplayer-progress-track">
+              <div className="multiplayer-progress-fill" style={{ width: `${percent}%` }} />
             </div>
           </div>
           {isResolved && nextRoundCountdown !== null && (
-            <div className="next-round-countdown">
+            <div className="multiplayer-next-round-countdown">
               Next round in {nextRoundCountdown}...
             </div>
           )}

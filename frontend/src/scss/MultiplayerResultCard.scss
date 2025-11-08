@@ -1,4 +1,4 @@
-.result-card {
+.multiplayer-result-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
@@ -9,7 +9,7 @@
   overflow: hidden;
 }
 
-.result-card-header {
+.multiplayer-result-card-header {
   padding: 20px;
   display: flex;
   gap: 16px;
@@ -17,31 +17,31 @@
   flex-direction: column;
 }
 
-.result-title {
+.multiplayer-result-title {
   font-size: 18px;
   font-weight: 700;
   color: #1f2937;
 }
 
-.result-text {
+.multiplayer-result-text {
   font-size: 15px;
   color: #4b5563;
   text-align: center;
   line-height: 1.5;
 }
 
-.score-text {
+.multiplayer-score-text {
   font-size: 18px;
   font-weight: 600;
   color: #1f2937;
 }
 
-.progress-container {
+.multiplayer-progress-container {
   width: 100%;
   margin-top: 8px;
 }
 
-.progress-track {
+.multiplayer-progress-track {
   width: 100%;
   background: #e5e7eb;
   height: 14px;
@@ -49,14 +49,14 @@
   overflow: hidden;
 }
 
-.progress-fill {
+.multiplayer-progress-fill {
   height: 100%;
   background: #2563eb;
   border-radius: 999px;
   transition: width 300ms ease;
 }
 
-.next-round-countdown {
+.multiplayer-next-round-countdown {
   font-size: 16px;
   font-weight: 600;
   color: #2563eb;
@@ -69,30 +69,30 @@
 }
 
 @media (max-width: 480px) {
-  .result-card {
+  .multiplayer-result-card {
     min-width: 280px;
     max-width: calc(100vw - 24px);
     width: auto;
   }
 
-  .result-card-header {
+  .multiplayer-result-card-header {
     padding: 16px;
     gap: 12px;
   }
 
-  .result-title {
+  .multiplayer-result-title {
     font-size: 16px;
   }
 
-  .result-text {
+  .multiplayer-result-text {
     font-size: 14px;
   }
 
-  .score-text {
+  .multiplayer-score-text {
     font-size: 16px;
   }
 
-  .next-round-countdown {
+  .multiplayer-next-round-countdown {
     font-size: 14px;
     padding: 10px 16px;
     margin-top: 8px;

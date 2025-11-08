@@ -5,6 +5,7 @@ import {
   UseGuards,
   Request,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { GamesService } from './games.service';
 import { OptionalJwtAuthGuard } from 'src/auth/optional-jwt-auth.guard';
@@ -34,5 +35,25 @@ export class GamesController {
     const userId = req.user?.id;
     if (!userId) throw new NotFoundException('User not found');
     return this.gamesService.deleteAllUserGames(userId);
+  }
+
+  @Get('percentile')
+  async getPercentile(
+    @Query('speakerId') speakerId: string,
+    @Query('score') score: string,
+  ) {
+    const speakerIdNum = parseInt(speakerId, 10);
+    const scoreNum = parseInt(score, 10);
+
+    if (isNaN(speakerIdNum) || isNaN(scoreNum)) {
+      throw new NotFoundException('Invalid speakerId or score');
+    }
+
+    const percentile = await this.gamesService.calculatePercentileForSpeaker(
+      speakerIdNum,
+      scoreNum,
+    );
+
+    return { percentile };
   }
 }
