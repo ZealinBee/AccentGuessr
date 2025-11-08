@@ -54,7 +54,7 @@ function MultiplayerLobby() {
 
   const handleShare = async () => {
     const inviteLink = `${window.location.origin}/join/${roomState?.code || matchCode}`;
-    const shareText = `🌍 Can you beat me at guessing where these accents are from?\n\nJoin my game: ${inviteLink}\n\nCode: ${roomState?.code || matchCode}`;
+    const shareText = `🌍 Can you beat me at guessing where these accents are from?\n\nJoin my game: ${inviteLink}`;
 
     if (navigator.share) {
       try {
