@@ -1,55 +1,140 @@
+.result-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.collapse-toggle-button {
+  background: white;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6b7280;
+  transition: all 200ms ease;
+
+  &:hover {
+    color: #1f2937;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  &:active {
+    color: #374151;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  svg {
+    display: block;
+  }
+}
 .result-card {
   background: white;
   border-radius: 12px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
-  min-width: 280px;
-  max-width: 360px;
+  min-width: 240px;
+  max-width: 280px;
   overflow: hidden;
   transition: max-height 300ms ease;
 
   &.expanded {
     max-height: 80vh;
   }
+
+  @media (min-width: 481px) {
+    min-width: 280px;
+    max-width: 320px;
+  }
 }
 
 .result-card-header {
-  padding: 20px;
+  padding: 16px;
   display: flex;
-  gap: 16px;
+  gap: 12px;
   align-items: center;
   flex-direction: column;
 }
 
 .result-title {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 700;
   color: #1f2937;
 }
 
+.result-card-play-voice-again {
+  width: 100%;
+
+  button {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: 2px solid #2563eb;
+    background: white;
+    color: #2563eb;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    font-family: "Inter", system-ui, sans-serif;
+    width: 100%;
+    transition: all 200ms ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+      background: #eff6ff;
+      border-color: #1d4ed8;
+      color: #1d4ed8;
+    }
+
+    &:active {
+      background: #dbeafe;
+      border-color: #1e40af;
+      color: #1e40af;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      border-color: #e5e7eb;
+      color: #9ca3af;
+
+      &:hover {
+        background: white;
+        border-color: #e5e7eb;
+        color: #9ca3af;
+      }
+    }
+  }
+}
+
 .result-text {
-  font-size: 15px;
+  font-size: 14px;
   color: #4b5563;
   text-align: center;
   line-height: 1.5;
 }
 
 .score-text {
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 600;
   color: #1f2937;
 }
 
 .progress-container {
   width: 100%;
-  margin-top: 8px;
 }
 
 .progress-track {
   width: 100%;
   background: #e5e7eb;
-  height: 14px;
+  height: 12px;
   border-radius: 999px;
   overflow: hidden;
 }
@@ -62,13 +147,13 @@
 }
 
 .next-button {
-  padding: 12px 24px;
+  padding: 10px 20px;
   border-radius: 8px;
   border: none;
   background: #2563eb;
   color: white;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 600;
   font-family: "Inter", system-ui, sans-serif;
   margin-top: 8px;
@@ -85,13 +170,13 @@
 }
 
 .details-toggle-button {
-  padding: 10px 20px;
+  padding: 8px 16px;
   border-radius: 8px;
   border: 2px solid #e5e7eb;
   background: #f9fafb;
   color: #4b5563;
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   font-family: "Inter", system-ui, sans-serif;
   margin-top: 4px;
@@ -201,6 +286,82 @@
   }
 }
 
+// Laptop and iPad screens - make card more compact
+@media (min-width: 481px) and (max-width: 1440px) {
+  .result-card {
+    min-width: 220px;
+    max-width: 260px;
+  }
+
+  .result-card-header {
+    padding: 14px;
+    gap: 10px;
+  }
+
+  .result-title {
+    font-size: 15px;
+  }
+
+  .result-text {
+    font-size: 13px;
+  }
+
+  .score-text {
+    font-size: 15px;
+  }
+
+  .result-card-play-voice-again button {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+
+  .next-button {
+    padding: 9px 18px;
+    font-size: 14px;
+  }
+
+  .details-toggle-button {
+    padding: 7px 14px;
+    font-size: 12px;
+  }
+
+  .progress-track {
+    height: 10px;
+  }
+
+  .progress-container {
+    margin-top: 6px;
+  }
+
+  .accent-description {
+    max-height: 35vh;
+    min-height: 180px;
+  }
+
+  .accent-description-header {
+    padding: 14px 16px 10px;
+
+    h3 {
+      font-size: 15px;
+    }
+  }
+
+  .accent-description-content {
+    padding: 0 16px 16px;
+
+    p {
+      font-size: 13px;
+      line-height: 1.5;
+    }
+  }
+
+  .close-button {
+    width: 28px;
+    height: 28px;
+    font-size: 28px;
+  }
+}
+
 @media (max-width: 480px) {
   .result-card {
     min-width: 300px;
@@ -212,6 +373,42 @@
     }
   }
 
+  .result-card-header {
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .result-title {
+    font-size: 18px;
+  }
+
+  .result-text {
+    font-size: 15px;
+  }
+
+  .score-text {
+    font-size: 18px;
+  }
+
+  .result-card-play-voice-again button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .next-button {
+    padding: 12px 24px;
+    font-size: 16px;
+  }
+
+  .details-toggle-button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .progress-track {
+    height: 14px;
+  }
+
   .accent-description {
     max-height: 50vh;
     min-height: 250px;
@@ -219,6 +416,5 @@
 }
 
 .accent-description-paragraph {
-    white-space: pre-line;
-
+  white-space: pre-line;
 }

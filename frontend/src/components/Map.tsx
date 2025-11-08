@@ -307,6 +307,7 @@ function Map({ roundData }: MapProps) {
             handleNext={handleNext}
             accentName={roundData.accent.name}
             accentDescription={roundData.accent.description}
+            audioClipUrl={roundData.clips[0]}
           />
         )}
       </div>
