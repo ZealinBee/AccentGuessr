@@ -54,13 +54,14 @@ function MultiplayerLobby() {
 
   const handleShare = async () => {
     const inviteLink = `${window.location.origin}/join/${roomState?.code || matchCode}`;
-    const shareText = `Can you beat me in guessing where this accent is from? ${inviteLink}`;
+    const shareText = `🌍 Can you beat me at guessing where these accents are from?\n\nJoin my game: ${inviteLink}\n\nCode: ${roomState?.code || matchCode}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'AccentGuessr Challenge',
+          title: 'Guess the Accent Challenge',
           text: shareText,
+          url: inviteLink,
         });
       } catch (err) {
         console.error('Failed to share:', err);
@@ -69,7 +70,8 @@ function MultiplayerLobby() {
       // Fallback: copy to clipboard
       try {
         await navigator.clipboard.writeText(shareText);
-        alert('Share link copied to clipboard!');
+        setCopySuccess(true);
+        setTimeout(() => setCopySuccess(false), 2000);
       } catch (err) {
         console.error('Failed to copy:', err);
       }
