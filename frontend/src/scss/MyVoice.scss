@@ -1,0 +1,304 @@
+.my-voice-container {
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background-color: #0f172a;
+  font-family: "Inter", system-ui, sans-serif;
+
+  .my-voice-back-home-button {
+    background: transparent;
+    color: #94a3b8;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    font-family: "Inter", system-ui, sans-serif;
+    border: 1px solid rgba(148, 163, 184, 0.3);
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+    position: absolute;
+    top: 2rem;
+    left: 1rem;
+    z-index: 100;
+
+    &:hover {
+      background-color: rgba(148, 163, 184, 0.1);
+      color: #cbd5e1;
+      border-color: rgba(148, 163, 184, 0.5);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+
+  .background-image {
+    position: absolute;
+    inset: 0;
+    background-image: url("/background.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    opacity: 0.35;
+    filter: contrast(1.05) saturate(1.1);
+  }
+
+  .background-overlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      circle at 30% 40%,
+      rgba(15, 23, 42, 0.8),
+      rgba(15, 23, 42, 0.95)
+    );
+  }
+
+  > * {
+    position: relative;
+    z-index: 10;
+  }
+
+  .error-card {
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0.75rem;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+    max-width: 70rem;
+    width: 100%;
+  }
+
+  .error {
+    background-color: transparent;
+    backdrop-filter: none;
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 0.75rem;
+    padding: 1.75rem 2.5rem;
+    box-shadow: none;
+    color: #fca5a5;
+    font-size: 1rem;
+    text-align: center;
+    max-width: 100%;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+
+  .error-message {
+    color: #cbd5e1;
+    font-size: 1rem;
+    text-align: center;
+    margin: 1.5rem 0 0.75rem 0;
+    line-height: 1.6;
+  }
+
+  .my-voice-google-button {
+    margin-bottom: 1rem;
+  }
+
+  .button-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .my-voice-volunteer-button {
+    background: linear-gradient(to right, #f8fafc, #e2e8f0);
+    color: #0f172a;
+    padding: 0.85rem 2rem;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    font-family: "Inter", system-ui, sans-serif;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    transition: all 0.2s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    width: 100%;
+
+    &:hover {
+      background: linear-gradient(to right, #ffffff, #f1f5f9);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+  }
+
+  .speaker-info {
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.75rem 2.5rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 45rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 1024px) and (max-width: 1440px) {
+      max-width: 42rem;
+      padding: 1.5rem 2rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    p {
+      font-size: 1rem;
+      color: #cbd5e1;
+      margin: 0.75rem 0;
+      line-height: 1.6;
+
+      strong {
+        color: #f8fafc;
+        margin-right: 0.5rem;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .map-section {
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0.75rem;
+    padding: 1.75rem 2.5rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 45rem;
+
+    @media (min-width: 1024px) and (max-width: 1440px) {
+      max-width: 42rem;
+      padding: 1.5rem 2rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .map-container {
+      width: 100%;
+      height: 500px;
+      border-radius: 0.5rem;
+      overflow: hidden;
+      border: 1px solid rgba(148, 163, 184, 0.15);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+    }
+
+    p {
+      color: #cbd5e1;
+      font-style: italic;
+      text-align: center;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+  }
+
+  > p {
+    color: #cbd5e1;
+    font-size: 1rem;
+    text-align: center;
+  }
+}
+
+.mapboxgl-popup-content {
+  padding: 12px !important;
+  border-radius: 0.5rem !important;
+  background-color: rgba(30, 41, 59, 0.95) !important;
+  border: 1px solid rgba(148, 163, 184, 0.15) !important;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
+  color: #cbd5e1 !important;
+
+  strong {
+    color: #f8fafc;
+    font-weight: 600;
+  }
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: rgba(30, 41, 59, 0.95) !important;
+}
+
+@media (max-width: 768px) {
+  .my-voice-container {
+    .error-card {
+      padding: 1.75rem 1.25rem;
+      border-radius: 0.6rem;
+    }
+
+    .error {
+      padding: 1.5rem 1.25rem;
+    }
+
+    .speaker-info,
+    .map-section {
+      padding: 1.75rem 1.25rem;
+      border-radius: 0.6rem;
+    }
+
+    .speaker-info h2,
+    .map-section h2 {
+      font-size: 1.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .speaker-info p {
+      font-size: 0.95rem;
+    }
+
+    .map-section .map-container {
+      height: 400px;
+    }
+
+    .background-image {
+      opacity: 0.3;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .my-voice-container {
+    .error-card {
+      padding: 1.5rem 1rem;
+    }
+
+    .error {
+      padding: 1.25rem 1rem;
+    }
+
+    .speaker-info,
+    .map-section {
+      padding: 1.5rem 1rem;
+    }
+
+    .speaker-info h2,
+    .map-section h2 {
+      font-size: 1.5rem;
+    }
+
+    .speaker-info p {
+      font-size: 0.9rem;
+    }
+  }
+}

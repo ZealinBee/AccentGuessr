@@ -1,7 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 import type { Match } from "../types/Match";
 import "../scss/MultiplayerEndGameLeaderboard.scss";
-import { Share2 } from "lucide-react";
 
 interface MultiplayerEndGameLeaderboardProps {
   roomState: Match;
@@ -14,8 +13,6 @@ export default function MultiplayerEndGameLeaderboard({
   playerId,
   onReturnToLobby,
 }: MultiplayerEndGameLeaderboardProps) {
-  const [shareSuccess, setShareSuccess] = useState(false);
-
   const finalResults = useMemo(() => {
     const totals = new Map<number, number>();
 
@@ -51,35 +48,6 @@ export default function MultiplayerEndGameLeaderboard({
   const currentPlayerRank = currentPlayerResult
     ? finalResults.indexOf(currentPlayerResult) + 1
     : null;
-
-  const handleShare = async () => {
-    const homeLink = window.location.origin;
-    const playerScore = currentPlayerResult?.totalScore || 0;
-    const rankText = currentPlayerRank ? `#${currentPlayerRank} of ${finalResults.length}` : '';
-
-    const shareText = `🏆 Just finished an AccentGuessr match!\n\n📊 My Results:\n${rankText ? `Rank: ${rankText}\n` : ''}Score: ${playerScore} points\n\n🌍 Think you can do better?\nPlay now: ${homeLink}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: '🏆 AccentGuessr Results',
-          text: shareText,
-          url: homeLink,
-        });
-      } catch (err) {
-        console.error('Failed to share:', err);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareText);
-        setShareSuccess(true);
-        setTimeout(() => setShareSuccess(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
-  };
 
   return (
     <div className="endgame-container">
@@ -151,26 +119,14 @@ export default function MultiplayerEndGameLeaderboard({
             </ul>
           </div>
 
-          <div className="endgame-actions">
+          {onReturnToLobby && (
             <button
-              className="endgame-share-button"
-              onClick={handleShare}
-              title="Share results"
+              className="endgame-action-button"
+              onClick={onReturnToLobby}
             >
-              <Share2 size={18} />
-              <span>Share Results</span>
-              {shareSuccess && <span className="share-success-tooltip">Copied to clipboard!</span>}
+              Return to Lobby
             </button>
-
-            {onReturnToLobby && (
-              <button
-                className="endgame-action-button"
-                onClick={onReturnToLobby}
-              >
-                Return to Lobby
-              </button>
-            )}
-          </div>
+          )}
         </div>
       </div>
     </div>

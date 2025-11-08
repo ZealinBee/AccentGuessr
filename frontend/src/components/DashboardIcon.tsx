@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import "../scss/DashboardIcon.scss";
 import { useNavigate } from "react-router-dom";
+import { LayoutDashboard, Mic, LogOut } from "lucide-react";
 
 function DashboardIcon() {
   const { userPictureURL, username, logout } = useAuth();
@@ -42,6 +43,10 @@ function DashboardIcon() {
     navigate("/dashboard");
   };
 
+  const handleMyVoice = () => {
+    navigate("/my-voice");
+  };
+
   return (
     <div>
       {userPictureURL && username && (
@@ -69,23 +74,21 @@ function DashboardIcon() {
                 className="dropdown-item dashboard-item"
                 onClick={handleDashboard}
               >
-                <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="3" width="7" height="7" />
-                  <rect x="14" y="3" width="7" height="7" />
-                  <rect x="14" y="14" width="7" height="7" />
-                  <rect x="3" y="14" width="7" height="7" />
-                </svg>
+                <LayoutDashboard className="dropdown-icon" size={20} />
                 <span>Dashboard</span>
+              </button>
+              <button
+                className="dropdown-item myvoice-item"
+                onClick={handleMyVoice}
+              >
+                <Mic className="dropdown-icon" size={20} />
+                <span>My Voice</span>
               </button>
               <button
                 className="dropdown-item signout-item"
                 onClick={handleSignOut}
               >
-                <svg className="dropdown-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+                <LogOut className="dropdown-icon" size={20} />
                 <span>Sign Out</span>
               </button>
             </div>

@@ -5,6 +5,7 @@ import "./scss/App.scss";
 import Dashboard from "./pages/Dashboard";
 import MultiplayerLobby from "./pages/MultiplayerLobby";
 import Multiplayer from "./pages/Multiplayer";
+import MyVoice from "./pages/MyVoice";
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/join/:matchCode" element={<MultiplayerLobby />} />
       <Route path="/multiplayer" element={<Multiplayer />} />
+      <Route path="/my-voice" element={<MyVoice />} />
     </Routes>
   );
 }

@@ -7,9 +7,10 @@ import useAuth from "../hooks/useAuth";
 
 interface LoginButtonProps {
   message?: string;
+  navigateTo?: string;
 }
 
-export default function LoginButton({ message }: LoginButtonProps) {
+export default function LoginButton({ message, navigateTo }: LoginButtonProps) {
   const navigate = useNavigate();
   const auth = useAuth();
   const googleButtonRef = useRef<HTMLDivElement>(null);
@@ -27,8 +28,13 @@ export default function LoginButton({ message }: LoginButtonProps) {
         { idToken, games },
         { withCredentials: true }
       );
-      auth.login(res.data.accessToken, res.data.user.name, res.data.user.picture, res.data.user.id);
-      navigate("/");
+      auth.login(
+        res.data.accessToken,
+        res.data.user.name,
+        res.data.user.picture,
+        res.data.user.id
+      );
+      navigate(navigateTo ? `/${navigateTo}` : "/");
     } catch (error) {
       console.error("Error during backend authentication:", error);
     } finally {
@@ -39,7 +45,9 @@ export default function LoginButton({ message }: LoginButtonProps) {
   const handleCustomButtonClick = () => {
     googleButtonRef.current
       ?.querySelector("div[role='button']")
-      ?.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true }));
+      ?.dispatchEvent(
+        new MouseEvent("click", { bubbles: true, cancelable: true })
+      );
   };
 
   return (

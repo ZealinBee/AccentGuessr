@@ -112,4 +112,38 @@ export class SpeakersService {
       accent: s.accent,
     }));
   }
+
+  async getMySpeakerData(userId: string) {
+    // First, find the user and their associated speaker
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      include: {
+        speaker: {
+          include: {
+            rounds: {
+              select: {
+                id: true,
+                guessLat: true,
+                guessLong: true,
+                score: true,
+                createdAt: true,
+                gameId: true,
+              },
+            },
+            accent: true,
+            clips: true,
+          },
+        },
+      },
+    });
+
+    if (!user?.speaker) {
+      return null;
+    }
+
+    return {
+      speaker: user.speaker,
+      rounds: user.speaker.rounds,
+    };
+  }
 }

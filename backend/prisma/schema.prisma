@@ -18,6 +18,8 @@ model Speaker {
 
   rounds Round[]
   matchRounds MatchRound[]
+
+  user User?
 }
 
 model Clip {
@@ -79,6 +81,9 @@ model User {
 
   games Game[]
   playerMatches MatchPlayer[]
+
+  speakerId Int? @unique
+  speaker Speaker? @relation(fields: [speakerId], references: [id])
 }
 
 model Game {
