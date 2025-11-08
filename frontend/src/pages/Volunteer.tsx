@@ -2,6 +2,8 @@ import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import "../scss/Volunteer.scss";
+import useAuth from "../hooks/useAuth";
+import LoginButton from "../components/GoogleLoginButton";
 
 type Quote = {
   joke: string;
@@ -29,6 +31,7 @@ function Volunteer() {
   const audioChunksRef = useRef<Blob[]>([]);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const { userId } = useAuth();
 
   // Calculate number of recordings
   const recordingCount = Object.values(recordingStates).filter(
@@ -164,6 +167,9 @@ function Volunteer() {
     if (countryOfOrigin) {
       formData.append("countryOfOrigin", countryOfOrigin);
     }
+    if (userId) {
+      formData.append("userId", userId);
+    }
 
     // Collect all recorded states with blobs
     const recordedEntries = Object.entries(recordingStates).filter(
@@ -251,6 +257,17 @@ function Volunteer() {
           <li>Scroll down and submit your recording</li>
         </ol>
       </div>
+
+      {!userId && (
+        <div className="login-prompt">
+          <p>
+            💡 If you want to see the data of where people think you're from
+            based off of your voice, feel free to login/sign up first(completely
+            optional)!
+          </p>
+          <LoginButton message="Continue with Google" navigateTo="volunteer" />
+        </div>
+      )}
 
       {isLoadingQuotes ? (
         <div className="loader-container">
@@ -400,12 +417,22 @@ function Volunteer() {
               ? `⏳ Complete Form and have at least 1 audio clip to Submit`
               : "✓ Submit Recordings"}
           </button>
+          {userId && (
+            <div className="logged-in-message">
+              <p>
+                ✓ You're logged in and you will see where people guess your
+                voice when we add it
+              </p>
+            </div>
+          )}
           <label className="consent">
             <div className="checkbox-container">
               <input type="checkbox" required />
               <div className="custom-checkbox"></div>
               <span className="checkbox-text">
-                I consent to my recordings being used for this game. It will not be used anywhere else. Email zhiyuan.liu@tuni.fi if you want to delete your recordings.
+                I consent to my recordings being used for this game. It will not
+                be used anywhere else. Email zhiyuan.liu@tuni.fi if you want to
+                delete your recordings.
               </span>
             </div>
           </label>
