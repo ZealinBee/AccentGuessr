@@ -26,12 +26,12 @@ function EndScreen({ totalScore }: EndScreenProps) {
     const homeLink = window.location.origin;
     const scorePercentage = ((totalScore / 25000) * 100).toFixed(1);
 
-    const shareText = `🎯 Just played AccentGuessr!\n\n📊 My Score:\n${totalScore.toLocaleString()} / 25,000 (${scorePercentage}%)\n\n🌍 Can you beat my score?\nPlay now: ${homeLink}`;
+    const shareText = `🎯 Just played Guess the Accent!\n\n📊 My Score:\n${totalScore.toLocaleString()} / 25,000 (${scorePercentage}%)\n\n🌍 Can you beat my score?\nPlay now: ${homeLink}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: '🎯 My AccentGuessr Score',
+          title: '🎯 My Guess the Accent Score',
           text: shareText,
           url: homeLink,
         });
