@@ -46,6 +46,11 @@ function Home() {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
+  const copyEmailToClipboard = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    navigator.clipboard.writeText('zhiyuan.liu@tuni.fi');
+  };
+
   return (
     <>
       <Seo
@@ -120,6 +125,9 @@ function Home() {
               {" "}
               <img src="/buymecoffeebutton.png" />
             </a>
+            <span className="feedback-text">
+              Feedbacks are welcomed: <a href="mailto:zhiyuan.liu@tuni.fi" className="feedback-email" onClick={copyEmailToClipboard}>zhiyuan.liu@tuni.fi</a>
+            </span>
           </div>
 
           <div className="faq-section">
@@ -148,6 +156,21 @@ function Home() {
                   )}
                 </div>
               ))}
+            </div>
+          </div>
+
+          <div className="video-section">
+            <div className="video-header">
+              <h2 className="video-title">See How It Works</h2>
+              <p className="video-subtitle">Watch a quick playthrough of AccentGuessr</p>
+            </div>
+            <div className="video-wrapper">
+              <iframe
+                src="https://www.youtube.com/embed/W9TXs8Xekik"
+                title="AccentGuessr Playthrough"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
             </div>
           </div>
         </>
