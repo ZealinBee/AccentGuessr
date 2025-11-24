@@ -55,7 +55,7 @@ function Home() {
     <>
       <Seo
         title="Guess the Accent — AccentGuessr"
-        description={`Try to identify where a speaker is from by their English accent. Short audio clips, global accents, fun learning.`}
+        description={`Try to identify where a speaker is from by their English accent. Short audio clips, global accents, fun learning. AccentGuessr — Guess the Accent!`}
         canonical={
           typeof window !== "undefined" ? window.location.href : undefined
         }
