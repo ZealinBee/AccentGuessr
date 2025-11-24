@@ -253,6 +253,158 @@
         margin-bottom: 0.5rem;
       }
 
+      .feedback-text {
+        color: #cbd5e1;
+        font-size: 0.9rem;
+        margin-top: 0.75rem;
+      }
+
+      .feedback-email {
+        color: #60a5fa;
+        text-decoration: none;
+        cursor: pointer;
+        transition: color 0.2s;
+      }
+
+      .feedback-email:hover {
+        color: #93c5fd;
+        text-decoration: underline;
+      }
+
+      /* FAQ Section */
+      .faq-section {
+        position: relative;
+        z-index: 10;
+        max-width: 50rem;
+        margin: 3rem auto;
+        padding: 0 1.5rem;
+      }
+
+      .faq-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .faq-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .faq-subtitle {
+        font-size: 1rem;
+        color: #cbd5e1;
+      }
+
+      .faq-container {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+
+      .faq-item {
+        background-color: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 0.5rem;
+        overflow: hidden;
+      }
+
+      .faq-question-button {
+        width: 100%;
+        padding: 1.25rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+
+      .faq-question-button:hover {
+        background-color: rgba(51, 65, 85, 0.5);
+      }
+
+      .faq-question {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #f8fafc;
+        text-align: left;
+        margin: 0;
+      }
+
+      .faq-icon {
+        color: #94a3b8;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+        margin-left: 1rem;
+      }
+
+      .faq-icon-open {
+        transform: rotate(180deg);
+      }
+
+      .faq-answer-wrapper {
+        padding: 0 1.25rem 1.25rem;
+      }
+
+      .faq-answer {
+        font-size: 0.95rem;
+        color: #cbd5e1;
+        line-height: 1.6;
+        margin: 0;
+      }
+
+      /* Video Section */
+      .video-section {
+        position: relative;
+        z-index: 10;
+        max-width: 50rem;
+        margin: 3rem auto;
+        padding: 0 1.5rem 3rem;
+      }
+
+      .video-header {
+        text-align: center;
+        margin-bottom: 2rem;
+      }
+
+      .video-title {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #f8fafc;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+      }
+
+      .video-subtitle {
+        font-size: 1rem;
+        color: #cbd5e1;
+      }
+
+      .video-wrapper {
+        position: relative;
+        width: 100%;
+        padding-bottom: 56.25%; /* 16:9 aspect ratio */
+        background-color: rgba(30, 41, 59, 0.85);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(148, 163, 184, 0.15);
+        border-radius: 0.75rem;
+        overflow: hidden;
+      }
+
+      .video-wrapper iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        border: none;
+      }
+
       /* Loading spinner */
       .loading-spinner {
         margin-left: 0.5rem;
@@ -323,6 +475,24 @@
         .background-image {
           opacity: 0.3;
         }
+
+        .faq-section,
+        .video-section {
+          padding: 0 1rem;
+        }
+
+        .faq-title,
+        .video-title {
+          font-size: 1.75rem;
+        }
+
+        .faq-question {
+          font-size: 0.95rem;
+        }
+
+        .faq-answer {
+          font-size: 0.9rem;
+        }
       }
 
       @media (max-width: 480px) {
@@ -336,6 +506,15 @@
 
         .welcome-card {
           padding: 1.5rem 1rem;
+        }
+
+        .faq-title,
+        .video-title {
+          font-size: 1.5rem;
+        }
+
+        .faq-question-button {
+          padding: 1rem;
         }
       }
     </style>
@@ -393,9 +572,129 @@
       >
         <img src="/buymecoffeebutton.png" alt="Buy Me A Coffee" />
       </a>
+      <span class="feedback-text">
+        Feedbacks are welcomed: <a href="mailto:zhiyuan.liu@tuni.fi" class="feedback-email" onclick="copyEmailToClipboard(event)">zhiyuan.liu@tuni.fi</a>
+      </span>
+    </div>
+
+    <div class="faq-section">
+      <div class="faq-header">
+        <h2 class="faq-title">Frequently Asked Questions</h2>
+        <p class="faq-subtitle">Everything you need to know about AccentGuessr</p>
+      </div>
+      <div class="faq-container" id="faqContainer"></div>
+    </div>
+
+    <div class="video-section">
+      <div class="video-header">
+        <h2 class="video-title">See How It Works</h2>
+        <p class="video-subtitle">Watch a quick playthrough of AccentGuessr</p>
+      </div>
+      <div class="video-wrapper">
+        <iframe
+          src="https://www.youtube.com/embed/W9TXs8Xekik"
+          title="AccentGuessr Playthrough"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+        ></iframe>
+      </div>
     </div>
 
     <script>
+      // FAQ data
+      const faqs = [
+        {
+          question: "What is AccentGuessr?",
+          answer: "AccentGuessr is an interactive game where you listen to short audio clips of people speaking English and try to guess their accent or country of origin. It's a fun way to learn about different English accents from around the world."
+        },
+        {
+          question: "How do I play the accent guessing game?",
+          answer: "Simply click the 'Singleplayer' button to start a game. You'll hear an audio clip of someone speaking English. Listen carefully and select the country or region where you think the speaker is from. You can play solo or challenge friends in multiplayer mode."
+        },
+        {
+          question: "What accents are included in the game?",
+          answer: "AccentGuessr features English accents from countries and regions around the world, including American, British, Australian, Indian, Canadian, South African, and many more. The collection is constantly growing thanks to our volunteer contributors."
+        },
+        {
+          question: "Can I contribute my own accent?",
+          answer: "Yes! Click the 'Volunteer Your Accent' button to record yourself speaking. Your contribution helps make the game more diverse and educational for players worldwide."
+        },
+        {
+          question: "Is AccentGuessr free to play?",
+          answer: "Yes, AccentGuessr is completely free to play. You can enjoy unlimited rounds of accent guessing in both singleplayer and multiplayer modes without any cost."
+        },
+        {
+          question: "Do I need to create an account?",
+          answer: "You can play without an account, but logging in with Google allows you to track your progress, save your scores, and compete with other players on the leaderboard."
+        }
+      ];
+
+      // Copy email to clipboard
+      function copyEmailToClipboard(e) {
+        e.preventDefault();
+        navigator.clipboard.writeText('zhiyuan.liu@tuni.fi');
+      }
+
+      // Toggle FAQ
+      function toggleFaq(index) {
+        const faqItems = document.querySelectorAll('.faq-item');
+        const clickedItem = faqItems[index];
+        const answerWrapper = clickedItem.querySelector('.faq-answer-wrapper');
+        const icon = clickedItem.querySelector('.faq-icon');
+
+        // Close all other FAQs
+        faqItems.forEach((item, i) => {
+          if (i !== index) {
+            const wrapper = item.querySelector('.faq-answer-wrapper');
+            const itemIcon = item.querySelector('.faq-icon');
+            if (wrapper) wrapper.remove();
+            if (itemIcon) itemIcon.classList.remove('faq-icon-open');
+          }
+        });
+
+        // Toggle current FAQ
+        if (answerWrapper) {
+          answerWrapper.remove();
+          icon.classList.remove('faq-icon-open');
+        } else {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'faq-answer-wrapper';
+          const answer = document.createElement('p');
+          answer.className = 'faq-answer';
+          answer.textContent = faqs[index].answer;
+          wrapper.appendChild(answer);
+          clickedItem.appendChild(wrapper);
+          icon.classList.add('faq-icon-open');
+        }
+      }
+
+      // Initialize FAQ items
+      document.addEventListener('DOMContentLoaded', function() {
+        const faqContainer = document.getElementById('faqContainer');
+        faqs.forEach((faq, index) => {
+          const faqItem = document.createElement('div');
+          faqItem.className = 'faq-item';
+
+          const button = document.createElement('button');
+          button.className = 'faq-question-button';
+          button.setAttribute('aria-expanded', 'false');
+          button.onclick = () => toggleFaq(index);
+
+          const question = document.createElement('h3');
+          question.className = 'faq-question';
+          question.textContent = faq.question;
+
+          const icon = document.createElement('span');
+          icon.className = 'faq-icon';
+          icon.innerHTML = '▼';
+
+          button.appendChild(question);
+          button.appendChild(icon);
+          faqItem.appendChild(button);
+          faqContainer.appendChild(faqItem);
+        });
+      });
+
       // Simple function to transition to the React app
       function startGame() {
         const btn = document.getElementById("startGameBtn");
