@@ -5,7 +5,11 @@
     <link rel="icon" type="image/png" href="/iconn.png" />
     <link rel="apple-touch-icon" href="/iconn.png" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1290357879552342"
+      crossorigin="anonymous"
+    ></script>
     <!-- Primary Meta Tags -->
     <title>
       Guess the Accent — AccentGuessr | Test Your Accent Recognition Skills
@@ -573,14 +577,22 @@
         <img src="/buymecoffeebutton.png" alt="Buy Me A Coffee" />
       </a>
       <span class="feedback-text">
-        Feedbacks are welcomed: <a href="mailto:zhiyuan.liu@tuni.fi" class="feedback-email" onclick="copyEmailToClipboard(event)">zhiyuan.liu@tuni.fi</a>
+        Feedbacks are welcomed:
+        <a
+          href="mailto:zhiyuan.liu@tuni.fi"
+          class="feedback-email"
+          onclick="copyEmailToClipboard(event)"
+          >zhiyuan.liu@tuni.fi</a
+        >
       </span>
     </div>
 
     <div class="faq-section">
       <div class="faq-header">
         <h2 class="faq-title">Frequently Asked Questions</h2>
-        <p class="faq-subtitle">Everything you need to know about AccentGuessr</p>
+        <p class="faq-subtitle">
+          Everything you need to know about AccentGuessr
+        </p>
       </div>
       <div class="faq-container" id="faqContainer"></div>
     </div>
@@ -595,7 +607,7 @@
           src="https://www.youtube.com/embed/W9TXs8Xekik"
           title="AccentGuessr Playthrough"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowFullScreen
+          allowfullscreen
         ></iframe>
       </div>
     </div>
@@ -605,88 +617,94 @@
       const faqs = [
         {
           question: "What is AccentGuessr?",
-          answer: "AccentGuessr is an interactive game where you listen to short audio clips of people speaking English and try to guess their accent or country of origin. It's a fun way to learn about different English accents from around the world."
+          answer:
+            "AccentGuessr is an interactive game where you listen to short audio clips of people speaking English and try to guess their accent or country of origin. It's a fun way to learn about different English accents from around the world.",
         },
         {
           question: "How do I play the accent guessing game?",
-          answer: "Simply click the 'Singleplayer' button to start a game. You'll hear an audio clip of someone speaking English. Listen carefully and select the country or region where you think the speaker is from. You can play solo or challenge friends in multiplayer mode."
+          answer:
+            "Simply click the 'Singleplayer' button to start a game. You'll hear an audio clip of someone speaking English. Listen carefully and select the country or region where you think the speaker is from. You can play solo or challenge friends in multiplayer mode.",
         },
         {
           question: "What accents are included in the game?",
-          answer: "AccentGuessr features English accents from countries and regions around the world, including American, British, Australian, Indian, Canadian, South African, and many more. The collection is constantly growing thanks to our volunteer contributors."
+          answer:
+            "AccentGuessr features English accents from countries and regions around the world, including American, British, Australian, Indian, Canadian, South African, and many more. The collection is constantly growing thanks to our volunteer contributors.",
         },
         {
           question: "Can I contribute my own accent?",
-          answer: "Yes! Click the 'Volunteer Your Accent' button to record yourself speaking. Your contribution helps make the game more diverse and educational for players worldwide."
+          answer:
+            "Yes! Click the 'Volunteer Your Accent' button to record yourself speaking. Your contribution helps make the game more diverse and educational for players worldwide.",
         },
         {
           question: "Is AccentGuessr free to play?",
-          answer: "Yes, AccentGuessr is completely free to play. You can enjoy unlimited rounds of accent guessing in both singleplayer and multiplayer modes without any cost."
+          answer:
+            "Yes, AccentGuessr is completely free to play. You can enjoy unlimited rounds of accent guessing in both singleplayer and multiplayer modes without any cost.",
         },
         {
           question: "Do I need to create an account?",
-          answer: "You can play without an account, but logging in with Google allows you to track your progress, save your scores, and compete with other players on the leaderboard."
-        }
+          answer:
+            "You can play without an account, but logging in with Google allows you to track your progress, save your scores, and compete with other players on the leaderboard.",
+        },
       ];
 
       // Copy email to clipboard
       function copyEmailToClipboard(e) {
         e.preventDefault();
-        navigator.clipboard.writeText('zhiyuan.liu@tuni.fi');
+        navigator.clipboard.writeText("zhiyuan.liu@tuni.fi");
       }
 
       // Toggle FAQ
       function toggleFaq(index) {
-        const faqItems = document.querySelectorAll('.faq-item');
+        const faqItems = document.querySelectorAll(".faq-item");
         const clickedItem = faqItems[index];
-        const answerWrapper = clickedItem.querySelector('.faq-answer-wrapper');
-        const icon = clickedItem.querySelector('.faq-icon');
+        const answerWrapper = clickedItem.querySelector(".faq-answer-wrapper");
+        const icon = clickedItem.querySelector(".faq-icon");
 
         // Close all other FAQs
         faqItems.forEach((item, i) => {
           if (i !== index) {
-            const wrapper = item.querySelector('.faq-answer-wrapper');
-            const itemIcon = item.querySelector('.faq-icon');
+            const wrapper = item.querySelector(".faq-answer-wrapper");
+            const itemIcon = item.querySelector(".faq-icon");
             if (wrapper) wrapper.remove();
-            if (itemIcon) itemIcon.classList.remove('faq-icon-open');
+            if (itemIcon) itemIcon.classList.remove("faq-icon-open");
           }
         });
 
         // Toggle current FAQ
         if (answerWrapper) {
           answerWrapper.remove();
-          icon.classList.remove('faq-icon-open');
+          icon.classList.remove("faq-icon-open");
         } else {
-          const wrapper = document.createElement('div');
-          wrapper.className = 'faq-answer-wrapper';
-          const answer = document.createElement('p');
-          answer.className = 'faq-answer';
+          const wrapper = document.createElement("div");
+          wrapper.className = "faq-answer-wrapper";
+          const answer = document.createElement("p");
+          answer.className = "faq-answer";
           answer.textContent = faqs[index].answer;
           wrapper.appendChild(answer);
           clickedItem.appendChild(wrapper);
-          icon.classList.add('faq-icon-open');
+          icon.classList.add("faq-icon-open");
         }
       }
 
       // Initialize FAQ items
-      document.addEventListener('DOMContentLoaded', function() {
-        const faqContainer = document.getElementById('faqContainer');
+      document.addEventListener("DOMContentLoaded", function () {
+        const faqContainer = document.getElementById("faqContainer");
         faqs.forEach((faq, index) => {
-          const faqItem = document.createElement('div');
-          faqItem.className = 'faq-item';
+          const faqItem = document.createElement("div");
+          faqItem.className = "faq-item";
 
-          const button = document.createElement('button');
-          button.className = 'faq-question-button';
-          button.setAttribute('aria-expanded', 'false');
+          const button = document.createElement("button");
+          button.className = "faq-question-button";
+          button.setAttribute("aria-expanded", "false");
           button.onclick = () => toggleFaq(index);
 
-          const question = document.createElement('h3');
-          question.className = 'faq-question';
+          const question = document.createElement("h3");
+          question.className = "faq-question";
           question.textContent = faq.question;
 
-          const icon = document.createElement('span');
-          icon.className = 'faq-icon';
-          icon.innerHTML = '▼';
+          const icon = document.createElement("span");
+          icon.className = "faq-icon";
+          icon.innerHTML = "▼";
 
           button.appendChild(question);
           button.appendChild(icon);
