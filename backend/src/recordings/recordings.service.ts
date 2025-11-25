@@ -1,15 +1,19 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { BlobService } from './blob.service';
+import { PrismaClient } from '@prisma/client';
 
 export interface RecordingSubmission {
   nativeLanguage: string;
   countryOfOrigin?: string;
   quoteId: string | number;
   userId?: string;
+  userEmail?: string;
 }
 
 @Injectable()
 export class RecordingsService {
+  private prisma: any = new PrismaClient();
+
   constructor(private readonly blobService: BlobService) {}
 
   // ✅ Helper to sanitize filenames for Azure Blob Storage
@@ -82,6 +86,15 @@ export class RecordingsService {
           body.userId,
         );
         urls.push(url);
+
+        // Save to VolunteerVoice table
+        await this.prisma.volunteerVoice.create({
+          data: {
+            url,
+            userEmail: body.userEmail || null,
+            status: 'pending', // Default status
+          },
+        });
       } catch (err) {
         console.error('Upload failed for', file.originalname, err);
         throw new BadRequestException(
@@ -98,5 +111,13 @@ export class RecordingsService {
       recordingsCount: files.length,
       urls,
     };
+  }
+
+  async getAllVolunteerVoices(): Promise<any[]> {
+    return await this.prisma.volunteerVoice.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 }

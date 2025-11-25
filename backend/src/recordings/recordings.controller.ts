@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UseInterceptors,
   UploadedFiles,
   Body,
@@ -25,5 +26,10 @@ export class RecordingsController {
     urls?: string[];
   }> {
     return await this.recordingsService.processRecordings(body, files ?? []);
+  }
+
+  @Get('volunteer-voices')
+  async getVolunteerVoices(): Promise<any[]> {
+    return await this.recordingsService.getAllVolunteerVoices();
   }
 }

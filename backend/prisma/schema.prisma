@@ -73,6 +73,20 @@ model Quote {
   submissionRecordings SubmissionRecording[]
 }
 
+model VolunteerVoice {
+  id          Int      @id @default(autoincrement())
+  url         String
+  status      VoiceStatus @default(pending)
+  userEmail   String?
+  createdAt   DateTime @default(now())
+}
+
+enum VoiceStatus {
+  accepted
+  pending
+  rejected
+}
+
 model User {
   id       String   @id @default(uuid())
   email    String   @unique
