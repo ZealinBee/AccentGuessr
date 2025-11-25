@@ -6,6 +6,7 @@ import type { Clip } from "../types/Clip";
 interface ResultCardProps {
   answerDistance: number;
   score: number;
+  baseScore?: number;
   gameRound: number;
   handleNext: () => void;
   accentName: string;

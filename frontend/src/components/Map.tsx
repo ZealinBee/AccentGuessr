@@ -47,7 +47,6 @@ function Map({ roundData }: MapProps) {
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
-  const [baseScore, setBaseScore] = useState<number | null>(null);
   const [percentile, setPercentile] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const { nextRound, pushRoundResult, gameRound } = useGame();
@@ -248,7 +247,6 @@ function Map({ roundData }: MapProps) {
 
     // Add difficulty-based bonus score if medianScore exists
     let finalScore = roundScore;
-    setBaseScore(roundScore);
 
     if (roundData.medianScore !== null && roundData.medianScore !== undefined) {
       const additionalScore = addScoreDependingOnDifficulty(roundScore, roundData.medianScore);
@@ -296,7 +294,6 @@ function Map({ roundData }: MapProps) {
     setConfirmedAnswer(null);
     setAnswerDistance(null);
     setScore(null);
-    setBaseScore(null);
     setPercentile(null);
     setShowModal(false);
 
@@ -329,7 +326,6 @@ function Map({ roundData }: MapProps) {
           <ResultCard
             answerDistance={answerDistance ?? 0}
             score={score ?? 0}
-            baseScore={baseScore ?? undefined}
             gameRound={gameRound}
             handleNext={handleNext}
             accentName={roundData.accent.name}
