@@ -12,6 +12,7 @@ model Speaker {
   createdAt DateTime @default(now())
   clips     Clip[]
   country String?
+  medianScore Float?
 
   accent Accent @relation(fields: [accentId], references: [id])
   accentId Int

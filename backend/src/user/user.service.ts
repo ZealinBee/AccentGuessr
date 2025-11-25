@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { CreateUserDto } from './dto/create-user.dto';
+import { SpeakersService } from '../speakers/speakers.service';
 // Minimal local types to avoid depending on generated Prisma types at compile time.
 type RoundShape = {
   id: number;
@@ -29,6 +30,11 @@ type UserWithGamesAndRounds = {
 @Injectable()
 export class UserService {
   private prisma: any = new PrismaClient() as any;
+
+  constructor(
+    @Inject(forwardRef(() => SpeakersService))
+    private speakersService: SpeakersService,
+  ) {}
 
   findOne(id: string): Promise<UserWithGamesAndRounds | null> {
     return this.prisma.user.findUnique({
@@ -88,6 +94,13 @@ export class UserService {
       },
       include: { rounds: true },
     });
+
+    // Update median score for each speaker in the game
+    const speakerIds = game.rounds.map((r: any) => r.speakerId as number);
+    const uniqueSpeakerIds = [...new Set<number>(speakerIds)];
+    for (const speakerId of uniqueSpeakerIds) {
+      await this.speakersService.updateAverageScoreForSpeaker(speakerId);
+    }
 
     return this.findOne(userId);
   }

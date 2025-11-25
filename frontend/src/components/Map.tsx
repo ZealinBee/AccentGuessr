@@ -6,6 +6,7 @@ import ResultCard from "./ResultCard";
 import InstructionCard from "./InstructionCard";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
+import addScoreDependingOnDifficulty from "../utils/addScoreDependingOnDifficulty";
 import type { Speaker } from "../types/Speaker";
 import {
   point,
@@ -46,6 +47,7 @@ function Map({ roundData }: MapProps) {
   const confirmedAnswerRef = useRef<{ lng: number; lat: number } | null>(null);
   const [answerDistance, setAnswerDistance] = useState<number | null>(null);
   const [score, setScore] = useState<number | null>(null);
+  const [baseScore, setBaseScore] = useState<number | null>(null);
   const [percentile, setPercentile] = useState<number | null>(null);
   const [showModal, setShowModal] = useState(false);
   const { nextRound, pushRoundResult, gameRound } = useGame();
@@ -155,7 +157,6 @@ function Map({ roundData }: MapProps) {
       totalDistance = 0;
       setAnswerDistance(totalDistance);
       roundScore = 5000;
-      setScore(roundScore);
     } else {
       // Find closest point on the polygon border
       const guessPt = point([answered.lng, answered.lat]);
@@ -210,7 +211,6 @@ function Map({ roundData }: MapProps) {
           regionFeature as any
         );
         setAnswerDistance(totalDistance);
-        setScore(roundScore);
       }
 
       // Draw a dotted line from guess to closest border point
@@ -245,8 +245,20 @@ function Map({ roundData }: MapProps) {
         });
       }
     }
+
+    // Add difficulty-based bonus score if medianScore exists
+    let finalScore = roundScore;
+    setBaseScore(roundScore);
+
+    if (roundData.medianScore !== null && roundData.medianScore !== undefined) {
+      const additionalScore = addScoreDependingOnDifficulty(roundScore, roundData.medianScore);
+      finalScore = roundScore + additionalScore;
+    }
+
+    setScore(finalScore);
+
     pushRoundResult({
-      score: roundScore,
+      score: finalScore,
       guessLong: answered.lng,
       guessLat: answered.lat,
       speakerId: roundData.id,
@@ -254,7 +266,7 @@ function Map({ roundData }: MapProps) {
 
     // Fetch percentile from backend
     fetch(
-      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${roundScore}`
+      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${finalScore}`
     )
       .then((res) => res.json())
       .then((data) => setPercentile(data.percentile))
@@ -284,6 +296,7 @@ function Map({ roundData }: MapProps) {
     setConfirmedAnswer(null);
     setAnswerDistance(null);
     setScore(null);
+    setBaseScore(null);
     setPercentile(null);
     setShowModal(false);
 
@@ -316,6 +329,7 @@ function Map({ roundData }: MapProps) {
           <ResultCard
             answerDistance={answerDistance ?? 0}
             score={score ?? 0}
+            baseScore={baseScore ?? undefined}
             gameRound={gameRound}
             handleNext={handleNext}
             accentName={roundData.accent.name}
@@ -323,6 +337,7 @@ function Map({ roundData }: MapProps) {
             audioClipUrl={roundData.clips[0]}
             percentile={percentile}
             onOpenModal={() => setShowModal(true)}
+            difficulty={roundData.medianScore}
           />
         )}
       </div>

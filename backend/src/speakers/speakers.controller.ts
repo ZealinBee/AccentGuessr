@@ -1,6 +1,8 @@
 import {
   Controller,
   Get,
+  Post,
+  Param,
   UseGuards,
   Request,
   NotFoundException,

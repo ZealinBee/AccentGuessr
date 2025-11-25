@@ -5,10 +5,97 @@
   min-width: 280px;
   max-width: 360px;
   overflow: hidden;
+  position: relative;
+}
+
+.difficulty-badge-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  margin-bottom: -8px;
+}
+
+.difficulty-badge {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid currentColor;
+  opacity: 0.95;
+}
+
+.difficulty-info-btn {
+  background: rgba(107, 114, 128, 0.1);
+  border: none;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #6b7280;
+  transition: all 200ms ease;
+  padding: 0;
+  flex-shrink: 0;
+
+  &:hover {
+    background: rgba(107, 114, 128, 0.2);
+    color: #374151;
+  }
+
+  &:active {
+    background: rgba(107, 114, 128, 0.3);
+    transform: scale(0.95);
+  }
+}
+
+.difficulty-tooltip {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: #1f2937;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 100;
+  min-width: 240px;
+  max-width: 320px;
+  animation: tooltipFadeIn 200ms ease;
+
+  &::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 20px;
+    border: 6px solid transparent;
+    border-bottom-color: #1f2937;
+  }
+}
+
+@keyframes tooltipFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .result-card-header {
-  padding: 24px;
+  padding: 16px 24px 24px 24px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -74,6 +161,11 @@
   text-align: center;
 }
 
+.bonus-score {
+  color: #f59e0b;
+  font-weight: 700;
+}
+
 .percentile-inline {
   color: #059669;
   font-weight: 700;
@@ -84,7 +176,8 @@
   background: #e5e7eb;
   height: 10px;
   border-radius: 999px;
-  overflow: hidden;
+  overflow: visible;
+  position: relative;
 }
 
 .progress-fill {
@@ -92,6 +185,19 @@
   background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%);
   border-radius: 999px;
   transition: width 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.progress-bonus {
+  height: 100%;
+  background: linear-gradient(90deg, #fbbf24 0%, #f59e0b 100%);
+  border-radius: 999px;
+  transition: all 600ms cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+  top: 0;
+  box-shadow: 0 0 8px rgba(245, 158, 11, 0.4);
 }
 
 .next-button {

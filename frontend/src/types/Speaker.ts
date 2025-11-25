@@ -5,6 +5,7 @@ interface Speaker {
     id: number;
     clips: Clip[];
     accent: Accent;
+    medianScore?: number;
 }
 
 export type { Speaker };

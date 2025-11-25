@@ -1,11 +1,14 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Inject, forwardRef } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
 import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class SpeakersService {
   private prisma = new PrismaClient();
-  constructor(private userService: UserService) {}
+  constructor(
+    @Inject(forwardRef(() => UserService))
+    private userService: UserService,
+  ) {}
 
   private toBlobUrl(url: string) {
     if (!url) return url;
@@ -145,5 +148,40 @@ export class SpeakersService {
       speaker: user.speaker,
       rounds: user.speaker.rounds,
     };
+  }
+
+  async updateAverageScoreForSpeaker(speakerId: number): Promise<void> {
+    const last25Rounds = await this.prisma.round.findMany({
+      where: { speakerId },
+      orderBy: { createdAt: 'desc' },
+      take: 25,
+    });
+
+    if (last25Rounds.length === 0) {
+      return;
+    }
+
+    // Sort scores to calculate median
+    const scores = last25Rounds
+      .map((round) => round.score || 0)
+      .sort((a, b) => a - b);
+
+    let medianScore: number;
+    const mid = Math.floor(scores.length / 2);
+
+    if (scores.length % 2 === 0) {
+      // Even number of scores: average of two middle values
+      medianScore = (scores[mid - 1] + scores[mid]) / 2;
+    } else {
+      // Odd number of scores: middle value
+      medianScore = scores[mid];
+    }
+
+    await this.prisma.speaker.update({
+      where: { id: speakerId },
+      data: {
+        medianScore: medianScore,
+      },
+    });
   }
 }

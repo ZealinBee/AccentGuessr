@@ -13,6 +13,7 @@ interface ResultCardProps {
   audioClipUrl?: Clip;
   percentile: number | null;
   onOpenModal: () => void;
+  difficulty?: number;
 }
 
 function ResultCard({
@@ -25,12 +26,30 @@ function ResultCard({
   audioClipUrl,
   percentile,
   onOpenModal,
+  difficulty,
 }: ResultCardProps) {
   const maxScore = 5000;
   const safeScore = typeof score === "number" ? score : 0;
-  const percent = Math.max(0, Math.min(100, (safeScore / maxScore) * 100));
+
+  const scorePercent = Math.max(0, Math.min(100, (safeScore / maxScore) * 100));
+
   const [isPlaying, setIsPlaying] = useState(false);
+  const [showDifficultyTooltip, setShowDifficultyTooltip] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const getDifficultyInfo = (difficultyScore: number) => {
+    if (difficultyScore < 1000) {
+      return { label: "Extremely Difficult", color: "#7c2d12", bgColor: "#fef2f2" };
+    } else if (difficultyScore < 2000) {
+      return { label: "Difficult", color: "#b91c1c", bgColor: "#fef2f2" };
+    } else if (difficultyScore < 3000) {
+      return { label: "Medium", color: "#d97706", bgColor: "#fffbeb" };
+    } else if (difficultyScore < 4000) {
+      return { label: "Easy", color: "#059669", bgColor: "#f0fdf4" };
+    } else {
+      return { label: "Very Easy", color: "#047857", bgColor: "#f0fdf4" };
+    }
+  };
 
   const togglePlay = async () => {
     const a = audioRef.current;
@@ -70,6 +89,31 @@ function ResultCard({
     <>
       <div className="result-card">
         <div className="result-card-header">
+          {difficulty !== undefined && difficulty !== null && (
+            <div className="difficulty-badge-container">
+              <div
+                className="difficulty-badge"
+                style={{
+                  backgroundColor: getDifficultyInfo(difficulty).bgColor,
+                  color: getDifficultyInfo(difficulty).color,
+                }}
+              >
+                {getDifficultyInfo(difficulty).label}
+              </div>
+              <button
+                className="difficulty-info-btn"
+                onClick={() => setShowDifficultyTooltip(!showDifficultyTooltip)}
+                aria-label="Difficulty information"
+              >
+                <Info size={14} />
+              </button>
+              {showDifficultyTooltip && (
+                <div className="difficulty-tooltip">
+                  The difficulty is calculated by the median score other people get for this speaker
+                </div>
+              )}
+            </div>
+          )}
           <div className="title-row">
             <div className="result-title">{accentName}</div>
             {audioClipUrl && (
@@ -103,12 +147,12 @@ function ResultCard({
               {percentile !== null && (
                 <span className="percentile-inline">
                   {" "}
-                  ({percentile}% percentile)
+                  ({percentile}th percentile)
                 </span>
               )}
             </div>
             <div className="progress-track">
-              <div className="progress-fill" style={{ width: `${percent}%` }} />
+              <div className="progress-fill" style={{ width: `${scorePercent}%` }} />
             </div>
           </div>
 
