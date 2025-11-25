@@ -11,6 +11,61 @@
   z-index: 20;
   max-width: 400px;
   width: calc(100% - 24px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+  &.collapsed {
+    width: auto;
+    padding: 0;
+    background-color: transparent;
+    box-shadow: none;
+  }
+}
+
+.instruction-toggle {
+  position: absolute;
+  top: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.15), rgba(37, 99, 235, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.3);
+  border-radius: 0.5rem;
+  padding: 0.5rem;
+  color: #3b82f6;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: none; // Hidden by default on desktop
+  align-items: center;
+  justify-content: center;
+  z-index: 30;
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.15);
+
+  &:hover {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.2));
+    border-color: rgba(59, 130, 246, 0.5);
+    transform: translateX(-50%) translateY(-2px);
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25);
+  }
+
+  &:active {
+    transform: translateX(-50%) translateY(0);
+    box-shadow: 0 1px 4px rgba(59, 130, 246, 0.2);
+  }
+
+  .instruction-card.collapsed & {
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 240, 240, 0.95));
+    border: 1px solid rgba(59, 130, 246, 0.4);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+    &:hover {
+      background: linear-gradient(135deg, rgba(59, 130, 246, 0.25), rgba(37, 99, 235, 0.2));
+      border-color: rgba(59, 130, 246, 0.6);
+      transform: translateY(-2px) scale(1.05);
+    }
+  }
 }
 
 .instruction-title {
@@ -40,6 +95,10 @@
     transform: translateX(-50%);
     max-width: 100%;
     padding: 10px;
+  }
+
+  .instruction-toggle {
+    display: flex; // Show toggle button on mobile
   }
 
   .instruction-title h2 {

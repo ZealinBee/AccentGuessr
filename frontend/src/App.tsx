@@ -6,6 +6,7 @@ import Dashboard from "./pages/Dashboard";
 import MultiplayerLobby from "./pages/MultiplayerLobby";
 import Multiplayer from "./pages/Multiplayer";
 import MyVoice from "./pages/MyVoice";
+import VolunteerDashboard from "./pages/VolunteerDashboard";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
       <Route path="/join/:matchCode" element={<MultiplayerLobby />} />
       <Route path="/multiplayer" element={<Multiplayer />} />
       <Route path="/my-voice" element={<MyVoice />} />
+      <Route path="/volunteer-dashboard" element={<VolunteerDashboard />} />
     </Routes>
   );
 }

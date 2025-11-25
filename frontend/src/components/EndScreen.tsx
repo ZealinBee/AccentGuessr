@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
 import useAuth from "../hooks/useAuth";
@@ -10,6 +10,21 @@ interface EndScreenProps {
   totalScore: number;
 }
 
+// Placeholder Ad Component (for preview until AdSense is approved)
+const PlaceholderAd = () => {
+  return (
+    <div className="placeholder-ad">
+      <div className="placeholder-ad-label">Advertisement</div>
+      <div className="placeholder-ad-content">
+        <div className="placeholder-ad-text">
+          <strong>AdSense Preview</strong>
+          <p>Your ad will appear here</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 function EndScreen({ totalScore }: EndScreenProps) {
   const navigate = useNavigate();
   const [shareSuccess, setShareSuccess] = useState(false);
@@ -17,37 +32,22 @@ function EndScreen({ totalScore }: EndScreenProps) {
   const { isLoggedIn } = useAuth();
   const { resetGame, startGame } = useGame();
 
+  // Load AdSense ads
+  useEffect(() => {
+    try {
+      ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({});
+    } catch (err) {
+      console.error('AdSense error:', err);
+    }
+  }, []);
+
   const newGame = () => {
     resetGame();
     startGame();
   };
 
   const handleShare = async () => {
-    const homeLink = window.location.origin;
-    const scorePercentage = ((totalScore / 25000) * 100).toFixed(1);
-
-    const shareText = `🎯 Just played Guess the Accent!\n\n📊 My Score:\n${totalScore.toLocaleString()} / 25,000 (${scorePercentage}%)\n\n🌍 Can you beat my score?\nPlay now: ${homeLink}`;
-
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: '🎯 My Guess the Accent Score',
-          text: shareText,
-          url: homeLink,
-        });
-      } catch (err) {
-        console.error('Failed to share:', err);
-      }
-    } else {
-      // Fallback: copy to clipboard
-      try {
-        await navigator.clipboard.writeText(shareText);
-        setShareSuccess(true);
-        setTimeout(() => setShareSuccess(false), 2000);
-      } catch (err) {
-        console.error('Failed to copy:', err);
-      }
-    }
+    // ...existing code...
   };
 
   return (
@@ -64,6 +64,19 @@ function EndScreen({ totalScore }: EndScreenProps) {
         >
           ← Home
         </button>
+
+        {/* Ad at the top */}
+        <div className="end-screen-ad-container">
+          {/* <PlaceholderAd /> */}
+          {/* Real ad - will match placeholder styling exactly */}
+          <ins className="adsbygoogle end-screen-ad"
+               style={{ display: 'none' }}
+               data-ad-client="ca-pub-1290357879552342"
+               data-ad-slot="4836802390"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
+
         <h1 className="end-screen-title">Thanks for playing! </h1>
         <h2 className="end-screen-score-heading">Your total score:</h2>
         <div className="end-screen-score">
@@ -104,6 +117,18 @@ function EndScreen({ totalScore }: EndScreenProps) {
             </div>
           </>
         )}
+
+        {/* Ad at the bottom */}
+        <div className="end-screen-ad-container">
+          {/* <PlaceholderAd /> */}
+          {/* Real ad - will match placeholder styling exactly */}
+          <ins className="adsbygoogle end-screen-ad"
+               style={{ display: 'none' }}
+               data-ad-client="ca-pub-1290357879552342"
+               data-ad-slot="4836802390"
+               data-ad-format="auto"
+               data-full-width-responsive="true"></ins>
+        </div>
       </div>
     </div>
   );

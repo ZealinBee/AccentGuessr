@@ -21,6 +21,51 @@ import "../scss/Map.scss";
 import { accentToFeature } from "../utils/accentToFeature";
 import { useGame } from "../hooks/useGame";
 
+// Placeholder Ad Component (for preview until AdSense is approved)
+const PlaceholderAd = () => {
+  return (
+    <div className="placeholder-ad">
+      <div className="placeholder-ad-label">Advertisement</div>
+      <div className="placeholder-ad-content">
+        <div className="placeholder-ad-text">
+          <strong>AdSense Preview</strong>
+          <p>Your ad will appear here</p>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Google AdSense Ad Component
+const MapAd = () => {
+  useEffect(() => {
+    try {
+      // Initialize AdSense ad
+      const w = window as Window & { adsbygoogle?: unknown[] };
+      (w.adsbygoogle = w.adsbygoogle || []).push({});
+    } catch (err) {
+      console.error('AdSense error:', err);
+    }
+  }, []);
+
+  return (
+    <>
+      {/* Show placeholder during development/testing */}
+      {import.meta.env.DEV && <PlaceholderAd />}
+
+      {/* Real AdSense ad */}
+      <ins
+        className="adsbygoogle map-ad"
+        style={{ display: 'block' }}
+        data-ad-client="ca-pub-1290357879552342"
+        data-ad-slot="9909999826"
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+    </>
+  );
+};
+
 interface MapProps {
   roundData: Speaker;
 }
@@ -336,6 +381,11 @@ function Map({ roundData }: MapProps) {
             difficulty={roundData.medianScore}
           />
         )}
+      </div>
+
+      {/* Ad container at bottom of map */}
+      <div className="map-ad-container">
+        <MapAd />
       </div>
 
       {/* Modal for accent description */}
