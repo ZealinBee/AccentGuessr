@@ -2,9 +2,11 @@ import {
   Controller,
   Post,
   Get,
+  Patch,
+  Param,
+  Body,
   UseInterceptors,
   UploadedFiles,
-  Body,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { RecordingsService } from './recordings.service';
@@ -31,5 +33,19 @@ export class RecordingsController {
   @Get('volunteer-voices')
   async getVolunteerVoices(): Promise<any[]> {
     return await this.recordingsService.getAllVolunteerVoices();
+  }
+
+  @Patch('volunteer-voices/:id/reject')
+  async rejectVolunteerVoice(
+    @Param('id') id: string,
+  ): Promise<{ success: boolean; message: string }> {
+    await this.recordingsService.updateVolunteerVoiceStatus(
+      parseInt(id, 10),
+      'rejected',
+    );
+    return {
+      success: true,
+      message: 'Voice rejected successfully',
+    };
   }
 }

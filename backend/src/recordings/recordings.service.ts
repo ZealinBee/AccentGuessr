@@ -93,6 +93,8 @@ export class RecordingsService {
             url,
             userEmail: body.userEmail || null,
             status: 'pending', // Default status
+            nativeLanguage: body.nativeLanguage,
+            country: body.countryOfOrigin || null,
           },
         });
       } catch (err) {
@@ -118,6 +120,16 @@ export class RecordingsService {
       orderBy: {
         createdAt: 'desc',
       },
+    });
+  }
+
+  async updateVolunteerVoiceStatus(
+    id: number,
+    status: 'accepted' | 'pending' | 'rejected',
+  ): Promise<any> {
+    return await this.prisma.volunteerVoice.update({
+      where: { id },
+      data: { status },
     });
   }
 }
