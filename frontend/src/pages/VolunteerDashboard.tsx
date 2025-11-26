@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   getVolunteerVoices,
@@ -7,12 +7,20 @@ import {
   acceptVolunteerVoice,
 } from "../api/volunteerVoices";
 import type { VolunteerVoice, Accent } from "../api/volunteerVoices";
+import AuthContext from "../context/AuthContext";
 import "../scss/VolunteerDashboard.scss";
 
 type FilterStatus = "all" | "accepted" | "pending" | "rejected";
 
 function VolunteerDashboard() {
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+
+  if (!authContext) {
+    throw new Error("AuthContext must be used within an AuthProvider");
+  }
+
+  const { token } = authContext;
   const [voices, setVoices] = useState<VolunteerVoice[]>([]);
   const [filteredVoices, setFilteredVoices] = useState<VolunteerVoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -30,12 +38,21 @@ function VolunteerDashboard() {
     const fetchVoices = async () => {
       try {
         setLoading(true);
-        const data = await getVolunteerVoices();
+        const data = await getVolunteerVoices(token);
         setVoices(data);
         setError(null);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Error fetching volunteer voices:", err);
-        setError("Failed to load volunteer voices");
+        if (err && typeof err === 'object' && 'response' in err) {
+          const axiosErr = err as { response?: { status?: number } };
+          if (axiosErr.response?.status === 401) {
+            setError("Access denied. You must be logged in as an admin to view this page.");
+          } else {
+            setError("Failed to load volunteer voices");
+          }
+        } else {
+          setError("Failed to load volunteer voices");
+        }
       } finally {
         setLoading(false);
       }
@@ -43,16 +60,23 @@ function VolunteerDashboard() {
 
     const fetchAccents = async () => {
       try {
-        const data = await getAccents();
+        const data = await getAccents(token);
         setAccents(data);
-      } catch (err) {
+      } catch (err: unknown) {
         console.error("Error fetching accents:", err);
+        if (err && typeof err === 'object' && 'response' in err) {
+          const axiosErr = err as { response?: { status?: number } };
+          if (axiosErr.response?.status !== 401) {
+            // Only show accent error if it's not an auth issue (already shown above)
+            setError("Failed to load accents");
+          }
+        }
       }
     };
 
     fetchVoices();
     fetchAccents();
-  }, []);
+  }, [token]);
 
   useEffect(() => {
     if (filter === "all") {
@@ -76,7 +100,7 @@ function VolunteerDashboard() {
 
     setAcceptingId(selectedVoiceId);
     try {
-      await acceptVolunteerVoice(selectedVoiceId, selectedAccentId);
+      await acceptVolunteerVoice(selectedVoiceId, selectedAccentId, token);
 
       // Update the voices state to reflect the change
       setVoices((prevVoices) =>
@@ -90,9 +114,18 @@ function VolunteerDashboard() {
       setShowAccentModal(false);
       setSelectedVoiceId(null);
       setSelectedAccentId(null);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error accepting voice:", err);
-      alert("Failed to accept voice. Please try again.");
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosErr = err as { response?: { status?: number } };
+        if (axiosErr.response?.status === 401) {
+          alert("Access denied. You must be logged in as an admin to perform this action.");
+        } else {
+          alert("Failed to accept voice. Please try again.");
+        }
+      } else {
+        alert("Failed to accept voice. Please try again.");
+      }
     } finally {
       setAcceptingId(null);
     }
@@ -111,7 +144,7 @@ function VolunteerDashboard() {
 
     setRejectingId(id);
     try {
-      await rejectVolunteerVoice(id);
+      await rejectVolunteerVoice(id, token);
 
       // Update the voices state to reflect the change
       setVoices((prevVoices) =>
@@ -119,9 +152,18 @@ function VolunteerDashboard() {
           voice.id === id ? { ...voice, status: "rejected" as const } : voice
         )
       );
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("Error rejecting voice:", err);
-      alert("Failed to reject voice. Please try again.");
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosErr = err as { response?: { status?: number } };
+        if (axiosErr.response?.status === 401) {
+          alert("Access denied. You must be logged in as an admin to perform this action.");
+        } else {
+          alert("Failed to reject voice. Please try again.");
+        }
+      } else {
+        alert("Failed to reject voice. Please try again.");
+      }
     } finally {
       setRejectingId(null);
     }

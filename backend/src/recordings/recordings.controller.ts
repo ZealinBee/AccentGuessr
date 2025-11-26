@@ -7,10 +7,12 @@ import {
   Body,
   UseInterceptors,
   UploadedFiles,
+  UseGuards,
 } from '@nestjs/common';
 import { AnyFilesInterceptor } from '@nestjs/platform-express';
 import { RecordingsService } from './recordings.service';
 import type { RecordingSubmission } from './recordings.service';
+import { AdminOnlyGuard } from '../auth/admin-only.guard';
 
 @Controller('submit-recordings')
 export class RecordingsController {
@@ -31,16 +33,19 @@ export class RecordingsController {
   }
 
   @Get('volunteer-voices')
+  @UseGuards(AdminOnlyGuard)
   async getVolunteerVoices(): Promise<any[]> {
     return await this.recordingsService.getAllVolunteerVoices();
   }
 
   @Get('accents')
+  @UseGuards(AdminOnlyGuard)
   async getAccents(): Promise<any[]> {
     return await this.recordingsService.getAllAccents();
   }
 
   @Patch('volunteer-voices/:id/reject')
+  @UseGuards(AdminOnlyGuard)
   async rejectVolunteerVoice(
     @Param('id') id: string,
   ): Promise<{ success: boolean; message: string }> {
@@ -55,6 +60,7 @@ export class RecordingsController {
   }
 
   @Patch('volunteer-voices/:id/accept')
+  @UseGuards(AdminOnlyGuard)
   async acceptVolunteerVoice(
     @Param('id') id: string,
     @Body() body: { accentId: number },

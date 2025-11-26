@@ -18,40 +18,51 @@ export interface Accent {
   createdAt: string;
 }
 
-export const getVolunteerVoices = async (): Promise<VolunteerVoice[]> => {
+export const getVolunteerVoices = async (token: string | null): Promise<VolunteerVoice[]> => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/submit-recordings/volunteer-voices`
+    `${import.meta.env.VITE_API_URL}/submit-recordings/volunteer-voices`,
+    { headers }
   );
   return response.data;
 };
 
-export const getAccents = async (): Promise<Accent[]> => {
+export const getAccents = async (token: string | null): Promise<Accent[]> => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/submit-recordings/accents`
+    `${import.meta.env.VITE_API_URL}/submit-recordings/accents`,
+    { headers }
   );
   return response.data;
 };
 
 export const rejectVolunteerVoice = async (
-  id: number
+  id: number,
+  token: string | null
 ): Promise<{ success: boolean; message: string }> => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.patch(
     `${
       import.meta.env.VITE_API_URL
-    }/submit-recordings/volunteer-voices/${id}/reject`
+    }/submit-recordings/volunteer-voices/${id}/reject`,
+    {},
+    { headers }
   );
   return response.data;
 };
 
 export const acceptVolunteerVoice = async (
   id: number,
-  accentId: number
+  accentId: number,
+  token: string | null
 ): Promise<{ success: boolean; message: string; speakerId?: number }> => {
+  const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.patch(
     `${
       import.meta.env.VITE_API_URL
     }/submit-recordings/volunteer-voices/${id}/accept`,
-    { accentId }
+    { accentId },
+    { headers }
   );
   return response.data;
 };
