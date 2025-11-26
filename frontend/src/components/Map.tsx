@@ -22,19 +22,19 @@ import { accentToFeature } from "../utils/accentToFeature";
 import { useGame } from "../hooks/useGame";
 
 // Placeholder Ad Component (for preview until AdSense is approved)
-const PlaceholderAd = () => {
-  return (
-    <div className="placeholder-ad">
-      <div className="placeholder-ad-label">Advertisement</div>
-      <div className="placeholder-ad-content">
-        <div className="placeholder-ad-text">
-          <strong>AdSense Preview</strong>
-          <p>Your ad will appear here</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// const PlaceholderAd = () => {
+//   return (
+//     <div className="placeholder-ad">
+//       <div className="placeholder-ad-label">Advertisement</div>
+//       <div className="placeholder-ad-content">
+//         <div className="placeholder-ad-text">
+//           <strong>AdSense Preview</strong>
+//           <p>Your ad will appear here</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 // Google AdSense Ad Component
 const MapAd = () => {
@@ -51,7 +51,7 @@ const MapAd = () => {
   return (
     <>
       {/* Show placeholder during development/testing */}
-      {import.meta.env.DEV && <PlaceholderAd />}
+      {/* {import.meta.env.DEV && <PlaceholderAd />} */}
 
       {/* Real AdSense ad */}
       <ins

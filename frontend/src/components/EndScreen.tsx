@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
 import useAuth from "../hooks/useAuth";
@@ -11,23 +11,23 @@ interface EndScreenProps {
 }
 
 // Placeholder Ad Component (for preview until AdSense is approved)
-const PlaceholderAd = () => {
-  return (
-    <div className="placeholder-ad">
-      <div className="placeholder-ad-label">Advertisement</div>
-      <div className="placeholder-ad-content">
-        <div className="placeholder-ad-text">
-          <strong>AdSense Preview</strong>
-          <p>Your ad will appear here</p>
-        </div>
-      </div>
-    </div>
-  );
-};
+// const PlaceholderAd = () => {
+//   return (
+//     <div className="placeholder-ad">
+//       <div className="placeholder-ad-label">Advertisement</div>
+//       <div className="placeholder-ad-content">
+//         <div className="placeholder-ad-text">
+//           <strong>AdSense Preview</strong>
+//           <p>Your ad will appear here</p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
 
 function EndScreen({ totalScore }: EndScreenProps) {
   const navigate = useNavigate();
-  const [shareSuccess, setShareSuccess] = useState(false);
+  // const [shareSuccess, setShareSuccess] = useState(false);
 
   const { isLoggedIn } = useAuth();
   const { resetGame, startGame } = useGame();
@@ -90,7 +90,6 @@ function EndScreen({ totalScore }: EndScreenProps) {
         >
           <Share2 size={18} />
           <span>Share Score</span>
-          {shareSuccess && <span className="end-screen-share-tooltip">Copied to clipboard!</span>}
         </button>
 
         {!isLoggedIn && (
