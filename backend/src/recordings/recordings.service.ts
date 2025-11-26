@@ -123,6 +123,21 @@ export class RecordingsService {
     });
   }
 
+  async getAllAccents(): Promise<any[]> {
+    return await this.prisma.accent.findMany({
+      select: {
+        id: true,
+        name: true,
+        type: true,
+        createdAt: true,
+        // Exclude region field as it's too large
+      },
+      orderBy: {
+        name: 'asc',
+      },
+    });
+  }
+
   async updateVolunteerVoiceStatus(
     id: number,
     status: 'accepted' | 'pending' | 'rejected',
@@ -131,5 +146,66 @@ export class RecordingsService {
       where: { id },
       data: { status },
     });
+  }
+
+  async acceptVolunteerVoice(
+    id: number,
+    accentId: number,
+  ): Promise<{ success: boolean; message: string; speakerId?: number }> {
+    // Get the volunteer voice
+    const volunteerVoice = await this.prisma.volunteerVoice.findUnique({
+      where: { id },
+    });
+
+    if (!volunteerVoice) {
+      throw new BadRequestException('Volunteer voice not found');
+    }
+
+    if (volunteerVoice.status === 'accepted') {
+      throw new BadRequestException('Voice already accepted');
+    }
+
+    // Create the speaker
+    const speaker = await this.prisma.speaker.create({
+      data: {
+        accentId,
+        country: volunteerVoice.country || null,
+      },
+    });
+
+    // Create the clip
+    await this.prisma.clip.create({
+      data: {
+        audioUrl: volunteerVoice.url,
+        speakerId: speaker.id,
+      },
+    });
+
+    // Update the volunteer voice status to accepted
+    await this.prisma.volunteerVoice.update({
+      where: { id },
+      data: { status: 'accepted' },
+    });
+
+    // If there's an email, link the speaker to the user with that email
+    if (volunteerVoice.userEmail) {
+      try {
+        await this.prisma.user.update({
+          where: { email: volunteerVoice.userEmail },
+          data: { speakerId: speaker.id },
+        });
+      } catch {
+        // User might not exist, which is fine - just log it
+        console.log(
+          `No user found with email ${volunteerVoice.userEmail}, speaker not linked to user`,
+        );
+      }
+    }
+
+    return {
+      success: true,
+      message: 'Voice accepted and speaker created successfully',
+      speakerId: speaker.id,
+    };
   }
 }

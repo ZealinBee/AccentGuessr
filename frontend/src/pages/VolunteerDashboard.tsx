@@ -1,7 +1,12 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getVolunteerVoices } from "../api/volunteerVoices";
-import type { VolunteerVoice } from "../api/volunteerVoices";
+import {
+  getVolunteerVoices,
+  getAccents,
+  rejectVolunteerVoice,
+  acceptVolunteerVoice,
+} from "../api/volunteerVoices";
+import type { VolunteerVoice, Accent } from "../api/volunteerVoices";
 import "../scss/VolunteerDashboard.scss";
 
 type FilterStatus = "all" | "accepted" | "pending" | "rejected";
@@ -14,6 +19,12 @@ function VolunteerDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FilterStatus>("pending");
   const [playingId, setPlayingId] = useState<number | null>(null);
+  const [rejectingId, setRejectingId] = useState<number | null>(null);
+  const [accents, setAccents] = useState<Accent[]>([]);
+  const [showAccentModal, setShowAccentModal] = useState(false);
+  const [selectedVoiceId, setSelectedVoiceId] = useState<number | null>(null);
+  const [selectedAccentId, setSelectedAccentId] = useState<number | null>(null);
+  const [acceptingId, setAcceptingId] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchVoices = async () => {
@@ -30,7 +41,17 @@ function VolunteerDashboard() {
       }
     };
 
+    const fetchAccents = async () => {
+      try {
+        const data = await getAccents();
+        setAccents(data);
+      } catch (err) {
+        console.error("Error fetching accents:", err);
+      }
+    };
+
     fetchVoices();
+    fetchAccents();
   }, []);
 
   useEffect(() => {
@@ -42,15 +63,68 @@ function VolunteerDashboard() {
   }, [filter, voices]);
 
   const handleAccept = (id: number) => {
-    // Placeholder for accept functionality
-    console.log("Accept voice:", id);
-    alert(`Accept functionality for voice ${id} will be implemented`);
+    setSelectedVoiceId(id);
+    setSelectedAccentId(null);
+    setShowAccentModal(true);
   };
 
-  const handleReject = (id: number) => {
-    // Placeholder for reject functionality
-    console.log("Reject voice:", id);
-    alert(`Reject functionality for voice ${id} will be implemented`);
+  const handleConfirmAccept = async () => {
+    if (!selectedVoiceId || !selectedAccentId) {
+      alert("Please select an accent");
+      return;
+    }
+
+    setAcceptingId(selectedVoiceId);
+    try {
+      await acceptVolunteerVoice(selectedVoiceId, selectedAccentId);
+
+      // Update the voices state to reflect the change
+      setVoices((prevVoices) =>
+        prevVoices.map((voice) =>
+          voice.id === selectedVoiceId
+            ? { ...voice, status: "accepted" as const }
+            : voice
+        )
+      );
+
+      setShowAccentModal(false);
+      setSelectedVoiceId(null);
+      setSelectedAccentId(null);
+    } catch (err) {
+      console.error("Error accepting voice:", err);
+      alert("Failed to accept voice. Please try again.");
+    } finally {
+      setAcceptingId(null);
+    }
+  };
+
+  const handleCancelAccept = () => {
+    setShowAccentModal(false);
+    setSelectedVoiceId(null);
+    setSelectedAccentId(null);
+  };
+
+  const handleReject = async (id: number) => {
+    if (!confirm("Are you sure you want to reject this voice?")) {
+      return;
+    }
+
+    setRejectingId(id);
+    try {
+      await rejectVolunteerVoice(id);
+
+      // Update the voices state to reflect the change
+      setVoices((prevVoices) =>
+        prevVoices.map((voice) =>
+          voice.id === id ? { ...voice, status: "rejected" as const } : voice
+        )
+      );
+    } catch (err) {
+      console.error("Error rejecting voice:", err);
+      alert("Failed to reject voice. Please try again.");
+    } finally {
+      setRejectingId(null);
+    }
   };
 
   const handlePlay = (id: number) => {
@@ -178,6 +252,17 @@ function VolunteerDashboard() {
                 <span className="voice-date">{formatDate(voice.createdAt)}</span>
               </div>
 
+              <div className="voice-details">
+                <div className="detail-item">
+                  <strong>Native Language:</strong> {voice.nativeLanguage}
+                </div>
+                {voice.country && (
+                  <div className="detail-item">
+                    <strong>Country:</strong> {voice.country}
+                  </div>
+                )}
+              </div>
+
               {voice.userEmail && (
                 <div className="voice-email">
                   <strong>Email:</strong> {voice.userEmail}
@@ -203,22 +288,70 @@ function VolunteerDashboard() {
                 <button
                   className="action-btn accept-btn"
                   onClick={() => handleAccept(voice.id)}
-                  disabled={voice.status === "accepted"}
+                  disabled={voice.status === "accepted" || acceptingId === voice.id}
                 >
-                  ✓ Accept
+                  {acceptingId === voice.id ? "Accepting..." : "✓ Accept"}
                 </button>
                 <button
                   className="action-btn reject-btn"
                   onClick={() => handleReject(voice.id)}
-                  disabled={voice.status === "rejected"}
+                  disabled={voice.status === "rejected" || rejectingId === voice.id}
                 >
-                  ✗ Reject
+                  {rejectingId === voice.id ? "Rejecting..." : "✗ Reject"}
                 </button>
               </div>
             </div>
           ))
         )}
       </div>
+
+      {showAccentModal && (
+        <div className="modal-overlay" onClick={handleCancelAccept}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <h2>Select an Accent</h2>
+            <p className="modal-subtitle">
+              Choose the accent that best matches this voice recording
+            </p>
+
+            <div className="accent-list">
+              {accents.length === 0 ? (
+                <div className="no-accents-message">
+                  <p>No accents available. Please check your database.</p>
+                </div>
+              ) : (
+                accents.map((accent) => (
+                  <div
+                    key={accent.id}
+                    className={`accent-item ${selectedAccentId === accent.id ? "selected" : ""}`}
+                    onClick={() => setSelectedAccentId(accent.id)}
+                  >
+                    <div className="accent-name">{accent.name}</div>
+                    {accent.description && (
+                      <div className="accent-description">{accent.description}</div>
+                    )}
+                  </div>
+                ))
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button
+                className="modal-btn cancel-btn"
+                onClick={handleCancelAccept}
+              >
+                Cancel
+              </button>
+              <button
+                className="modal-btn confirm-btn"
+                onClick={handleConfirmAccept}
+                disabled={!selectedAccentId || acceptingId !== null}
+              >
+                {acceptingId ? "Accepting..." : "Confirm Accept"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

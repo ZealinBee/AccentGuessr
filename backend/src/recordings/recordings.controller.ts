@@ -35,6 +35,11 @@ export class RecordingsController {
     return await this.recordingsService.getAllVolunteerVoices();
   }
 
+  @Get('accents')
+  async getAccents(): Promise<any[]> {
+    return await this.recordingsService.getAllAccents();
+  }
+
   @Patch('volunteer-voices/:id/reject')
   async rejectVolunteerVoice(
     @Param('id') id: string,
@@ -47,5 +52,16 @@ export class RecordingsController {
       success: true,
       message: 'Voice rejected successfully',
     };
+  }
+
+  @Patch('volunteer-voices/:id/accept')
+  async acceptVolunteerVoice(
+    @Param('id') id: string,
+    @Body() body: { accentId: number },
+  ): Promise<{ success: boolean; message: string; speakerId?: number }> {
+    return await this.recordingsService.acceptVolunteerVoice(
+      parseInt(id, 10),
+      body.accentId,
+    );
   }
 }
