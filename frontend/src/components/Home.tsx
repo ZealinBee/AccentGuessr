@@ -8,6 +8,7 @@ import { useGame } from "../hooks/useGame";
 import useAuth from "../hooks/useAuth";
 import DashboardIcon from "./DashboardIcon";
 import { User, Users, Mic, ChevronDown } from "lucide-react";
+import { track } from "../lib/firebase";
 
 function Home() {
   const navigate = useNavigate();
@@ -121,6 +122,7 @@ function Home() {
               href="https://buymeacoffee.com/zhiyuanliu"
               target="_blank"
               rel="noreferrer"
+              onClick={() => track('buy_coffee_click', { source: 'home_page' })}
             >
               {" "}
               <img src="/buymecoffeebutton.png" />

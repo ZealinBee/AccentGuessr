@@ -7,6 +7,7 @@ import "../scss/MultiplayerLobby.scss";
 import MultiplayerMap from "../components/MultiplayerMap";
 import MultiplayerEndGameLeaderboard from "../components/MultiplayerEndGameLeaderboard";
 import { Copy, Share2 } from "lucide-react";
+import { track } from "../lib/firebase";
 
 function MultiplayerLobby() {
   const { matchCode } = useParams<{ matchCode: string }>();
@@ -55,6 +56,13 @@ function MultiplayerLobby() {
   const handleShare = async () => {
     const inviteLink = `${window.location.origin}/join/${roomState?.code || matchCode}`;
     const shareText = `🌍 Can you beat me at guessing where these accents are from?\n\nJoin my game: ${inviteLink}`;
+
+    // Track share event
+    track('share', {
+      method: 'share' in navigator ? 'web_share_api' : 'fallback',
+      content_type: 'multiplayer_invite',
+      match_code: roomState?.code || matchCode
+    });
 
     if (navigator.share) {
       try {

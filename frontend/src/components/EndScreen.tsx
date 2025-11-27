@@ -5,6 +5,7 @@ import LoginButton from "./GoogleLoginButton";
 import useAuth from "../hooks/useAuth";
 import { useGame } from "../hooks/useGame";
 import { Share2, Play } from "lucide-react";
+import { track } from "../lib/firebase";
 
 interface EndScreenProps {
   totalScore: number;
@@ -49,6 +50,13 @@ function EndScreen({ totalScore }: EndScreenProps) {
   const handleShare = async () => {
     const shareText = `Can you guess the accent of this person? Try to beat my score: ${totalScore.toLocaleString()}`;
     const shareUrl = window.location.origin;
+
+    // Track share event
+    track('share', {
+      method: navigator.share ? 'web_share_api' : 'fallback',
+      content_type: 'score',
+      score: totalScore
+    });
 
     // Check if Web Share API is available
     if (navigator.share) {
