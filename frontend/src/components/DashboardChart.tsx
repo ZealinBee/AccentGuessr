@@ -35,18 +35,38 @@ function DashboardChart({ game, rounds, games, height = 200 }: Props) {
   const dataFromRounds = (rounds ?? game?.rounds ?? []).map((r, i) => ({
     name: `#${i + 1}`,
     score: typeof r.score === "number" ? r.score : 0,
+    fullDate: null as string | null,
   }));
 
-  let data = dataFromRounds;
+  let data: Array<{ name: string; score: number; fullDate: string | null }> = dataFromRounds;
   let header = "Round scores";
 
   if (games && Array.isArray(games) && games.length > 0) {
-    data = games.map((g, i) => ({
-      name: g.createdAt ? new Date(g.createdAt).toLocaleDateString() : `#${i + 1}`,
-      score: typeof g.totalScore === "number" ? g.totalScore : 0,
-    }));
+    data = games.map((g, i) => {
+      const date = g.createdAt ? new Date(g.createdAt) : null;
+      return {
+        name: `Game ${i + 1}`,
+        score: typeof g.totalScore === "number" ? g.totalScore : 0,
+        fullDate: date ? date.toLocaleString() : null,
+      };
+    });
     header = "Total score per game";
   }
+
+  const CustomTooltip = ({ active, payload }: any) => {
+    if (active && payload && payload.length) {
+      return (
+        <div className="custom-tooltip">
+          <p className="label">{payload[0].payload.name}</p>
+          {payload[0].payload.fullDate && (
+            <p className="date">{payload[0].payload.fullDate}</p>
+          )}
+          <p className="score">Score: {payload[0].value}</p>
+        </div>
+      );
+    }
+    return null;
+  };
 
   return (
     <div className="dashboard-chart">
@@ -68,7 +88,7 @@ function DashboardChart({ game, rounds, games, height = 200 }: Props) {
                 tick={{ fill: '#cbd5e1' }}
                 axisLine={{ stroke: 'rgba(148, 163, 184, 0.2)' }}
               />
-              <Tooltip />
+              <Tooltip content={<CustomTooltip />} />
               <Line
                 type="monotone"
                 dataKey="score"

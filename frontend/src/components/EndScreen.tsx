@@ -47,7 +47,50 @@ function EndScreen({ totalScore }: EndScreenProps) {
   };
 
   const handleShare = async () => {
-    // ...existing code...
+    const shareText = `Can you guess the accent of this person? Try to beat my score: ${totalScore.toLocaleString()}`;
+    const shareUrl = window.location.origin;
+
+    // Check if Web Share API is available
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'AccentGuessr',
+          text: shareText,
+          url: shareUrl,
+        });
+      } catch (err) {
+        // User cancelled or sharing failed
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Error sharing:', err);
+          fallbackShare(shareText, shareUrl);
+        }
+      }
+    } else {
+      // Fallback for browsers without Web Share API
+      fallbackShare(shareText, shareUrl);
+    }
+  };
+
+  const fallbackShare = (text: string, url: string) => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+    if (isMobile) {
+      // On mobile, show options for SMS and other platforms
+      const smsText = encodeURIComponent(`${text}\n${url}`);
+      const smsUrl = `sms:?&body=${smsText}`;
+
+      // Try to open SMS
+      window.location.href = smsUrl;
+    } else {
+      // On desktop, copy to clipboard
+      const fullText = `${text}\n${url}`;
+      navigator.clipboard.writeText(fullText).then(() => {
+        alert('Score copied to clipboard!');
+      }).catch((err) => {
+        console.error('Failed to copy:', err);
+        alert('Failed to copy score. Please try again.');
+      });
+    }
   };
 
   return (

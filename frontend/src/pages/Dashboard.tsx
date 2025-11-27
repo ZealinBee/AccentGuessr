@@ -58,6 +58,12 @@ function Dashboard() {
               ...g,
               createdAt: g.createdAt ? String(g.createdAt) : "",
             }))
+              .sort((a, b) => {
+                // Sort by createdAt ascending (oldest first)
+                const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+                const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+                return dateA - dateB;
+              })
           : [];
         setGames(data);
       } catch (err: unknown) {
