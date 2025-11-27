@@ -6,7 +6,6 @@ import ResultCard from "./ResultCard";
 import InstructionCard from "./InstructionCard";
 import haversineKm from "../utils/haversineKm";
 import { scoreCalculate } from "../utils/scoreCalculate";
-import addScoreDependingOnDifficulty from "../utils/addScoreDependingOnDifficulty";
 import type { Speaker } from "../types/Speaker";
 import {
   point,
@@ -290,18 +289,10 @@ function Map({ roundData }: MapProps) {
       }
     }
 
-    // Add difficulty-based bonus score if medianScore exists
-    let finalScore = roundScore;
-
-    if (roundData.medianScore !== null && roundData.medianScore !== undefined) {
-      const additionalScore = addScoreDependingOnDifficulty(roundScore, roundData.medianScore);
-      finalScore = roundScore + additionalScore;
-    }
-
-    setScore(finalScore);
+    setScore(roundScore);
 
     pushRoundResult({
-      score: finalScore,
+      score: roundScore,
       guessLong: answered.lng,
       guessLat: answered.lat,
       speakerId: roundData.id,
@@ -309,7 +300,7 @@ function Map({ roundData }: MapProps) {
 
     // Fetch percentile from backend
     fetch(
-      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${finalScore}`
+      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${roundScore}`
     )
       .then((res) => res.json())
       .then((data) => setPercentile(data.percentile))
