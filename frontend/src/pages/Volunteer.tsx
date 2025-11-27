@@ -251,7 +251,7 @@ function Volunteer() {
         ← Home
       </button>
       <div className="instructions">
-        <h1>Thanks for Volunteering! Here's the instructions:</h1>
+        <h1>Thanks for Volunteering! Here's the how you can submit your voice:</h1>
         <ol>
           <li>Find a quiet place to record your accent.</li>
           <li>Click on any quote card to expand it</li>
