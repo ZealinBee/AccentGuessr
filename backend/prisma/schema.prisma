@@ -48,6 +48,7 @@ model Quote {
   id          Int      @id @default(autoincrement())
   joke String
   isUsed Boolean
+  volunteerVoices VolunteerVoice[]
 }
 
 model VolunteerVoice {
@@ -58,6 +59,8 @@ model VolunteerVoice {
   createdAt   DateTime @default(now())
   nativeLanguage String
   country String?
+  quoteId     Int?
+  quote       Quote?   @relation(fields: [quoteId], references: [id])
 }
 
 enum VoiceStatus {

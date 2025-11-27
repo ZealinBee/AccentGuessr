@@ -6,6 +6,7 @@ import useAuth from "../hooks/useAuth";
 import LoginButton from "../components/GoogleLoginButton";
 
 type Quote = {
+  id: number;
   joke: string;
   isUsed: boolean;
 };
@@ -198,7 +199,7 @@ function Volunteer() {
           state.audioBlob,
           `recording_${index}.webm`
         );
-        formData.append("quoteId", quotes[Number(index)].joke);
+        formData.append("quoteId", quotes[Number(index)].id.toString());
       }
     });
 

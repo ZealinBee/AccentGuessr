@@ -95,6 +95,7 @@ export class RecordingsService {
             status: 'pending', // Default status
             nativeLanguage: body.nativeLanguage,
             country: body.countryOfOrigin || null,
+            quoteId: typeof body.quoteId === 'string' ? parseInt(body.quoteId, 10) : body.quoteId,
           },
         });
       } catch (err) {
@@ -186,6 +187,14 @@ export class RecordingsService {
       where: { id },
       data: { status: 'accepted' },
     });
+
+    // Mark the quote as used if quoteId exists
+    if (volunteerVoice.quoteId) {
+      await this.prisma.quote.update({
+        where: { id: volunteerVoice.quoteId },
+        data: { isUsed: true },
+      });
+    }
 
     // If there's an email, link the speaker to the user with that email
     if (volunteerVoice.userEmail) {
