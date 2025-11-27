@@ -53,13 +53,13 @@ function EndScreen({ totalScore }: EndScreenProps) {
 
     // Track share event
     track('share', {
-      method: navigator.share ? 'web_share_api' : 'fallback',
+      method: 'share' in navigator ? 'web_share_api' : 'fallback',
       content_type: 'score',
       score: totalScore
     });
 
     // Check if Web Share API is available
-    if (navigator.share) {
+    if ('share' in navigator && navigator.share) {
       try {
         await navigator.share({
           title: 'AccentGuessr',
