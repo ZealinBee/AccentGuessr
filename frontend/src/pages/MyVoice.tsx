@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Mic } from "lucide-react";
+import { Mic, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import "../scss/MyVoice.scss";
 import "mapbox-gl/dist/mapbox-gl.css";
@@ -28,6 +28,77 @@ interface MySpeakerData {
     clips: Clip[];
   };
   rounds: Round[];
+}
+
+function ClipPlayer({ clip }: { clip: Clip }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [playing, setPlaying] = useState(false);
+  const [volume, setVolume] = useState(1);
+
+  const togglePlay = async () => {
+    const a = audioRef.current;
+    if (!a) return;
+    if (!a.paused) {
+      a.pause();
+      setPlaying(false);
+    } else {
+      try {
+        await a.play();
+        setPlaying(true);
+      } catch (err) {
+        console.warn("Playback failed:", err);
+        setPlaying(false);
+      }
+    }
+  };
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    a.volume = volume;
+  }, [volume]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a) return;
+    const onEnded = () => setPlaying(false);
+    a.addEventListener("ended", onEnded);
+    return () => a.removeEventListener("ended", onEnded);
+  }, []);
+
+  return (
+    <div className="clip-item">
+      <div className="clip-player-controls">
+        <button
+          onClick={togglePlay}
+          aria-label={playing ? "Pause" : "Play"}
+          className="clip-play-button"
+        >
+          {playing ? (
+            <Pause size={20} fill="white" />
+          ) : (
+            <Play size={20} fill="white" />
+          )}
+        </button>
+        <div className="clip-volume-control">
+          <div className="clip-volume-icon">
+            {volume === 0 ? <VolumeX size={18} /> : <Volume2 size={18} />}
+          </div>
+          <input
+            type="range"
+            min={0}
+            max={1}
+            step={0.01}
+            value={volume}
+            onChange={(e) => setVolume(Number(e.target.value))}
+            className="clip-volume-slider"
+          />
+          <span className="clip-volume-text">{Math.round(volume * 100)}%</span>
+        </div>
+      </div>
+      <audio ref={audioRef} src={clip.audioUrl} preload="metadata" />
+    </div>
+  );
 }
 
 function MyVoice() {
@@ -157,7 +228,10 @@ function MyVoice() {
                 If you've already volunteered, sign in to link your voice:
               </p>
               <div className="my-voice-google-button">
-                <LoginButton message="Continue with Google" navigateTo="my-voice" />
+                <LoginButton
+                  message="Continue with Google"
+                  navigateTo="my-voice"
+                />
               </div>
             </>
           )}
@@ -189,6 +263,14 @@ function MyVoice() {
       </button>
       {speakerData && (
         <>
+          <div className="map-section">
+            <h2>Where People Thought You're From</h2>
+            {speakerData.rounds.length > 0 ? (
+              <div ref={mapContainerRef} className="map-container" />
+            ) : (
+              <p>No guesses recorded yet</p>
+            )}
+          </div>
           <div className="speaker-info">
             <h2>Your Speaker Profile</h2>
             <p>
@@ -211,13 +293,33 @@ function MyVoice() {
               </p>
             )}
           </div>
-          <div className="map-section">
-            <h2>Where People Thought You're From</h2>
-            {speakerData.rounds.length > 0 ? (
-              <div ref={mapContainerRef} className="map-container" />
+
+          <div className="clips-section">
+            <h2>Your Clips</h2>
+            {speakerData.speaker.clips &&
+            speakerData.speaker.clips.length > 0 ? (
+              <div className="clips-list">
+                {speakerData.speaker.clips.map((clip) => (
+                  <ClipPlayer key={clip.id} clip={clip} />
+                ))}
+              </div>
             ) : (
-              <p>No guesses recorded yet</p>
+              <p className="no-clips">No clips recorded yet</p>
             )}
+          </div>
+
+          <div className="help-section">
+            <p className="help-text">
+              Not your voice?{" "}
+              <a
+                href="https://docs.google.com/forms/d/e/1FAIpQLScVB5dpUIjuk0v6FoIoU7AYnHDMnu_UPIGzKXZ23yKphq4wYA/viewform?usp=header"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="help-link"
+              >
+                We'll fix it here
+              </a>
+            </p>
           </div>
         </>
       )}

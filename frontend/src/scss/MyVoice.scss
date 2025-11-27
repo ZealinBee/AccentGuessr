@@ -173,6 +173,168 @@
     }
   }
 
+  .clips-section {
+    background-color: rgba(30, 41, 59, 0.85);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.15);
+    border-radius: 0.75rem;
+    padding: 2rem 2.5rem;
+    box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 45rem;
+    margin-bottom: 1.5rem;
+
+    @media (min-width: 1024px) and (max-width: 1440px) {
+      max-width: 42rem;
+      padding: 1.75rem 2rem;
+    }
+
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #f8fafc;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+      text-align: center;
+    }
+
+    .clips-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .clip-item {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .clip-player-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .clip-play-button {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+
+      &:hover {
+        background: #2563eb;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        transform: scale(0.95);
+      }
+    }
+
+    .clip-volume-control {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .clip-volume-icon {
+      color: #94a3b8;
+      display: flex;
+      align-items: center;
+      flex-shrink: 0;
+    }
+
+    .clip-volume-slider {
+      flex: 1;
+      height: 6px;
+      border-radius: 6px;
+      background: #334155;
+      outline: none;
+      cursor: pointer;
+      appearance: none;
+
+      &::-webkit-slider-thumb {
+        appearance: none;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      &::-moz-range-thumb {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: white;
+        cursor: pointer;
+        border: none;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      }
+    }
+
+    .clip-volume-text {
+      color: #cbd5e1;
+      font-size: 13px;
+      font-weight: 500;
+      width: 36px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .no-clips {
+      color: #94a3b8;
+      text-align: center;
+      font-size: 1rem;
+      padding: 2rem 0;
+    }
+  }
+
+  .help-section {
+    background-color: rgba(30, 41, 59, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(148, 163, 184, 0.1);
+    border-radius: 0.5rem;
+    padding: 1rem 1.5rem;
+    width: 100%;
+    max-width: 45rem;
+    margin-bottom: 2rem;
+
+    @media (min-width: 1024px) and (max-width: 1440px) {
+      max-width: 42rem;
+    }
+
+    .help-text {
+      color: #cbd5e1;
+      font-size: 0.9rem;
+      text-align: center;
+      margin: 0;
+    }
+
+    .help-link {
+      color: #3b82f6;
+      font-weight: 600;
+      text-decoration: none;
+      transition: color 0.2s;
+
+      &:hover {
+        color: #60a5fa;
+      }
+    }
+  }
+
   .map-section {
     background-color: rgba(30, 41, 59, 0.85);
     backdrop-filter: blur(10px);
@@ -252,12 +414,14 @@
     }
 
     .speaker-info,
+    .clips-section,
     .map-section {
       padding: 1.75rem 1.25rem;
       border-radius: 0.6rem;
     }
 
     .speaker-info h2,
+    .clips-section h2,
     .map-section h2 {
       font-size: 1.75rem;
       margin-bottom: 1.25rem;
@@ -265,6 +429,23 @@
 
     .speaker-info p {
       font-size: 0.95rem;
+    }
+
+    .clips-section {
+      padding: 1.75rem 1.25rem;
+
+      h2 {
+        font-size: 1.75rem;
+        margin-bottom: 1.25rem;
+      }
+    }
+
+    .help-section {
+      padding: 0.875rem 1.25rem;
+
+      .help-text {
+        font-size: 0.85rem;
+      }
     }
 
     .map-section .map-container {
@@ -288,17 +469,35 @@
     }
 
     .speaker-info,
+    .clips-section,
     .map-section {
       padding: 1.5rem 1rem;
     }
 
     .speaker-info h2,
+    .clips-section h2,
     .map-section h2 {
       font-size: 1.5rem;
     }
 
     .speaker-info p {
       font-size: 0.9rem;
+    }
+
+    .clips-section {
+      padding: 1.5rem 1rem;
+
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+
+    .help-section {
+      padding: 0.75rem 1rem;
+
+      .help-text {
+        font-size: 0.8rem;
+      }
     }
   }
 }
