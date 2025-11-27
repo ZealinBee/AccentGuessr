@@ -21,9 +21,9 @@ interface RequestWithUser extends Request {
 export class SpeakersController {
   constructor(private readonly speakersService: SpeakersService) {}
 
-  @Get()
-  getAll() {
-    return this.speakersService.getAllSpeakers();
+  @Get('country-counts')
+  getCountryCounts() {
+    return this.speakersService.getCountryCounts();
   }
 
   @Get('me')
@@ -40,5 +40,10 @@ export class SpeakersController {
     }
 
     return speakerData;
+  }
+
+  @Get()
+  getAll() {
+    return this.speakersService.getAllSpeakers();
   }
 }

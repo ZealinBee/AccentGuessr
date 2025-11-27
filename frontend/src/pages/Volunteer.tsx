@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import "../scss/Volunteer.scss";
 import useAuth from "../hooks/useAuth";
 import LoginButton from "../components/GoogleLoginButton";
+import Heatmap from "../components/Heatmap";
 
 type Quote = {
   id: number;
@@ -455,6 +456,11 @@ function Volunteer() {
             </div>
           )}
         </form>
+      </div>
+
+      <div className="volunteer-heatmap-section">
+        <h2>See Where Our Volunteers Are From</h2>
+        <Heatmap />
       </div>
     </div>
   );

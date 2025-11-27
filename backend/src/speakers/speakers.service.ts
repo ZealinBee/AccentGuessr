@@ -28,6 +28,22 @@ export class SpeakersService {
       accent: s.accent,
     }));
   }
+
+  async getCountryCounts() {
+    const speakers = await this.prisma.speaker.findMany({
+      select: { country: true },
+    });
+
+    const countryCounts: Record<string, number> = {};
+
+    speakers.forEach((speaker) => {
+      const country = speaker.country || 'Unknown';
+      countryCounts[country] = (countryCounts[country] || 0) + 1;
+    });
+
+    return countryCounts;
+  }
+
   async getFiveRandomSpeakers(userId: string | null) {
     const speakers = await this.prisma.speaker.findMany({
       include: { clips: true, accent: true },

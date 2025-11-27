@@ -1,0 +1,159 @@
+.heatmap-container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #0f172a;
+  color: #f1f5f9;
+  position: relative;
+}
+
+.heatmap-header {
+  padding: 20px;
+  text-align: center;
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+
+  h2 {
+    margin: 0 0 10px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: #f8fafc;
+    letter-spacing: -0.02em;
+  }
+
+  p {
+    margin: 0;
+    font-size: 16px;
+    color: #cbd5e1;
+  }
+}
+
+.heatmap-map {
+  flex: 1;
+  width: 100%;
+  position: relative;
+}
+
+.heatmap-loading,
+.heatmap-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  font-size: 20px;
+  color: #cbd5e1;
+}
+
+.heatmap-error {
+  color: #ef4444;
+}
+
+.heatmap-legend {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  background-color: rgba(30, 41, 59, 0.9);
+  backdrop-filter: blur(10px);
+  padding: 15px;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+  z-index: 1;
+
+  .legend-title {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #f8fafc;
+  }
+
+  .legend-gradient {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 12px;
+    color: #cbd5e1;
+
+    .gradient-bar {
+      width: 150px;
+      height: 12px;
+      background: linear-gradient(
+        to right,
+        #10b981,
+        #34d399,
+        #fbbf24,
+        #ef4444
+      );
+      border-radius: 6px;
+      box-shadow: 0 2px 4px rgba(16, 185, 129, 0.3);
+    }
+  }
+
+  @media (max-width: 768px) {
+    top: 70px;
+    right: 10px;
+    left: auto;
+    padding: 10px;
+    font-size: 11px;
+
+    .legend-title {
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .legend-gradient {
+      gap: 6px;
+      font-size: 10px;
+
+      .gradient-bar {
+        width: 80px;
+        height: 10px;
+      }
+    }
+  }
+}
+
+// Customize Mapbox popup
+.mapboxgl-popup-content {
+  background-color: rgba(30, 41, 59, 0.95);
+  backdrop-filter: blur(10px);
+  color: #f8fafc;
+  border-radius: 8px;
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+
+  strong {
+    color: #10b981;
+    font-size: 16px;
+  }
+}
+
+.mapboxgl-popup-close-button {
+  color: #cbd5e1;
+  font-size: 20px;
+
+  &:hover {
+    background-color: rgba(148, 163, 184, 0.1);
+  }
+}
+
+.mapboxgl-popup-tip {
+  border-top-color: rgba(30, 41, 59, 0.95) !important;
+  border-bottom-color: rgba(30, 41, 59, 0.95) !important;
+}
+
+// Responsive design
+@media (max-width: 768px) {
+  .heatmap-header {
+    padding: 15px;
+
+    h2 {
+      font-size: 22px;
+    }
+
+    p {
+      font-size: 14px;
+    }
+  }
+}
