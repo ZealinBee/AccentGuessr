@@ -32,7 +32,8 @@ export default function LoginButton({ message, navigateTo }: LoginButtonProps) {
         res.data.accessToken,
         res.data.user.name,
         res.data.user.picture,
-        res.data.user.id
+        res.data.user.id,
+        res.data.user.email
       );
       navigate(navigateTo ? `/${navigateTo}` : "/");
     } catch (error) {

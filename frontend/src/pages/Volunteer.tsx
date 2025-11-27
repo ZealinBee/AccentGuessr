@@ -32,7 +32,7 @@ function Volunteer() {
   const audioChunksRef = useRef<Blob[]>([]);
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const { userId } = useAuth();
+  const { userId, email } = useAuth();
 
   // Calculate number of recordings
   const recordingCount = Object.values(recordingStates).filter(
@@ -171,6 +171,9 @@ function Volunteer() {
     if (userId) {
       formData.append("userId", userId);
     }
+    if (email) {
+      formData.append("userEmail", email);
+    }
 
     // Collect all recorded states with blobs
     const recordedEntries = Object.entries(recordingStates).filter(
@@ -200,6 +203,7 @@ function Volunteer() {
           `recording_${index}.webm`
         );
         formData.append("quoteId", quotes[Number(index)].id.toString());
+        formData.append("quoteName", quotes[Number(index)].joke);
       }
     });
 
