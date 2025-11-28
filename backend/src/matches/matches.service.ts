@@ -458,5 +458,4 @@ export class MatchesService {
     // --- Return fresh match state to sender ---
     return await this.getFullMatchState(match.id);
   }
-
 }

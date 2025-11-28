@@ -1,6 +1,20 @@
+'use client'
+
+import dynamic from 'next/dynamic';
 import EndScreen from "./EndScreen";
 import { useGame } from "../hooks/useGame";
-import Map from "./Map";
+
+// Dynamically import Map component with no SSR to avoid Mapbox issues
+const Map = dynamic(() => import('./Map'), {
+  ssr: false,
+  loading: () => <div style={{
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: '100vh',
+    fontSize: '1.5rem'
+  }}>Loading map...</div>
+});
 
 function Game() {
   const { isShowingEndScreen, totalScore, gameData, gameRound } = useGame();

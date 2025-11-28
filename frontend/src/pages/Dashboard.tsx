@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { env } from "@/lib/env";
+import { useRouter } from "next/navigation";
 import "../scss/Dashboard.scss";
 import DashboardChart from "../components/DashboardChart";
 import axios from "axios";
@@ -34,7 +35,7 @@ type Game = {
 };
 
 function Dashboard() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { token, isLoggedIn } = useAuth();
   const [games, setGames] = useState<Game[] | null>(null);
   const [expandedGames, setExpandedGames] = useState<Record<number, boolean>>(
@@ -50,7 +51,7 @@ function Dashboard() {
       setLoading(true);
       setError(null);
       try {
-        const base = import.meta.env.VITE_API_URL;
+        const base = env.API_URL;
         const headers = token ? { Authorization: `Bearer ${token}` } : {};
         const res = await axios.get(`${base}/games/my-games`, { headers });
         const data = Array.isArray(res.data)
@@ -86,7 +87,7 @@ function Dashboard() {
   const handleDeleteAllGames = async () => {
     setIsDeleting(true);
     try {
-      const base = import.meta.env.VITE_API_URL;
+      const base = env.API_URL;
       const headers = token ? { Authorization: `Bearer ${token}` } : {};
       await axios.delete(`${base}/games/my-games`, { headers });
       setGames([]);
@@ -106,7 +107,7 @@ function Dashboard() {
         <div className="dashboard-topbar">
           <button
             className="back-button"
-            onClick={() => navigate("/")}
+            onClick={() => router.push("/")}
             aria-label="Go back to home"
           >
             ← Home

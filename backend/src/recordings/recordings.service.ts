@@ -96,7 +96,10 @@ export class RecordingsService {
             status: 'pending', // Default status
             nativeLanguage: body.nativeLanguage,
             country: body.countryOfOrigin || null,
-            quoteId: typeof body.quoteId === 'string' ? parseInt(body.quoteId, 10) : body.quoteId,
+            quoteId:
+              typeof body.quoteId === 'string'
+                ? parseInt(body.quoteId, 10)
+                : body.quoteId,
           },
         });
       } catch (err) {

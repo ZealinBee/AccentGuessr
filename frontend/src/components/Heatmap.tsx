@@ -1,9 +1,12 @@
+"use client"
+
 import { useEffect, useRef, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { getCountryCounts } from "../api/speakers";
 import { normalizeCountryName, countryToISO } from "../utils/countryCoordinates";
 import "../scss/Heatmap.scss";
+import { env } from "@/lib/env";
 
 interface CountryData {
   country: string;
@@ -61,9 +64,11 @@ function Heatmap() {
   }, []);
 
   useEffect(() => {
+    // Only run in browser
+    if (typeof window === 'undefined') return;
     if (!mapContainerRef.current || countryData.length === 0) return;
 
-    const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as string | undefined;
+    const mapboxToken = env.MAPBOX_ACCESS_TOKEN;
     if (mapboxToken) mapboxgl.accessToken = mapboxToken;
 
     const map = new mapboxgl.Map({
@@ -194,7 +199,18 @@ function Heatmap() {
     });
 
     return () => {
-      map.remove();
+      try {
+        if (map && typeof map.remove === 'function') {
+          map.remove();
+        }
+        if (mapRef.current && typeof mapRef.current.remove === 'function') {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      } catch (error) {
+        // Ignore cleanup errors - DOM might already be removed
+        console.warn('Map cleanup error:', error);
+      }
     };
   }, [countryData]);
 

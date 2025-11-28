@@ -1,6 +1,7 @@
 import React, { createContext, useState } from "react";
 import axios from "axios";
 import type { Speaker } from "../types/Speaker";
+import { env } from "@/lib/env";
 
 type RoundInfo = {
   score: number;
@@ -40,8 +41,8 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       const token = localStorage.getItem("token");
       const res = token
-        ? await axios.get(`${import.meta.env.VITE_API_URL}/game`, { headers: { Authorization: `Bearer ${token}` } })
-        : await axios.get(`${import.meta.env.VITE_API_URL}/game`);
+        ? await axios.get(`${env.API_URL}/game`, { headers: { Authorization: `Bearer ${token}` } })
+        : await axios.get(`${env.API_URL}/game`);
       setGameData(res.data);
       setGameRound(0);
       setTotalScore(0);
@@ -78,7 +79,7 @@ export const GameProvider: React.FC<{ children: React.ReactNode }> = ({ children
       localStorage.setItem("allRoundInfo", JSON.stringify(allRoundInfo));
       const token = localStorage.getItem("token");
       if (token) {
-        axios.post(`${import.meta.env.VITE_API_URL}/user/submit-game`, allRoundInfo, {
+        axios.post(`${env.API_URL}/user/submit-game`, allRoundInfo, {
           headers: { Authorization: `Bearer ${token}` },
         }).catch(console.error);
       }

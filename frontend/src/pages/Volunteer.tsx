@@ -1,6 +1,7 @@
 import axios from "axios";
+import { env } from "@/lib/env";
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import "../scss/Volunteer.scss";
 import useAuth from "../hooks/useAuth";
 import LoginButton from "../components/GoogleLoginButton";
@@ -31,7 +32,7 @@ function Volunteer() {
   const [countryOfOrigin, setCountryOfOrigin] = useState<string>("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const navigate = useNavigate();
+  const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const { userId, email } = useAuth();
 
@@ -48,7 +49,7 @@ function Volunteer() {
       try {
         setIsLoadingQuotes(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/quotes`
+          `${env.API_URL}/quotes`
         );
         const unusedQuotes = response.data.filter((quote: Quote) => {
           return !quote.isUsed;
@@ -213,7 +214,7 @@ function Volunteer() {
     setIsSubmitting(true);
     try {
       await axios.post(
-        `${import.meta.env.VITE_API_URL}/submit-recordings`,
+        `${env.API_URL}/submit-recordings`,
         formData,
         {
           headers: {
@@ -233,7 +234,7 @@ function Volunteer() {
       setSelectedQuoteIndex(null);
 
       // Navigate to home after success
-      navigate("/");
+      router.push("/");
     } catch (error) {
       console.error("Error submitting recordings:", error);
       alert("There was an error submitting your recordings. Please try again.");
@@ -246,7 +247,7 @@ function Volunteer() {
     <div className="volunteer-container">
       <button
         className="volunteer-back-home-button"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         ← Home
       </button>

@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
+import { env } from "@/lib/env";
 import AudioPlayer from "./AudioPlayer";
 import { scoreCalculate } from "../utils/scoreCalculate";
 import {
@@ -388,7 +389,7 @@ export default function MultiplayerMap({
   ]);
 
   useEffect(() => {
-    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as
+    const token = env.MAPBOX_ACCESS_TOKEN as
       | string
       | undefined;
     if (token) mapboxgl.accessToken = token;

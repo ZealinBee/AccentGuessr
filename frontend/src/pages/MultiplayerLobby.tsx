@@ -1,7 +1,7 @@
  import { useEffect, useState } from "react";
 import useAuth from "../hooks/useAuth";
 import { useMatchSocket } from "../hooks/useMatchWebSocket";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useRouter } from "next/navigation";
 import type { Match } from "../types/Match";
 import "../scss/MultiplayerLobby.scss";
 import MultiplayerMap from "../components/MultiplayerMap";
@@ -10,8 +10,9 @@ import { Copy, Share2 } from "lucide-react";
 import { track } from "../lib/firebase";
 
 function MultiplayerLobby() {
-  const { matchCode } = useParams<{ matchCode: string }>();
-  const navigate = useNavigate();
+  const params = useParams() ?? {};
+  const matchCode = (params as Record<string, string | string[]>).matchCode as string;
+  const router = useRouter();
   const numericCode = Number(matchCode);
   const { userId, username } = useAuth();
   const { connected, joinMatch, startMatch } = useMatchSocket(numericCode, {
@@ -101,7 +102,7 @@ function MultiplayerLobby() {
 
         <button
           className="lobby-back-home-button"
-          onClick={() => navigate("/")}
+          onClick={() => router.push("/")}
         >
           ← Home
         </button>
@@ -155,7 +156,7 @@ function MultiplayerLobby() {
 
       <button
         className="lobby-back-home-button"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         ← Home
       </button>

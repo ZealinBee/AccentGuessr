@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import "../scss/EndScreen.scss";
 import LoginButton from "./GoogleLoginButton";
@@ -6,6 +5,7 @@ import useAuth from "../hooks/useAuth";
 import { useGame } from "../hooks/useGame";
 import { Share2, Play } from "lucide-react";
 import { track } from "../lib/firebase";
+import { useRouter } from "next/navigation";
 
 interface EndScreenProps {
   totalScore: number;
@@ -27,8 +27,8 @@ interface EndScreenProps {
 // };
 
 function EndScreen({ totalScore }: EndScreenProps) {
-  const navigate = useNavigate();
   // const [shareSuccess, setShareSuccess] = useState(false);
+  const router = useRouter();
 
   const { isLoggedIn } = useAuth();
   const { resetGame, startGame } = useGame();
@@ -110,7 +110,7 @@ function EndScreen({ totalScore }: EndScreenProps) {
           className="end-screen-back-home-button"
           onClick={() => {
             resetGame();
-            navigate("/");
+            router.push("/");
           }}
         >
           ← Home

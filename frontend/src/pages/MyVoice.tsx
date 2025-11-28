@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
-import { useNavigate } from "react-router-dom";
+import { env } from "@/lib/env";
+import { useRouter } from "next/navigation";
 import { Mic, Play, Pause, Volume2, VolumeX } from "lucide-react";
 import mapboxgl from "mapbox-gl";
 import "../scss/MyVoice.scss";
@@ -103,7 +104,7 @@ function ClipPlayer({ clip }: { clip: Clip }) {
 
 function MyVoice() {
   const { token, isLoggedIn } = useAuth();
-  const navigate = useNavigate();
+  const router = useRouter();
   const [loading, setLoading] = useState<boolean>(true);
   const [speakerData, setSpeakerData] = useState<MySpeakerData | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -122,7 +123,7 @@ function MyVoice() {
       try {
         setLoading(true);
         const response = await axios.get<MySpeakerData>(
-          `${import.meta.env.VITE_API_URL}/speakers/me`,
+          `${env.API_URL}/speakers/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -150,7 +151,7 @@ function MyVoice() {
   useEffect(() => {
     if (!speakerData || !mapContainerRef.current) return;
 
-    const mapboxToken = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as
+    const mapboxToken = env.MAPBOX_ACCESS_TOKEN as
       | string
       | undefined;
     if (mapboxToken) mapboxgl.accessToken = mapboxToken;
@@ -215,7 +216,7 @@ function MyVoice() {
       <div className="my-voice-container">
         <button
           className="my-voice-back-home-button"
-          onClick={() => navigate("/")}
+          onClick={() => router.push("/")}
         >
           ← Home
         </button>
@@ -242,7 +243,7 @@ function MyVoice() {
           <div className="button-wrapper">
             <button
               className="my-voice-volunteer-button"
-              onClick={() => navigate("/volunteer")}
+              onClick={() => router.push("/volunteer")}
             >
               <Mic size={18} />
               <span>Volunteer Your Voice</span>
@@ -257,7 +258,7 @@ function MyVoice() {
     <div className="my-voice-container">
       <button
         className="my-voice-back-home-button"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         ← Home
       </button>

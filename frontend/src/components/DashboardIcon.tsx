@@ -1,14 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import useAuth from "../hooks/useAuth";
 import "../scss/DashboardIcon.scss";
-import { useNavigate } from "react-router-dom";
 import { LayoutDashboard, Mic, LogOut } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 function DashboardIcon() {
   const { userPictureURL, username, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const closeTimeoutRef = useRef<number | null>(null);
-  const navigate = useNavigate();
+  const router = useRouter();
 
   const openDropdown = () => {
     if (closeTimeoutRef.current) {
@@ -40,11 +40,11 @@ function DashboardIcon() {
   };
 
   const handleDashboard = () => {
-    navigate("/dashboard");
+    router.push("/dashboard");
   };
 
   const handleMyVoice = () => {
-    navigate("/my-voice");
+    router.push("/my-voice");
   };
 
   return (

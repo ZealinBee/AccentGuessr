@@ -1,4 +1,5 @@
 import axios from "axios";
+import { env } from "@/lib/env";
 
 export interface VolunteerVoice {
   id: number;
@@ -21,7 +22,7 @@ export interface Accent {
 export const getVolunteerVoices = async (token: string | null): Promise<VolunteerVoice[]> => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/submit-recordings/volunteer-voices`,
+    `${env.API_URL}/submit-recordings/volunteer-voices`,
     { headers }
   );
   return response.data;
@@ -30,7 +31,7 @@ export const getVolunteerVoices = async (token: string | null): Promise<Voluntee
 export const getAccents = async (token: string | null): Promise<Accent[]> => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/submit-recordings/accents`,
+    `${env.API_URL}/submit-recordings/accents`,
     { headers }
   );
   return response.data;
@@ -42,9 +43,7 @@ export const rejectVolunteerVoice = async (
 ): Promise<{ success: boolean; message: string }> => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.patch(
-    `${
-      import.meta.env.VITE_API_URL
-    }/submit-recordings/volunteer-voices/${id}/reject`,
+    `${env.API_URL}/submit-recordings/volunteer-voices/${id}/reject`,
     {},
     { headers }
   );
@@ -58,9 +57,7 @@ export const acceptVolunteerVoice = async (
 ): Promise<{ success: boolean; message: string; speakerId?: number }> => {
   const headers = token ? { Authorization: `Bearer ${token}` } : {};
   const response = await axios.patch(
-    `${
-      import.meta.env.VITE_API_URL
-    }/submit-recordings/volunteer-voices/${id}/accept`,
+    `${env.API_URL}/submit-recordings/volunteer-voices/${id}/accept`,
     { accentId },
     { headers }
   );

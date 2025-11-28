@@ -1,4 +1,5 @@
 import { initializeApp, getApp, getApps } from "firebase/app";
+import { env } from "@/lib/env";
 import {
   getAnalytics,
   isSupported,
@@ -8,7 +9,7 @@ import {
 } from "firebase/analytics";
 
 const firebaseConfig = {
-  apiKey: `${import.meta.env.VITE_FIREBASE_API_KEY}`,
+  apiKey: `${env.FIREBASE_API_KEY}`,
   authDomain: "guess-the-accc.firebaseapp.com",
   projectId: "guess-the-accc",
   storageBucket: "guess-the-accc.firebasestorage.app",

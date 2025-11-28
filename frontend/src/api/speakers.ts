@@ -1,4 +1,5 @@
 import axios from "axios";
+import { env } from "@/lib/env";
 
 export interface CountryCounts {
   [country: string]: number;
@@ -6,7 +7,7 @@ export interface CountryCounts {
 
 export const getCountryCounts = async (): Promise<CountryCounts> => {
   const response = await axios.get(
-    `${import.meta.env.VITE_API_URL}/speakers/country-counts`
+    `${env.API_URL}/speakers/country-counts`
   );
   return response.data;
 };

@@ -1,9 +1,10 @@
 import { GoogleLogin } from "@react-oauth/google";
 import { useRef, useState } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import "../scss/GoogleLoginButton.scss";
 import useAuth from "../hooks/useAuth";
+import { env } from "@/lib/env";
 
 interface LoginButtonProps {
   message?: string;
@@ -11,7 +12,7 @@ interface LoginButtonProps {
 }
 
 export default function LoginButton({ message, navigateTo }: LoginButtonProps) {
-  const navigate = useNavigate();
+  const router = useRouter();
   const auth = useAuth();
   const googleButtonRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ export default function LoginButton({ message, navigateTo }: LoginButtonProps) {
       if (!idToken) return;
       setLoading(true);
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auth/google`,
+        `${env.API_URL}/auth/google`,
         { idToken, games },
         { withCredentials: true }
       );
@@ -35,7 +36,7 @@ export default function LoginButton({ message, navigateTo }: LoginButtonProps) {
         res.data.user.id,
         res.data.user.email
       );
-      navigate(navigateTo ? `/${navigateTo}` : "/");
+      router.push(navigateTo ? `/${navigateTo}` : "/");
     } catch (error) {
       console.error("Error during backend authentication:", error);
     } finally {

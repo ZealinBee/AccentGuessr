@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useRouter } from "next/navigation";
 import {
   getVolunteerVoices,
   getAccents,
@@ -13,7 +13,7 @@ import "../scss/VolunteerDashboard.scss";
 type FilterStatus = "all" | "accepted" | "pending" | "rejected";
 
 function VolunteerDashboard() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const authContext = useContext(AuthContext);
 
   if (!authContext) {
@@ -218,7 +218,7 @@ function VolunteerDashboard() {
         <div className="error-container">
           <h2>Error</h2>
           <p>{error}</p>
-          <button onClick={() => navigate("/")}>Go Home</button>
+          <button onClick={() => router.push("/")}>Go Home</button>
         </div>
       </div>
     );
@@ -228,7 +228,7 @@ function VolunteerDashboard() {
     <div className="volunteer-dashboard-container">
       <button
         className="dashboard-back-home-button"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         ← Home
       </button>

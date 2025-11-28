@@ -1,3 +1,5 @@
+'use client'
+
 import { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import { X } from "lucide-react";
@@ -14,6 +16,7 @@ import {
   nearestPointOnLine,
   distance,
 } from "@turf/turf";
+import { env } from "@/lib/env";
 
 import "mapbox-gl/dist/mapbox-gl.css";
 import "../scss/Map.scss";
@@ -102,9 +105,10 @@ function Map({ roundData }: MapProps) {
   }, [confirmedAnswer]);
 
   useEffect(() => {
-    const token = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN as
-      | string
-      | undefined;
+    // Only run in browser
+    if (typeof window === 'undefined') return;
+
+    const token = env.MAPBOX_ACCESS_TOKEN;
     if (token) mapboxgl.accessToken = token;
 
     if (!mapContainerRef.current) return;
@@ -138,10 +142,28 @@ function Map({ roundData }: MapProps) {
     };
 
     map.on("click", handleClick);
+
     return () => {
-      map.off("click", handleClick);
-      if (markerRef.current) markerRef.current.remove();
-      map.remove();
+      try {
+        if (map && typeof map.off === 'function') {
+          map.off("click", handleClick);
+        }
+        if (markerRef.current && typeof markerRef.current.remove === 'function') {
+          markerRef.current.remove();
+          markerRef.current = null;
+        }
+        if (correctMarkerRef.current && typeof correctMarkerRef.current.remove === 'function') {
+          correctMarkerRef.current.remove();
+          correctMarkerRef.current = null;
+        }
+        if (mapRef.current && typeof mapRef.current.remove === 'function') {
+          mapRef.current.remove();
+          mapRef.current = null;
+        }
+      } catch (error) {
+        // Ignore cleanup errors - DOM might already be removed
+        console.warn('Map cleanup error:', error);
+      }
     };
   }, []);
 
@@ -300,7 +322,7 @@ function Map({ roundData }: MapProps) {
 
     // Fetch percentile from backend
     fetch(
-      `${import.meta.env.VITE_API_URL}/games/percentile?speakerId=${roundData.id}&score=${roundScore}`
+      `${env.API_URL}/games/percentile?speakerId=${roundData.id}&score=${roundScore}`
     )
       .then((res) => res.json())
       .then((data) => setPercentile(data.percentile))

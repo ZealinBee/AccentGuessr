@@ -1,12 +1,13 @@
 import axios from "axios";
-import { useNavigate } from "react-router-dom";
+import { env } from "@/lib/env";
+import { useRouter } from "next/navigation";
 import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 
 import "../scss/Multiplayer.scss";
 
 function Multiplayer() {
-  const navigate = useNavigate();
+  const router = useRouter();
   const { token } = useAuth();
   const [isCreatingRoom, setIsCreatingRoom] = useState(false);
   const [isJoiningRoom, setIsJoiningRoom] = useState(false);
@@ -15,7 +16,7 @@ function Multiplayer() {
     setIsCreatingRoom(true);
     try {
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/matches`,
+        `${env.API_URL}/matches`,
         {},
         {
           headers: {
@@ -30,7 +31,7 @@ function Multiplayer() {
         setIsCreatingRoom(false);
         return;
       }
-      navigate(`/join/${code}`);
+      router.push(`/join/${code}`);
     } catch (error) {
       alert("Failed to create room. Please try again.");
       console.error("Error creating room:", error);
@@ -42,7 +43,7 @@ function Multiplayer() {
     const code = prompt("Enter room code:");
     if (code) {
       setIsJoiningRoom(true);
-      navigate(`/join/${code}`);
+      router.push(`/join/${code}`);
     }
   };
 
@@ -53,7 +54,7 @@ function Multiplayer() {
 
       <button
         className="multiplayer-back-home-button"
-        onClick={() => navigate("/")}
+        onClick={() => router.push("/")}
       >
         ← Home
       </button>
