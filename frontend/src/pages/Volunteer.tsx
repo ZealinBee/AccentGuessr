@@ -391,7 +391,7 @@ function Volunteer() {
               id="nativeLanguage"
               value={nativeLanguage}
               onChange={(e) => setNativeLanguage(e.target.value)}
-              placeholder="e.g., American English, British English, Spanish, Mandarin"
+              placeholder="e.g., American English, British English, Spanish, Mandarin, The more specific the better(Californian, Scottish, Texans etc.)!"
               required
             />
           </div>
