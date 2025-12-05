@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import '@/scss/App.scss'
 import { Providers } from './providers'
+import Script from 'next/script'
 
 export const metadata: Metadata = {
   title: 'AccentGuessr - Guess Accents from Around the World',
@@ -28,6 +29,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <Script
+          id="adsense-loader"
+          strategy="afterInteractive"
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1290357879552342"
+          crossOrigin="anonymous"
+        />
+      </head>
       <body>
         <Providers>{children}</Providers>
       </body>
