@@ -3,6 +3,7 @@ import useAuth from "../hooks/useAuth";
 import "../scss/DashboardIcon.scss";
 import { LayoutDashboard, Mic, LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 function DashboardIcon() {
   const { userPictureURL, username, logout } = useAuth();
@@ -39,13 +40,6 @@ function DashboardIcon() {
     logout();
   };
 
-  const handleDashboard = () => {
-    router.push("/dashboard");
-  };
-
-  const handleMyVoice = () => {
-    router.push("/my-voice");
-  };
 
   return (
     <div>
@@ -70,20 +64,20 @@ function DashboardIcon() {
               onMouseEnter={openDropdown}
               onMouseLeave={() => scheduleCloseDropdown()}
             >
-              <button
+              <Link
+                href="/dashboard"
                 className="dropdown-item dashboard-item"
-                onClick={handleDashboard}
               >
                 <LayoutDashboard className="dropdown-icon" size={20} />
                 <span>Dashboard</span>
-              </button>
-              <button
+              </Link>
+              <Link
+                href="/my-voice"
                 className="dropdown-item myvoice-item"
-                onClick={handleMyVoice}
               >
                 <Mic className="dropdown-icon" size={20} />
                 <span>My Voice</span>
-              </button>
+              </Link>
               <button
                 className="dropdown-item signout-item"
                 onClick={handleSignOut}

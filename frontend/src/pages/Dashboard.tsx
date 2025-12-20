@@ -5,6 +5,7 @@ import "../scss/Dashboard.scss";
 import DashboardChart from "../components/DashboardChart";
 import axios from "axios";
 import useAuth from "../hooks/useAuth";
+import Link from "next/link";
 
 type Round = {
   id: number;
@@ -105,13 +106,13 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-content">
         <div className="dashboard-topbar">
-          <button
+          <Link
             className="back-button"
-            onClick={() => router.push("/")}
+            href="/"
             aria-label="Go back to home"
           >
             ← Home
-          </button>
+          </Link>
         </div>
         <div className="games-section">
           {/* Chart showing totalScore across all games */}

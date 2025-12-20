@@ -1,6 +1,6 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Game from "./Game";
 import "../scss/Home.scss";
 import LoginButton from "./GoogleLoginButton";
@@ -11,7 +11,6 @@ import { User, Users, Mic, ChevronDown } from "lucide-react";
 import { track } from "../lib/firebase";
 
 function Home() {
-  const router = useRouter();
   const { startGame, isLoading, gameData } = useGame();
   const { isLoggedIn } = useAuth();
   const [openFaqIndex, setOpenFaqIndex] = useState<number | null>(null);
@@ -96,20 +95,14 @@ function Home() {
                     </>
                   )}
                 </button>
-                <button
-                  onClick={() => router.push("/multiplayer")}
-                  className="start-button"
-                >
+                <Link href="/multiplayer" className="start-button">
                   <Users size={18} />
                   <span>Multiplayer</span>
-                </button>
-                <button
-                  onClick={() => router.push("/volunteer")}
-                  className="start-button volunteer-button"
-                >
+                </Link>
+                <Link href="/volunteer" className="start-button volunteer-button">
                   <Mic size={18} />
                   <span>Volunteer Your Accent</span>
-                </button>
+                </Link>
               </div>
             </div>
           </div>

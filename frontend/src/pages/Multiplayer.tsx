@@ -5,6 +5,7 @@ import useAuth from "../hooks/useAuth";
 import { useState } from "react";
 
 import "../scss/Multiplayer.scss";
+import Link from "next/link";
 
 function Multiplayer() {
   const router = useRouter();
@@ -52,12 +53,12 @@ function Multiplayer() {
       <div className="multiplayer-background-image" />
       <div className="multiplayer-background-overlay" />
 
-      <button
+      <Link
         className="multiplayer-back-home-button"
-        onClick={() => router.push("/")}
+        href="/"
       >
         ← Home
-      </button>
+      </Link>
 
       <div className="multiplayer-content">
         <div className="multiplayer-card">
