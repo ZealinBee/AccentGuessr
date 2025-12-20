@@ -19,7 +19,7 @@ function DashboardIcon() {
     setIsOpen(true);
   };
 
-  const scheduleCloseDropdown = (delay = 200) => {
+  const scheduleCloseDropdown = (delay = 350) => {
     if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
     closeTimeoutRef.current = window.setTimeout(() => {
       setIsOpen(false);

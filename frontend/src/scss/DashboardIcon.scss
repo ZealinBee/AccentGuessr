@@ -58,6 +58,16 @@
   position: absolute;
   top: calc(100% + 8px);
   right: 0;
+
+  // Bridge to prevent hover gap
+  &::before {
+    content: "";
+    position: absolute;
+    top: -12px;
+    left: 0;
+    right: 0;
+    height: 12px;
+  }
   min-width: 200px;
   background: rgba(30, 41, 59, 0.95);
   backdrop-filter: blur(10px);
