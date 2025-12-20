@@ -205,7 +205,6 @@ function Volunteer() {
           `recording_${index}.webm`
         );
         formData.append("quoteId", quotes[Number(index)].id.toString());
-        formData.append("quoteName", quotes[Number(index)].joke);
       }
     });
 

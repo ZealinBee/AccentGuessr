@@ -6,7 +6,6 @@ export interface RecordingSubmission {
   nativeLanguage: string;
   countryOfOrigin?: string;
   quoteId: string | number;
-  quoteName: string;
   userId?: string;
   userEmail?: string;
 }
@@ -79,7 +78,6 @@ export class RecordingsService {
 
         const url = await this.blobService.uploadRecording(
           safeFile,
-          this.sanitizeFilename(body.quoteName),
           this.sanitizeFilename(body.nativeLanguage),
           body.countryOfOrigin
             ? this.sanitizeFilename(body.countryOfOrigin)

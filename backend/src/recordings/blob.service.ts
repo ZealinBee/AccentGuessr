@@ -21,7 +21,6 @@ export class BlobService {
 
   async uploadRecording(
     file: Express.Multer.File,
-    quoteId: string | number,
     nativeLanguage: string,
     countryOfOrigin?: string,
     userId?: string,
@@ -41,7 +40,7 @@ export class BlobService {
         try {
           const user = await this.userService.findOne(userId);
           if (user?.email) {
-            userEmail = user.email.replace(/[^a-zA-Z0-9._-]/g, '_');
+            userEmail = user.email.replace(/[^a-zA-Z0-9._@-]/g, '_');
           }
         } catch (error) {
           console.warn(
@@ -53,7 +52,7 @@ export class BlobService {
       }
 
       const filename =
-        [randomId, quoteId, nativeLanguage, countryOfOrigin, userEmail]
+        [countryOfOrigin, userId, userEmail, randomId]
           .filter(Boolean) // remove undefined
           .join('-')
           .replace(/\s+/g, '_') + extension;
