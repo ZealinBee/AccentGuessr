@@ -1,0 +1,50 @@
+/* Navigation Progress Bar */
+.navigation-progress-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 9999;
+  pointer-events: none;
+  background: transparent;
+}
+
+.navigation-progress-bar {
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    #3b82f6 0%,
+    #60a5fa 50%,
+    #93c5fd 100%
+  );
+  box-shadow:
+    0 0 10px rgba(59, 130, 246, 0.7),
+    0 0 5px rgba(59, 130, 246, 0.5);
+  transition: width 0.2s ease-out, opacity 0.3s ease-out;
+  transform-origin: left;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 100px;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4)
+    );
+    animation: shimmer 1.5s ease-out infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100px);
+  }
+  100% {
+    transform: translateX(100px);
+  }
+}
