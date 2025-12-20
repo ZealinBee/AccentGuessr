@@ -177,6 +177,15 @@ function Home() {
               />
             </div>
           </div>
+            <footer className="site-footer">
+              <div className="footer-container">
+                <div className="footer-links">
+                  <Link href="/privacy" className="footer-link">Privacy Policy</Link>
+                  <Link href="/terms" className="footer-link">Terms of Service</Link>
+                </div>
+                <p className="footer-credit">© {new Date().getFullYear()} AccentGuessr</p>
+              </div>
+            </footer>
         </>
       )}
       {gameData && <Game />}

@@ -1,0 +1,238 @@
+.legal-page {
+  min-height: 100vh;
+  background-color: #0f172a;
+  font-family: "Inter", system-ui, sans-serif;
+  padding: 2rem 1.5rem 4rem;
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 1rem 3rem;
+  }
+}
+
+.legal-container {
+  max-width: 800px;
+  margin: 0 auto;
+  background-color: rgba(30, 41, 59, 0.85);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.75rem;
+  padding: 2.5rem 3rem;
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.4);
+
+  @media (max-width: 768px) {
+    padding: 1.5rem 1.25rem;
+    border-radius: 0.6rem;
+  }
+}
+
+.legal-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: #94a3b8;
+  text-decoration: none;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #f8fafc;
+  }
+}
+
+.legal-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #f8fafc;
+  margin-bottom: 0.5rem;
+  letter-spacing: -0.02em;
+
+  @media (max-width: 768px) {
+    font-size: 1.75rem;
+  }
+
+  @media (max-width: 480px) {
+    font-size: 1.5rem;
+  }
+}
+
+.legal-updated {
+  font-size: 0.875rem;
+  color: #94a3b8;
+  margin-bottom: 2rem;
+}
+
+.legal-section {
+  margin-bottom: 2rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.legal-section-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #f8fafc;
+  margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
+
+  @media (max-width: 768px) {
+    font-size: 1.125rem;
+  }
+}
+
+.legal-text {
+  font-size: 0.95rem;
+  color: #cbd5e1;
+  line-height: 1.7;
+  margin-bottom: 1rem;
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+
+  @media (max-width: 768px) {
+    font-size: 0.9rem;
+  }
+}
+
+.legal-list {
+  list-style: disc;
+  padding-left: 1.5rem;
+  margin: 0.75rem 0;
+
+  li {
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.legal-link {
+  color: #60a5fa;
+  text-decoration: underline;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #93c5fd;
+  }
+}
+
+.legal-email {
+  color: #60a5fa;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+
+  &:hover {
+    color: #93c5fd;
+    text-decoration: underline;
+  }
+}
+
+// About page specific styles
+.about-hero {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.2);
+}
+
+.about-tagline {
+  font-size: 1.125rem;
+  color: #94a3b8;
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.about-features {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.about-feature {
+  background-color: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.5rem;
+  padding: 1.25rem;
+  text-align: center;
+
+  .feature-icon {
+    color: #60a5fa;
+    margin-bottom: 0.75rem;
+  }
+
+  .feature-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 0.5rem;
+  }
+
+  .feature-desc {
+    font-size: 0.875rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+}
+
+// Contact page specific styles
+.contact-methods {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin: 1.5rem 0;
+}
+
+.contact-card {
+  background-color: rgba(15, 23, 42, 0.5);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  text-align: center;
+  transition: border-color 0.2s ease-in-out;
+
+  &:hover {
+    border-color: rgba(148, 163, 184, 0.3);
+  }
+
+  .contact-icon {
+    color: #60a5fa;
+    margin-bottom: 1rem;
+  }
+
+  .contact-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f8fafc;
+    margin-bottom: 0.5rem;
+  }
+
+  .contact-info {
+    font-size: 0.9rem;
+    color: #94a3b8;
+    line-height: 1.5;
+  }
+
+  a {
+    color: #60a5fa;
+    text-decoration: none;
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      color: #93c5fd;
+      text-decoration: underline;
+    }
+  }
+}
